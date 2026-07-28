@@ -651,12 +651,12 @@ function wafMiddleware(req, res, next) {
     const criticalThreats = threats.filter(t => t.severity === 'critical');
     const highThreats = threats.filter(t => t.severity === 'high');
 
-    if (criticalThreats.length > 0 || highThreats.length > 0) {
+    if ((criticalThreats.length > 0 || highThreats.length > 0) && !isLocalIP) {
       const threat = criticalThreats[0] || highThreats[0];
       logSecurityEvent(threat.type, threat.severity, req, 'WAF blocked request', threats);
 
       // 高危请求自动封禁（本地IP除外）
-      if (!isLocalIP && criticalThreats.length > 0 && getConfig('auto_ban_enabled') === 'true') {
+      if (criticalThreats.length > 0 && getConfig('auto_ban_enabled') === 'true') {
         banIP(req.ip, `WAF 自动封禁: ${threat.type}`, 'critical', 'waf_auto');
       }
 
@@ -672,7 +672,7 @@ function wafMiddleware(req, res, next) {
 
   // 4. 机器人防护
   const botProtectionEnabled = getConfig('bot_protection_enabled') === 'true';
-  if (botProtectionEnabled) {
+  if (botProtectionEnabled && !isLocalIP) {
     const botThreat = threats.find(t => t.type === 'bot_detected');
     if (botThreat) {
       // 允许主流搜索引擎爬虫，拦截其他所有机器人
@@ -706,7 +706,7 @@ function wafMiddleware(req, res, next) {
     });
   }
 
-  if (scanResult.action === 'should_block' && scanResult.riskScore >= 40) {
+  if (scanResult.action === 'should_block' && scanResult.riskScore >= 40 && !req._isLocal) {
     logSecurityEvent('high_risk_blocked', 'high', req, `高危环境拦截: 风险评分 ${scanResult.riskScore}`, scanResult.scanResults);
     res.status(403);
     return res.render('blocked', {
@@ -791,6 +791,9 @@ function adminAccessCheck(req, res, next) {
 }
 
 function botProtection(req, res, next) {
+  if (req._isLocal) {
+    return next();
+  }
   if (req.uaAnalysis?.is_bot) {
     const allowedBots = ['googlebot', 'bingbot', 'baidu', 'yandex', 'duckduckbot'];
     const botName = req.uaAnalysis.bot_name?.toLowerCase() || '';

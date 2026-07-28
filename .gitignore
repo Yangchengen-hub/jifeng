@@ -60,6 +60,10 @@ src/request-signature.js
 src/crypto-utils.js
 src/qq-auth.js
 
+# ============ 生产环境临时文件 ============
+# 注意：src/ 目录需要上传到 Vercel（Serverless 需要）
+# 但敏感文件通过上面的明确排除来保护
+
 # ============ Vercel / Render 本地配置 ============
 .vercel/
 .render/
