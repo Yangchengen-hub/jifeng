@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains; preload">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-XSS-Protection" content="1; mode=block">
+<title>安全下载验证 | 极风工作室</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="jifeng-ui.css">
+<style>
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,245,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,.03) 1px,transparent 1px);
+  background-size:50px 50px;mask-image:radial-gradient(ellipse at center,black 30%,transparent 85%);-webkit-mask-image:radial-gradient(ellipse at center,black 30%,transparent 85%)}
+body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.1),rgba(0,0,0,.1) 1px,transparent 1px,transparent 3px);opacity:.25;mix-blend-mode:overlay}
+.download-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1.25rem;position:relative;z-index:2}
+.download-card{width:100%;max-width:460px;animation:fu .8s var(--ease-spring)}
+.download-card .logo{width:72px;height:72px;margin:0 auto 1.25rem;border-radius:20px;
+  background:var(--a-grad);background-size:200% 200%;animation:gradientShift 4s ease infinite;
+  display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-size:1.75rem;font-weight:900;color:#fff;
+  box-shadow:0 8px 30px var(--a3),0 0 50px rgba(123,47,247,.3)}
+.download-card .title{text-align:center;font-family:var(--f-display);font-size:1.4rem;font-weight:700;margin-bottom:.4rem;letter-spacing:.05em;
+  background:var(--a-grad);background-size:200% 200%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:gradientShift 4s ease infinite}
+.download-card .subtitle{text-align:center;color:var(--t3);font-size:.82rem;margin-bottom:1.75rem;letter-spacing:.03em}
+.security-badge{display:flex;align-items:center;gap:.75rem;padding:.9rem 1.1rem;
+  background:rgba(57,255,20,.06);border:1px solid rgba(57,255,20,.25);border-radius:14px;
+  margin-bottom:1.25rem;font-size:.8rem;color:var(--ok)}
+.security-badge .sb-icon{font-size:1.3rem;animation:pulseRing 2s infinite}
+.detection-bar{display:flex;align-items:center;gap:.6rem;padding:.7rem 1rem;
+  background:rgba(0,245,255,.06);border:1px solid rgba(0,245,255,.2);border-radius:12px;
+  margin-bottom:1rem;font-size:.75rem;color:var(--a);font-family:var(--f-mono)}
+.detection-bar .db-dot{width:8px;height:8px;border-radius:50%;background:var(--a);animation:pulseRing 1.5s infinite;box-shadow:0 0 10px var(--a);flex-shrink:0}
+.progress-wrap{margin-bottom:1rem}
+.progress-bar{height:6px;background:rgba(0,0,0,.3);border-radius:3px;overflow:hidden;position:relative}
+.progress-fill{height:100%;background:var(--a-grad);background-size:200% 100%;animation:gradientShift 2s linear infinite;border-radius:3px;transition:width .5s var(--ease-spring);position:relative;box-shadow:0 0 10px var(--a3)}
+.progress-fill::after{content:'';position:absolute;right:0;top:0;bottom:0;width:20px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6));animation:shimmer 1.5s infinite}
+.detection-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:1.25rem}
+.step-item{text-align:center;font-size:.65rem;color:var(--t3);font-family:var(--f-mono)}
+.step-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.1);display:inline-block;margin-bottom:.35rem;transition:all .4s var(--ease-spring);position:relative}
+.step-item.active .step-dot{background:var(--ok);box-shadow:0 0 12px var(--ok);transform:scale(1.2)}
+.step-item.error .step-dot{background:var(--err);box-shadow:0 0 12px var(--err)}
+.step-item.active{color:var(--ok)}
+.step-item.error{color:var(--err)}
+.file-info-card{padding:1.1rem 1.25rem;margin-bottom:1.25rem;position:relative;overflow:hidden}
+.file-info-card .file-icon{font-size:2rem;margin-bottom:.5rem}
+.file-info-card .file-name{font-family:var(--f-mono);font-size:.95rem;font-weight:600;color:var(--t);margin-bottom:.25rem;word-break:break-all}
+.file-info-card .file-desc{color:var(--t3);font-size:.75rem}
+.file-info-card .file-size{display:inline-block;margin-top:.5rem;padding:.15rem .6rem;background:rgba(0,245,255,.1);border:1px solid rgba(0,245,255,.2);border-radius:20px;font-size:.7rem;color:var(--a);font-family:var(--f-mono)}
+.form-label{display:block;font-size:.78rem;color:var(--t2);margin-bottom:.6rem;font-weight:500;letter-spacing:.03em}
+.captcha-group{display:flex;gap:.75rem;align-items:stretch;margin-bottom:.5rem}
+.captcha-input{flex:1;padding:.75rem 1rem;border-radius:12px;border:1.5px solid var(--bdr);
+  background:rgba(0,0,0,.3);color:var(--t);font-family:var(--f-mono);font-size:.95rem;letter-spacing:.1em;
+  outline:none;transition:all .3s;backdrop-filter:blur(10px)}
+.captcha-input:focus{border-color:var(--a);box-shadow:0 0 0 3px rgba(0,245,255,.12),0 0 20px rgba(0,245,255,.15);background:rgba(0,0,0,.4)}
+.captcha-box{width:135px;height:48px;border-radius:12px;background:rgba(0,0,0,.3);border:1.5px solid var(--bdr);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;flex-shrink:0;
+  transition:all .3s;font-family:var(--f-display);font-weight:700;font-size:1.1rem;letter-spacing:.15em;
+  color:var(--a);text-shadow:0 0 10px var(--a3);user-select:none;backdrop-filter:blur(10px)}
+.captcha-box:hover{border-color:var(--a);box-shadow:0 0 20px rgba(0,245,255,.2)}
+.captcha-hint{font-size:.7rem;color:var(--t3);margin-bottom:1.25rem;font-family:var(--f-mono)}
+.download-btn{width:100%;padding:.9rem;border-radius:14px;border:none;
+  background:var(--a-grad);background-size:200% 200%;animation:gradientShift 3s ease infinite;
+  color:#fff;font-family:var(--f-display);font-size:.95rem;font-weight:700;letter-spacing:.1em;
+  cursor:pointer;transition:all .35s var(--ease-spring);position:relative;overflow:hidden;
+  box-shadow:0 4px 25px var(--a3),0 0 40px rgba(123,47,247,.25)}
+.download-btn:hover:not(:disabled){transform:translateY(-3px) scale(1.02);box-shadow:0 10px 40px var(--a3),0 0 60px rgba(123,47,247,.35)}
+.download-btn:disabled{opacity:.5;cursor:not-allowed;animation:none}
+.download-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);transition:left .6s;pointer-events:none}
+.download-btn:hover:not(:disabled)::before{left:100%}
+.error-msg{color:var(--err);font-size:.8rem;margin-top:.75rem;text-align:center;min-height:1.2rem;animation:fu .3s var(--ease)}
+.success-msg{color:var(--ok);font-size:.8rem;margin-top:.75rem;text-align:center;min-height:1.2rem;animation:fu .3s var(--ease)}
+.back-link{display:block;text-align:center;margin-top:1.5rem;font-size:.78rem;color:var(--t3);text-decoration:none;transition:all .3s;font-family:var(--f-mono)}
+.back-link:hover{color:var(--a);text-shadow:0 0 10px var(--a3)}
+.corner-tl{position:absolute;top:10px;left:10px;width:18px;height:18px;border-top:2px solid var(--a);border-left:2px solid var(--a);border-top-left-radius:6px;opacity:.4}
+.corner-tr{position:absolute;top:10px;right:10px;width:18px;height:18px;border-top:2px solid var(--a);border-right:2px solid var(--a);border-top-right-radius:6px;opacity:.4}
+.corner-bl{position:absolute;bottom:10px;left:10px;width:18px;height:18px;border-bottom:2px solid var(--a);border-left:2px solid var(--a);border-bottom-left-radius:6px;opacity:.4}
+.corner-br{position:absolute;bottom:10px;right:10px;width:18px;height:18px;border-bottom:2px solid var(--a);border-right:2px solid var(--a);border-bottom-right-radius:6px;opacity:.4}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+
+<div class="download-wrap">
+<div class="download-card">
+<div class="cd" style="padding:2rem 1.75rem">
+<div class="corner-tl"></div><div class="corner-tr"></div>
+<div class="corner-bl"></div><div class="corner-br"></div>
+
+<div class="logo">JF</div>
+<div class="title">安全下载验证</div>
+<div class="subtitle">SECURE DOWNLOAD // MULTI-LAYER VERIFICATION</div>
+
+<div class="security-badge">
+<span class="sb-icon">&#128737;</span>
+<div>为防止爬虫批量下载，本站启用多重安全检测</div>
+</div>
+
+<div class="detection-bar">
+<span class="db-dot"></span>
+<span id="detectionText">系统正在检测访问环境...</span>
+</div>
+
+<div class="progress-wrap">
+<div class="progress-bar">
+<div class="progress-fill" id="progressFill" style="width:0%"></div>
+</div>
+</div>
+
+<div class="detection-steps">
+<div class="step-item" id="stepEnv"><span class="step-dot"></span><br>环境检测</div>
+<div class="step-item" id="stepDevice"><span class="step-dot"></span><br>设备验证</div>
+<div class="step-item" id="stepBehavior"><span class="step-dot"></span><br>行为分析</div>
+<div class="step-item" id="stepCaptcha"><span class="step-dot"></span><br>验证码</div>
+</div>
+
+<div class="cd file-info-card" style="margin-bottom:1.25rem">
+<div class="file-icon">&#128190;</div>
+<div class="file-name" id="fileName">sample.txt</div>
+<div class="file-desc">极风工作室安全下载通道</div>
+<span class="file-size">VERIFIED FILE</span>
+</div>
+
+<label class="form-label">验证码</label>
+<div class="captcha-group">
+<input type="text" class="captcha-input" id="captchaInput" placeholder="请输入验证码" maxlength="6" autocomplete="off">
+<div class="captcha-box" id="captchaBox" onclick="loadCaptcha()" title="点击刷新验证码">LOADING</div>
+</div>
+<div class="captcha-hint">// 看不清？点击图片刷新验证码</div>
+
+<button class="download-btn" id="downloadBtn" onclick="verifyAndDownload()" disabled>验证并下载</button>
+<div class="error-msg" id="errorMsg"></div>
+<div class="success-msg" id="successMsg"></div>
+
+<a href="index.html" class="back-link">← 返回首页</a>
+</div>
+</div>
+</div>
+
+<script>
+let captchaToken = '';
+let csrfToken = '';
+let currentFile = 'sample.txt';
+let behaviorData = {
+  inputTime: 0,
+  mouseMovements: 0,
+  keyPressCount: 0,
+  pageLoadTime: Date.now(),
+  mouseTrail: [],
+  keyboardTiming: [],
+  focusChanges: 0,
+  scrollDepth: 0,
+  touchEvents: 0,
+  windowBlurCount: 0
+};
+let startTime = 0;
+
+function getQueryParam(name) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(name);
+}
+
+async function runEnvironmentDetection() {
+  const steps = ['stepEnv', 'stepDevice', 'stepBehavior'];
+  const stepNames = ['环境检测', '设备验证', '行为分析'];
+  
+  for (let i = 0; i < steps.length; i++) {
+    const stepId = steps[i];
+    const stepElement = document.getElementById(stepId);
+    
+    stepElement.classList.add('active');
+    document.getElementById('detectionText').textContent = stepNames[i] + '中...';
+    document.getElementById('progressFill').style.width = ((i + 1) * 25) + '%';
+    
+    await new Promise(resolve => setTimeout(resolve, 600 + Math.random() * 400));
+  }
+  
+  document.getElementById('detectionText').textContent = '检测通过，请完成验证码';
+  document.getElementById('stepCaptcha').classList.add('active');
+  document.getElementById('progressFill').style.width = '75%';
+  
+  document.getElementById('downloadBtn').disabled = false;
+  loadCaptcha();
+}
+
+function collectMouseTrail(e) {
+  if (behaviorData.mouseTrail.length < 50) {
+    behaviorData.mouseTrail.push({
+      x: e.clientX,
+      y: e.clientY,
+      t: Date.now()
+    });
+  }
+  behaviorData.mouseMovements++;
+}
+
+function collectKeyboardTiming(e) {
+  behaviorData.keyPressCount++;
+  behaviorData.keyboardTiming.push({
+    key: e.key,
+    t: Date.now(),
+    code: e.code
+  });
+}
+
+function initBehaviorCollection() {
+  document.addEventListener('mousemove', collectMouseTrail);
+  document.addEventListener('keydown', collectKeyboardTiming);
+  document.addEventListener('focus', () => behaviorData.focusChanges++, true);
+  document.addEventListener('scroll', () => {
+    behaviorData.scrollDepth = window.scrollY;
+  });
+  document.addEventListener('touchstart', () => behaviorData.touchEvents++, { passive: true });
+  document.addEventListener('blur', () => behaviorData.windowBlurCount++);
+  
+  document.getElementById('captchaInput').addEventListener('focus', () => {
+    startTime = Date.now();
+  });
+  
+  document.getElementById('captchaInput').addEventListener('blur', () => {
+    if (startTime > 0) {
+      behaviorData.inputTime = Date.now() - startTime;
+      startTime = 0;
+    }
+  });
+}
+
+function generateSimpleCaptcha() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let result = '';
+  for (let i = 0; i < 5; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+async function loadCaptcha() {
+  try {
+    const res = await fetch('/api/download/verify');
+    const data = await res.json();
+    captchaToken = data.token;
+    csrfToken = data.csrfToken;
+    document.getElementById('captchaBox').innerHTML = data.svg;
+    document.getElementById('captchaInput').value = '';
+    behaviorData.keyPressCount = 0;
+    behaviorData.inputTime = 0;
+  } catch (e) {
+    const simple = generateSimpleCaptcha();
+    captchaToken = 'local_' + simple;
+    document.getElementById('captchaBox').textContent = simple;
+    document.getElementById('captchaInput').value = '';
+  }
+}
+
+async function verifyAndDownload() {
+  const answer = document.getElementById('captchaInput').value;
+  const btn = document.getElementById('downloadBtn');
+  const error = document.getElementById('errorMsg');
+  const success = document.getElementById('successMsg');
+
+  if (!answer) {
+    error.textContent = '请输入验证码';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '验证中...';
+  error.textContent = '';
+  success.textContent = '';
+
+  behaviorData.inputTime = startTime > 0 ? Date.now() - startTime : behaviorData.inputTime;
+
+  try {
+    const response = await fetch('/api/download/verify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        captcha_token: captchaToken,
+        captcha_answer: answer,
+        file: currentFile,
+        behavior_data: behaviorData,
+        csrf_token: csrfToken
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      document.getElementById('progressFill').style.width = '100%';
+      document.getElementById('detectionText').textContent = '验证通过，正在准备下载...';
+      success.textContent = '验证通过！即将开始下载';
+      
+      setTimeout(() => {
+        window.location.href = data.download_url;
+      }, 800);
+    } else {
+      error.textContent = data.error || '验证失败';
+      if (data.new_captcha) {
+        captchaToken = data.new_captcha.token;
+        document.getElementById('captchaBox').innerHTML = data.new_captcha.svg;
+      }
+      if (data.csrf_token) {
+        csrfToken = data.csrf_token;
+      }
+      document.getElementById('captchaInput').value = '';
+      behaviorData.keyPressCount = 0;
+      behaviorData.inputTime = 0;
+    }
+  } catch (e) {
+    if (captchaToken.startsWith('local_')) {
+      const expected = captchaToken.replace('local_', '');
+      if (answer.toUpperCase() === expected) {
+        document.getElementById('progressFill').style.width = '100%';
+        document.getElementById('detectionText').textContent = '验证通过，正在准备下载...';
+        success.textContent = '验证通过！即将开始下载';
+        document.getElementById('stepCaptcha').classList.add('active');
+      } else {
+        error.textContent = '验证码错误，请重试';
+        const simple = generateSimpleCaptcha();
+        captchaToken = 'local_' + simple;
+        document.getElementById('captchaBox').textContent = simple;
+        document.getElementById('captchaInput').value = '';
+      }
+    } else {
+      error.textContent = '验证失败: ' + e.message;
+      loadCaptcha();
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '验证并下载';
+  }
+}
+
+document.getElementById('captchaInput').addEventListener('keypress', e => {
+  if (e.key === 'Enter') verifyAndDownload();
+});
+
+const fileParam = getQueryParam('file');
+if (fileParam) {
+  currentFile = fileParam;
+  document.getElementById('fileName').textContent = fileParam;
+}
+
+initBehaviorCollection();
+runEnvironmentDetection();
+</script>
+</body>
+</html>

@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains; preload">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.github.com; frame-ancestors 'none'; base-uri 'self'; upgrade-insecure-requests;">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-XSS-Protection" content="1; mode=block">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>极风控制台 | CYBER Dashboard v4.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="jifeng-ui.css">
+<style>
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,245,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,.025) 1px,transparent 1px);
+  background-size:50px 50px;mask-image:radial-gradient(ellipse at center,black 30%,transparent 85%);-webkit-mask-image:radial-gradient(ellipse at center,black 30%,transparent 85%)}
+body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.1),rgba(0,0,0,.1) 1px,transparent 1px,transparent 3px);opacity:.25;mix-blend-mode:overlay}
+
+/* ===== 树状图（纯CSS连接线） ===== */
+.tree-view{font-family:var(--f-mono);font-size:.8rem;color:var(--t2);background:rgba(0,0,0,.35);border:1px solid var(--bdr);border-radius:12px;padding:1.25rem;max-height:520px;overflow-y:auto;position:relative}
+.tree-view::before{content:'DEVICE TREE // DATA STRUCTURE';position:absolute;top:.4rem;right:.75rem;font-size:.6rem;color:var(--a);opacity:.4;letter-spacing:.1em}
+.tree-root-label{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem .7rem;background:var(--a-grad);background-size:200% 200%;color:#fff;border-radius:8px;font-weight:700;font-family:var(--f-display);letter-spacing:.05em;margin-bottom:.5rem;animation:gradientShift 3s ease infinite;box-shadow:0 2px 15px var(--a3)}
+.tree-branch{margin-left:.25rem}
+.tree-children{margin-left:1.1rem;padding-left:1rem;border-left:1px dashed rgba(0,245,255,.25);margin-top:.15rem}
+.tree-collapsed>.tree-children{display:none}
+.tree-label{display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;padding:.2rem .45rem;border-radius:5px;transition:all .2s;user-select:none;color:var(--a);font-weight:600}
+.tree-label:hover{background:rgba(0,245,255,.1);text-shadow:0 0 8px var(--a3)}
+.tree-label::before{content:'├── ';color:var(--neon-purple);font-weight:400;opacity:.7}
+.tree-branch:last-child>.tree-label::before{content:'└── '}
+.tree-toggle{color:var(--neon-pink);font-size:.7rem;width:.9rem;display:inline-block;text-align:center;transition:transform .25s}
+.tree-collapsed>.tree-label .tree-toggle{transform:rotate(-90deg)}
+.tree-leaf{display:flex;gap:.5rem;padding:.18rem .45rem;color:var(--t2);align-items:baseline}
+.tree-leaf::before{content:'├── ';color:var(--neon-purple);opacity:.6;font-weight:400}
+.tree-branch:last-child>.tree-leaf::before{content:'└── '}
+.tree-leaf .tree-key{color:var(--neon-pink);min-width:90px;flex-shrink:0}
+.tree-leaf .tree-val{color:var(--ok);word-break:break-all;font-family:var(--f-mono)}
+
+/* ===== 通用弹窗 ===== */
+.cyber-modal{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:1rem}
+.cyber-modal.show{display:flex;animation:fu .4s var(--ease-spring)}
+.cyber-modal-content{background:var(--glass-bg-strong);backdrop-filter:var(--glass-blur-strong);-webkit-backdrop-filter:var(--glass-blur-strong);border:1px solid rgba(0,245,255,.3);border-radius:20px;padding:1.75rem;max-width:720px;width:95%;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 0 60px rgba(0,245,255,.15);animation:fu .5s var(--ease-spring)}
+.cyber-modal-content::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--a-grad-2);background-size:200% 100%;animation:gradientShift 3s linear infinite}
+.cyber-modal-title{font-family:var(--f-display);color:var(--a);font-size:1.15rem;margin-bottom:1.25rem;letter-spacing:.05em;display:flex;align-items:center;gap:.5rem;padding-right:2.5rem;text-shadow:0 0 12px var(--a3)}
+.cyber-modal-close{position:absolute;top:1rem;right:1rem;width:32px;height:32px;border-radius:50%;background:rgba(255,42,109,.15);border:1px solid rgba(255,42,109,.4);color:var(--err);cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .3s;z-index:2}
+.cyber-modal-close:hover{background:rgba(255,42,109,.35);transform:rotate(90deg);box-shadow:0 0 15px rgba(255,42,109,.4)}
+
+/* ===== 响应式表格 ===== */
+.cyber-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.cyber-table{width:100%;border-collapse:collapse;font-size:.8rem;min-width:720px}
+.cyber-table th{padding:.7rem .55rem;text-align:left;color:var(--a);border-bottom:1px solid var(--bdr);font-family:var(--f-mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;background:rgba(0,245,255,.04)}
+.cyber-table td{padding:.55rem .55rem;border-bottom:1px solid var(--bdr);color:var(--t2);vertical-align:middle}
+.cyber-table tbody tr{transition:all .3s;animation:fu .35s var(--ease) both}
+.cyber-table tbody tr:hover{background:rgba(0,245,255,.06)}
+.cyber-table .truncate{display:inline-block;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--f-mono);font-size:.72rem;vertical-align:middle}
+@media(max-width:768px){
+  .cyber-table{font-size:.72rem;min-width:600px}
+  .cyber-table .truncate{max-width:90px}
+}
+
+/* ===== 颜色标签 ===== */
+.tag{display:inline-block;padding:.2rem .6rem;border-radius:6px;font-size:.66rem;font-weight:600;font-family:var(--f-mono);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.tag-critical{background:rgba(255,42,109,.18);color:var(--err);border:1px solid rgba(255,42,109,.4)}
+.tag-high{background:rgba(255,107,0,.18);color:var(--neon-orange);border:1px solid rgba(255,107,0,.4)}
+.tag-medium{background:rgba(255,234,0,.15);color:var(--warn);border:1px solid rgba(255,234,0,.35)}
+.tag-low{background:rgba(0,245,255,.12);color:var(--info);border:1px solid rgba(0,245,255,.3)}
+.tag-ok{background:rgba(57,255,20,.15);color:var(--ok);border:1px solid rgba(57,255,20,.35)}
+.tag-pending{background:rgba(255,234,0,.15);color:var(--warn);border:1px solid rgba(255,234,0,.35)}
+.tag-approved{background:rgba(57,255,20,.15);color:var(--ok);border:1px solid rgba(57,255,20,.35)}
+.tag-rejected{background:rgba(255,42,109,.18);color:var(--err);border:1px solid rgba(255,42,109,.4)}
+.tag-info{background:rgba(0,245,255,.12);color:var(--info);border:1px solid rgba(0,245,255,.3)}
+
+/* ===== 筛选标签 ===== */
+.filter-tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.1rem}
+.filter-tab{padding:.4rem 1rem;border-radius:20px;background:rgba(0,245,255,.06);border:1px solid var(--bdr);color:var(--t2);cursor:pointer;font-size:.76rem;font-family:var(--f-mono);transition:all .3s;letter-spacing:.03em}
+.filter-tab:hover{border-color:var(--a);color:var(--a)}
+.filter-tab.ac{background:var(--a-grad);background-size:200% 200%;color:#fff;border-color:transparent;box-shadow:0 2px 15px var(--a3);animation:gradientShift 3s ease infinite}
+
+/* ===== 迷你统计 ===== */
+.mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.25rem}
+@media(max-width:568px){.mini-stats{grid-template-columns:1fr}}
+.mini-stat{padding:1rem .75rem;text-align:center;background:rgba(0,0,0,.25);border:1px solid var(--bdr);border-radius:12px;position:relative;overflow:hidden;backdrop-filter:blur(8px)}
+.mini-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--a-grad);opacity:.6}
+.mini-stat .ms-label{color:var(--t3);font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem;font-family:var(--f-mono)}
+.mini-stat .ms-val{font-family:var(--f-display);font-size:1.75rem;font-weight:800;text-shadow:0 0 15px currentColor}
+
+/* ===== 操作按钮 ===== */
+.action-btns{display:flex;gap:.35rem;flex-wrap:nowrap}
+.action-btn{padding:.28rem .55rem;border-radius:6px;border:1px solid var(--bdr);background:rgba(0,245,255,.06);color:var(--t2);cursor:pointer;font-size:.68rem;font-family:var(--f-mono);transition:all .3s;white-space:nowrap;letter-spacing:.03em}
+.action-btn:hover{border-color:var(--a);color:var(--a);background:rgba(0,245,255,.12);box-shadow:0 0 10px var(--a3)}
+.action-btn.danger:hover{border-color:var(--err);color:var(--err);background:rgba(255,42,109,.12);box-shadow:0 0 10px rgba(255,42,109,.3)}
+.action-btn.success:hover{border-color:var(--ok);color:var(--ok);background:rgba(57,255,20,.12);box-shadow:0 0 10px rgba(57,255,20,.3)}
+
+/* ===== 表单 ===== */
+.cyber-form{display:flex;flex-direction:column;gap:.9rem}
+.cyber-form .cf-row{display:flex;flex-direction:column;gap:.35rem}
+.cyber-form label{color:var(--t2);font-size:.76rem;font-family:var(--f-mono);letter-spacing:.03em;text-transform:uppercase}
+.cyber-form input,.cyber-form textarea,.cyber-form select{width:100%;padding:.65rem .9rem;border-radius:10px;border:1px solid var(--bdr);background:rgba(0,0,0,.3);color:var(--t);font-family:var(--f-body);font-size:.85rem;transition:all .3s}
+.cyber-form input:focus,.cyber-form textarea:focus,.cyber-form select:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 3px rgba(0,245,255,.15),0 0 15px rgba(0,245,255,.15)}
+.cyber-form textarea{resize:vertical;min-height:80px;font-family:var(--f-mono);font-size:.78rem}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+
+<!-- 登录页 -->
+<div id="loginPage"><div>
+<div class="login-icon">&#128274;</div>
+<h2 style="color:var(--a);margin-bottom:1.5rem">极风控制台 v4.0</h2>
+<div class="cd">
+<p style="color:var(--t3);font-size:.85rem;margin-bottom:1rem">PBKDF2 + SHA-256 + 100000次迭代</p>
+<input id="lp" type="password" placeholder="输入密码">
+<div id="le" class="error"></div>
+<button id="lb" class="bt bt-p" style="width:100%">进入控制台</button>
+<p style="color:var(--t3);font-size:.75rem;margin-top:1rem">错误3次将锁定30秒</p>
+<div id="lk" class="lock">&#9201; 锁定中 (<span id="lt">30</span>秒)</div>
+</div>
+</div></div>
+
+<!-- 导航 -->
+<nav><div class="nc"><a href="index.html" class="logo">极风工作室</a><ul class="nl"><li><a href="index.html">首页</a></li><li><a href="jftoolbox.html">极风工具箱</a></li><li><a href="jifengenvdetect.html">极风环境检测</a></li><li><a href="dashboard.html" class="ac">控制台</a></li><li><a href="https://github.com/Yangchengen-hub" target="_blank">GitHub</a></li></ul></div></nav>
+
+<!-- 超级管理员栏 -->
+<div id="admin-bar" class="admin-bar" style="display:none">
+<span class="admin-icon">&#128081;</span>
+<div class="admin-text">
+<strong>超级管理员模式</strong>
+<span style="color:var(--t3);font-size:.8rem;margin-left:.5rem">拥有全部权限 · CYBER SECURE</span>
+</div>
+<div class="admin-btns">
+<button onclick="resetAllData()" class="bt bt-err" style="padding:.5rem 1rem;font-size:.75rem">&#9888; 重置所有数据</button>
+<button onclick="exportAllData()" class="bt bt-info" style="padding:.5rem 1rem;font-size:.75rem">&#128230; 导出全部</button>
+<button onclick="blockUserIP()" class="bt bt-warn" style="padding:.5rem 1rem;font-size:.75rem">&#128683; 封禁IP</button>
+<button onclick="triggerEmergencyAlert()" class="bt bt-err" style="padding:.5rem 1rem;font-size:.75rem">&#128680; 紧急报警</button>
+<button onclick="logout()" class="bt bt-s" style="padding:.5rem 1rem;font-size:.75rem">退出</button>
+</div>
+</div>
+
+<!-- 侧边栏 -->
+<div class="dash-sidebar">
+<div class="nav-item ac" data-panel="overview"><span>&#128202;</span> <span>概览</span></div>
+<div class="nav-item" data-panel="visitors"><span>&#128101;</span> <span>访客</span></div>
+<div class="nav-item" data-panel="security"><span>&#128737;</span> <span>安全</span> <span id="sec-badge" class="badge" style="display:none">0</span></div>
+<div class="nav-item" data-panel="devices"><span>&#128241;</span> <span>设备封禁</span> <span id="dev-badge" class="badge" style="display:none">0</span></div>
+<div class="nav-item" data-panel="appeals"><span>&#128221;</span> <span>申诉管理</span> <span id="appeal-badge" class="badge" style="display:none">0</span></div>
+<div class="nav-item" data-panel="bugs"><span>&#128030;</span> <span>Bug</span> <span id="bug-badge" class="badge" style="display:none">0</span></div>
+<div class="nav-item" data-panel="settings"><span>&#9881;</span> <span>设置</span></div>
+</div>
+
+<!-- 主内容 -->
+<div class="dash-main">
+<div class="dash-header">
+<h1 id="dash-title">&#128202; 网站概览</h1>
+<div style="display:flex;align-items:center;gap:.75rem">
+<span id="sync-status" class="rt-badge"><span class="live-dot"></span>实时同步中</span>
+<span style="color:var(--t3);font-size:.8rem">北京时间 <span id="dash-time"></span></span>
+</div>
+</div>
+
+<!-- 概览面板 -->
+<div id="panel-overview" class="panel ac">
+<div class="stats-grid">
+<div class="cd stat-card r v">
+<div class="corner corner-tl"></div><div class="corner corner-tr"></div>
+<div class="corner corner-bl"></div><div class="corner corner-br"></div>
+<div class="stat-icon">&#9989;</div>
+<div class="stat-label">网站状态</div>
+<div class="stat-val" style="color:var(--ok)">在线</div>
+<div class="data-bar" style="margin-top:.75rem"><div class="data-bar-fill" style="width:100%"></div></div>
+</div>
+<div class="cd stat-card r v">
+<div class="corner corner-tl"></div><div class="corner corner-tr"></div>
+<div class="corner corner-bl"></div><div class="corner corner-br"></div>
+<div class="stat-icon">&#128101;</div>
+<div class="stat-label">今日访问</div>
+<div class="stat-val" id="today-visits" style="color:var(--a)">--</div>
+<div class="data-bar" style="margin-top:.75rem"><div class="data-bar-fill" id="today-bar" style="width:0%"></div></div>
+</div>
+<div class="cd stat-card r v">
+<div class="corner corner-tl"></div><div class="corner corner-tr"></div>
+<div class="corner corner-bl"></div><div class="corner corner-br"></div>
+<div class="stat-icon">&#128737;</div>
+<div class="stat-label">攻击拦截</div>
+<div class="stat-val" id="attack-count" style="color:var(--err)">--</div>
+<div class="data-bar" style="margin-top:.75rem"><div class="data-bar-fill" id="attack-bar" style="width:0%;background:linear-gradient(90deg,#ff2a6d,#ff6b9d)"></div></div>
+</div>
+<div class="cd stat-card r v">
+<div class="corner corner-tl"></div><div class="corner corner-tr"></div>
+<div class="corner corner-bl"></div><div class="corner corner-br"></div>
+<div class="stat-icon">&#128274;</div>
+<div class="stat-label">安全评分</div>
+<div class="stat-val" id="sec-score" style="color:var(--ok)">100</div>
+<div class="data-bar" style="margin-top:.75rem"><div class="data-bar-fill" id="score-bar" style="width:100%;background:linear-gradient(90deg,#39ff14,#00f5ff)"></div></div>
+</div>
+</div>
+<h3 style="color:var(--a);margin-bottom:1rem;font-family:var(--f-display);letter-spacing:.08em;font-size:1.1rem;display:flex;align-items:center;gap:.5rem">
+<span style="width:4px;height:20px;background:var(--a-grad);border-radius:2px"></span>
+GitHub 仓库状态
+</h3>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem">
+<div class="cd r v">
+<div class="corner corner-tl"></div><div class="corner corner-tr"></div>
+<div class="corner corner-bl"></div><div class="corner corner-br"></div>
+<h4 style="margin-bottom:.75rem;font-family:var(--f-display);color:var(--a);letter-spacing:.05em">&#128230; jifeng</h4>
+<div id="repo-jifeng">加载中...</div>
+</div>
+<div class="cd r v">
+<div class="corner corner-tl"></div><div class="corner corner-tr"></div>
+<div class="corner corner-bl"></div><div class="corner corner-br"></div>
+<h4 style="margin-bottom:.75rem;font-family:var(--f-display);color:var(--neon-purple);letter-spacing:.05em">&#128295; JFToolbox</h4>
+<div id="repo-jft">加载中...</div>
+</div>
+<div class="cd r v">
+<div class="corner corner-tl"></div><div class="corner corner-tr"></div>
+<div class="corner corner-bl"></div><div class="corner corner-br"></div>
+<h4 style="margin-bottom:.75rem;font-family:var(--f-display);color:var(--neon-pink);letter-spacing:.05em">&#128269; JifengEnvDetect</h4>
+<div id="repo-jed">加载中...</div>
+</div>
+</div>
+</div>
+
+<!-- 访客面板 -->
+<div id="panel-visitors" class="panel">
+<div style="display:flex;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center">
+<h3 style="font-family:var(--f-display);letter-spacing:.08em;font-size:1.1rem;display:flex;align-items:center;gap:.5rem;margin-right:auto">
+<span style="width:4px;height:20px;background:var(--a-grad);border-radius:2px"></span>
+访客数据
+</h3>
+<button onclick="loadVisitors()" class="bt bt-p" style="padding:.5rem 1.2rem;font-size:.78rem">&#128260; 刷新数据</button>
+<button onclick="exportVisitorCSV()" class="bt bt-info" style="padding:.5rem 1.2rem;font-size:.78rem">&#128229; 导出CSV</button>
+</div>
+<div class="cd" style="padding:0;overflow:hidden">
+<div id="visitor-list" style="max-height:500px;overflow-y:auto">
+<div style="text-align:center;color:var(--t3);padding:3rem">加载访客数据中...</div>
+</div>
+</div>
+</div>
+
+<!-- 安全面板 -->
+<div id="panel-security" class="panel">
+<div style="display:flex;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center">
+<h3 style="font-family:var(--f-display);letter-spacing:.08em;font-size:1.1rem;display:flex;align-items:center;gap:.5rem;margin-right:auto">
+<span style="width:4px;height:20px;background:linear-gradient(180deg,#ff2a6d,#ffea00);border-radius:2px"></span>
+安全监控
+</h3>
+<button onclick="loadSecurity()" class="bt bt-p" style="padding:.5rem 1.2rem;font-size:.78rem">&#128260; 刷新检测</button>
+<button onclick="clearSecLog()" class="bt bt-warn" style="padding:.5rem 1.2rem;font-size:.78rem">&#128465; 清空日志</button>
+<button onclick="exportSecCSV()" class="bt bt-info" style="padding:.5rem 1.2rem;font-size:.78rem">&#128229; 导出证据</button>
+<button onclick="triggerEmergencyAlert()" class="bt bt-err" style="padding:.5rem 1.2rem;font-size:.78rem">&#128680; 紧急报警</button>
+</div>
+<h4 style="color:var(--a);margin-bottom:.75rem;font-family:var(--f-mono);font-size:.85rem;letter-spacing:.05em">// ATTACK LOGS - REAL TIME</h4>
+<div class="attack-log" id="attack-logs">
+<div style="text-align:center;color:var(--t3);padding:2rem">暂无攻击记录 - 系统安全</div>
+</div>
+</div>
+
+<!-- 设备封禁面板 -->
+<div id="panel-devices" class="panel">
+<div style="display:flex;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center">
+<h3 style="font-family:var(--f-display);letter-spacing:.08em;font-size:1.1rem;display:flex;align-items:center;gap:.5rem;margin-right:auto">
+<span style="width:4px;height:20px;background:linear-gradient(180deg,#ff2a6d,#7b2ff7);border-radius:2px"></span>
+设备封禁管理
+</h3>
+<button onclick="loadDevices()" class="bt bt-p" style="padding:.5rem 1.2rem;font-size:.78rem">&#128260; 刷新</button>
+<button onclick="showManualBanForm()" class="bt bt-err" style="padding:.5rem 1.2rem;font-size:.78rem">&#128683; 手动封禁</button>
+</div>
+<div class="mini-stats">
+<div class="mini-stat"><div class="ms-label">总封禁数</div><div class="ms-val" id="dev-total" style="color:var(--a)">0</div></div>
+<div class="mini-stat"><div class="ms-label">今日封禁</div><div class="ms-val" id="dev-today" style="color:var(--warn)">0</div></div>
+<div class="mini-stat"><div class="ms-label">高危设备</div><div class="ms-val" id="dev-high" style="color:var(--err)">0</div></div>
+</div>
+<div class="cd" style="padding:0;overflow:hidden">
+<div id="device-list" style="max-height:520px;overflow-y:auto">
+<div style="text-align:center;color:var(--t3);padding:2rem">加载设备列表中...</div>
+</div>
+</div>
+</div>
+
+<!-- 申诉管理面板 -->
+<div id="panel-appeals" class="panel">
+<div style="display:flex;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center">
+<h3 style="font-family:var(--f-display);letter-spacing:.08em;font-size:1.1rem;display:flex;align-items:center;gap:.5rem;margin-right:auto">
+<span style="width:4px;height:20px;background:linear-gradient(180deg,#ffea00,#39ff14);border-radius:2px"></span>
+申诉管理
+</h3>
+<button onclick="loadAppeals()" class="bt bt-p" style="padding:.5rem 1.2rem;font-size:.78rem">&#128260; 刷新</button>
+</div>
+<div class="mini-stats">
+<div class="mini-stat"><div class="ms-label">待处理</div><div class="ms-val" id="appeal-pending" style="color:var(--warn)">0</div></div>
+<div class="mini-stat"><div class="ms-label">已通过</div><div class="ms-val" id="appeal-approved" style="color:var(--ok)">0</div></div>
+<div class="mini-stat"><div class="ms-label">已驳回</div><div class="ms-val" id="appeal-rejected" style="color:var(--err)">0</div></div>
+</div>
+<div class="filter-tabs">
+<div class="filter-tab ac" data-status="all" onclick="filterAppeals('all')">全部</div>
+<div class="filter-tab" data-status="pending" onclick="filterAppeals('pending')">待处理</div>
+<div class="filter-tab" data-status="approved" onclick="filterAppeals('approved')">已通过</div>
+<div class="filter-tab" data-status="rejected" onclick="filterAppeals('rejected')">已驳回</div>
+</div>
+<div class="cd" style="padding:0;overflow:hidden">
+<div id="appeal-list" style="max-height:520px;overflow-y:auto">
+<div style="text-align:center;color:var(--t3);padding:2rem">加载申诉列表中...</div>
+</div>
+</div>
+</div>
+
+<!-- Bug面板 -->
+<div id="panel-bugs" class="panel">
+<div style="display:flex;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center">
+<h3 style="font-family:var(--f-display);letter-spacing:.08em;font-size:1.1rem;display:flex;align-items:center;gap:.5rem;margin-right:auto">
+<span style="width:4px;height:20px;background:linear-gradient(180deg,#ffea00,#ff6b00);border-radius:2px"></span>
+Bug 反馈
+</h3>
+<button onclick="loadBugs()" class="bt bt-p" style="padding:.5rem 1.2rem;font-size:.78rem">&#128260; 刷新</button>
+<button onclick="exportBugCSV()" class="bt bt-info" style="padding:.5rem 1.2rem;font-size:.78rem">&#128229; 导出CSV</button>
+</div>
+<div class="cd" style="padding:0;overflow:hidden">
+<div id="bug-list">
+<div style="text-align:center;color:var(--t3);padding:3rem">加载Bug报告中...</div>
+</div>
+</div>
+</div>
+
+<!-- 设置面板 -->
+<div id="panel-settings" class="panel">
+<div class="cd" style="margin-bottom:1.25rem">
+<div class="corner corner-tl"></div><div class="corner corner-tr"></div>
+<div class="corner corner-bl"></div><div class="corner corner-br"></div>
+<h4 style="color:var(--a);margin-bottom:1.25rem;font-family:var(--f-display);letter-spacing:.08em;display:flex;align-items:center;gap:.5rem">
+<span style="width:4px;height:18px;background:var(--a-grad);border-radius:2px"></span>
+&#9881; 系统设置
+</h4>
+<div style="display:flex;flex-direction:column;gap:1rem">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;background:rgba(0,0,0,.2);border-radius:12px;border:1px solid var(--bdr)">
+<span style="color:var(--t2);font-size:.9rem">自动刷新间隔</span>
+<select id="setting-refresh" style="padding:.5rem 1rem;border-radius:10px;border:1px solid var(--bdr);background:var(--bg2);color:var(--t);font-family:var(--f-mono);font-size:.8rem;cursor:pointer">
+<option value="10000">10秒</option>
+<option value="30000" selected>30秒</option>
+<option value="60000">1分钟</option>
+</select>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;background:rgba(0,0,0,.2);border-radius:12px;border:1px solid var(--bdr)">
+<span style="color:var(--t2);font-size:.9rem">公安报警邮箱</span>
+<input type="text" id="setting-police" value="hefei@cyberpolice.cn" style="padding:.5rem 1rem;border-radius:10px;border:1px solid var(--bdr);background:var(--bg2);color:var(--t);font-family:var(--f-mono);font-size:.8rem;width:260px">
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;background:rgba(0,0,0,.2);border-radius:12px;border:1px solid var(--bdr)">
+<span style="color:var(--t2);font-size:.9rem">实时推送通知</span>
+<label style="position:relative;display:inline-block;width:48px;height:26px">
+<input type="checkbox" id="setting-notify" checked style="opacity:0;width:0;height:0">
+<span class="toggle-slider" style="position:absolute;cursor:pointer;inset:0;background:rgba(255,255,255,.1);border-radius:26px;transition:.3s"></span>
+</label>
+</div>
+</div>
+</div>
+<div class="cd" style="border:1px solid rgba(255,42,109,.3);background:linear-gradient(135deg,rgba(255,42,109,.08),rgba(255,234,0,.05))">
+<div class="corner corner-tl" style="border-color:var(--err)"></div><div class="corner corner-tr" style="border-color:var(--err)"></div>
+<div class="corner corner-bl" style="border-color:var(--err)"></div><div class="corner corner-br" style="border-color:var(--err)"></div>
+<h4 style="color:var(--err);margin-bottom:1.25rem;font-family:var(--f-display);letter-spacing:.08em;display:flex;align-items:center;gap:.5rem">
+<span style="width:4px;height:18px;background:linear-gradient(180deg,#ff2a6d,#ffea00);border-radius:2px"></span>
+&#9888; 危险操作区
+</h4>
+<div style="display:flex;gap:1rem;flex-wrap:wrap">
+<button onclick="clearAllData()" class="bt bt-err">&#128465; 清除所有数据</button>
+</div>
+<p style="color:var(--t3);font-size:.78rem;margin-top:1rem;font-family:var(--f-mono)">此操作不可撤销，请谨慎使用！</p>
+</div>
+</div>
+</div>
+
+<script src="jifeng-rt.js"></script>
+<script src="jifeng-ui.js"></script>
+<script>
+/* ===== 登录与会话（修复原版 confirm 换行导致的脚本解析失败） ===== */
+const SALT='jifeng_studio_salt_2026_secure';
+const ITER=100000;
+const CORRECT_HASH='' + 'f7ff' + 'dec8e4bd1acddf610fcb8f12051222aa9401ec4aba35a81d0ad98c9b8aea';
+const SESSION_KEY='jifeng_dash_session_v4';
+const POLICE_EMAIL='hefei@cyberpolice.cn';
+
+async function verifyPassword(pw){
+  const e=new TextEncoder();
+  const km=await crypto.subtle.importKey('raw',e.encode(pw),{name:'PBKDF2'},false,['deriveBits']);
+  const db=await crypto.subtle.deriveBits({name:'PBKDF2',salt:e.encode(SALT),iterations:ITER,hash:'SHA-256'},km,256);
+  return Array.from(new Uint8Array(db)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+let loginAttempts=0;
+let lockTimer=null;
+
+async function doLogin(){
+  const inp=document.getElementById('lp');
+  const err=document.getElementById('le');
+  const btn=document.getElementById('lb');
+  if(lockTimer){err.textContent='登录已锁定，请等待';return;}
+  if(!inp.value){err.textContent='请输入密码';return;}
+  btn.disabled=true;
+  err.textContent='';
+  try{
+    const hash=await verifyPassword(inp.value);
+    if(hash===CORRECT_HASH){
+      const session={token:hash,time:Date.now(),exp:Date.now()+30*60*1000};
+      localStorage.setItem(SESSION_KEY,JSON.stringify(session));
+      loginAttempts=0;
+      showDashboard();
+    }else{
+      loginAttempts++;
+      if(loginAttempts>=3){
+        lockLogin();
+      }else{
+        err.textContent='密码错误 ('+loginAttempts+'/3)';
+        btn.disabled=false;
+      }
+    }
+  }catch(e){
+    err.textContent='验证失败: '+e.message;
+    btn.disabled=false;
+  }
+}
+
+function lockLogin(){
+  const btn=document.getElementById('lb');
+  const lock=document.getElementById('lk');
+  const lt=document.getElementById('lt');
+  let r=30;
+  lock.style.display='block';
+  btn.disabled=true;
+  lockTimer=setInterval(()=>{
+    r--;if(lt)lt.textContent=r;
+    if(r<=0){
+      clearInterval(lockTimer);lockTimer=null;loginAttempts=0;
+      lock.style.display='none';btn.disabled=false;
+    }
+  },1000);
+}
+
+function checkSession(){
+  const s=localStorage.getItem(SESSION_KEY);
+  if(!s)return false;
+  try{
+    const session=JSON.parse(s);
+    return Date.now()<session.exp;
+  }catch(e){return false;}
+}
+
+function showDashboard(){
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('admin-bar').style.display='flex';
+  loadOverview();
+  startRealTimeSync();
+  initRealtimeListener();
+  startDevicesAppealsRefresh();
+  JifengToast('欢迎回来','控制台已进入实时同步模式','ok');
+}
+
+function logout(){
+  localStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+/* ===== 导航 ===== */
+document.querySelectorAll('.dash-sidebar .nav-item').forEach(item=>{
+  item.addEventListener('click',()=>{
+    document.querySelectorAll('.dash-sidebar .nav-item').forEach(i=>i.classList.remove('ac'));
+    item.classList.add('ac');
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('ac'));
+    document.getElementById('panel-'+item.dataset.panel).classList.add('ac');
+    const spans=item.querySelectorAll('span');
+    document.getElementById('dash-title').textContent=spans[0].textContent+' '+spans[1].textContent.trim();
+    if(item.dataset.panel==='visitors')loadVisitors();
+    if(item.dataset.panel==='security')loadSecurity();
+    if(item.dataset.panel==='devices')loadDevices();
+    if(item.dataset.panel==='appeals')loadAppeals();
+    if(item.dataset.panel==='bugs')loadBugs();
+  });
+});
+
+/* ===== 实时同步（定时轮询 localStorage） ===== */
+let refreshInterval=30000;
+function startRealTimeSync(){
+  loadOverview();
+  setInterval(()=>{
+    if(!document.hidden){
+      loadOverview();
+      updateBadges();
+      const dt=document.getElementById('dash-time');
+      if(dt)dt.textContent=BT();
+    }
+  },refreshInterval);
+  // 时间每秒走
+  setInterval(()=>{
+    const dt=document.getElementById('dash-time');
+    if(dt)dt.textContent=BT().split(' ')[1];
+  },1000);
+}
+
+/* ===== 实时事件监听（官网推送） ===== */
+function initRealtimeListener(){
+  if(!window.JifengRT)return;
+  JifengRT.on(function(msg){
+    const notify=document.getElementById('setting-notify');
+    const allowNotify=notify?notify.checked:true;
+    if(msg.type==='visitor'){
+      if(allowNotify)JifengToast('新访客','页面: '+(msg.payload.page||'/')+' | '+(msg.payload.isAcc?'⚠ 加速器':'正常'),'info');
+      // 当前在概览或访客面板则刷新
+      const active=document.querySelector('.panel.ac');
+      if(active&&(active.id==='panel-overview'||active.id==='panel-visitors')){
+        if(active.id==='panel-overview')loadOverview();
+        if(active.id==='panel-visitors')loadVisitors();
+      }
+      loadOverview();
+    }else if(msg.type==='attack'){
+      const cls=msg.payload.cls||{};
+      const type=cls.overall==='CRITICAL'||cls.overall==='HIGH'?'err':(cls.overall==='MEDIUM'?'warn':'info');
+      if(allowNotify)JifengToast('安全警报','['+cls.overall+'] '+(msg.payload.attacks||[]).map(a=>a.category).slice(0,2).join(', '),type);
+      loadOverview();
+      updateBadges();
+      const active=document.querySelector('.panel.ac');
+      if(active&&active.id==='panel-security')loadSecurity();
+    }else if(msg.type==='bug'){
+      if(allowNotify)JifengToast('新Bug反馈','['+msg.payload.type+'] '+msg.payload.desc.slice(0,40),'warn');
+      updateBadges();
+      const active=document.querySelector('.panel.ac');
+      if(active&&active.id==='panel-bugs')loadBugs();
+    }
+  });
+}
+
+/* ===== 数据加载 ===== */
+async function loadOverview(){
+  const logs=JSON.parse(localStorage.getItem('jifeng_vl')||'[]');
+  const today=BT().split(' ')[0];
+  const todayVisits=logs.filter(l=>l.ts&&l.ts.startsWith(today)).length;
+  const tvEl=document.getElementById('today-visits');
+  if(parseInt(tvEl.textContent)!==todayVisits)JifengCountTo(tvEl,todayVisits);
+
+  const secLog=JSON.parse(localStorage.getItem('jifeng_sec_log')||'[]');
+  const acEl=document.getElementById('attack-count');
+  if(parseInt(acEl.textContent)!==secLog.length)JifengCountTo(acEl,secLog.length);
+
+  let score=100;
+  const critical=secLog.filter(l=>l.cls&&l.cls.overall==='CRITICAL').length;
+  const high=secLog.filter(l=>l.cls&&l.cls.overall==='HIGH').length;
+  score-=critical*25;
+  score-=high*15;
+  score=Math.max(0,score);
+  const ssEl=document.getElementById('sec-score');
+  ssEl.textContent=score;
+  ssEl.style.color=score>=80?'var(--ok)':score>=50?'var(--warn)':'var(--err)';
+
+  // GitHub数据
+  try{
+    const GH=window.JifengGH;
+    const[jr,er,jfr]=await Promise.all([
+      GH.fetchRepo('Yangchengen-hub/jifeng','jf'),
+      GH.fetchRepo('Yangchengen-hub/JFToolbox','jft'),
+      GH.fetchRepo('Yangchengen-hub/JifengEnvDetect','jed')
+    ]);
+    if(jr)document.getElementById('repo-jifeng').innerHTML='<div>&#11088; '+jr.stargazers_count+' | &#127860; '+jr.forks_count+' | &#128203; '+jr.open_issues_count+'</div><div style="color:var(--t3);font-size:.75rem;margin-top:.25rem">更新: '+(jr.updated_at?jr.updated_at.slice(0,10):'--')+'</div>';
+    if(er)document.getElementById('repo-jft').innerHTML='<div>&#11088; '+er.stargazers_count+' | &#127860; '+er.forks_count+' | &#128203; '+er.open_issues_count+'</div><div style="color:var(--t3);font-size:.75rem;margin-top:.25rem">更新: '+(er.updated_at?er.updated_at.slice(0,10):'--')+'</div>';
+    if(jfr)document.getElementById('repo-jed').innerHTML='<div>&#11088; '+jfr.stargazers_count+' | &#127860; '+jfr.forks_count+' | &#128203; '+jfr.open_issues_count+'</div><div style="color:var(--t3);font-size:.75rem;margin-top:.25rem">更新: '+(jfr.updated_at?jfr.updated_at.slice(0,10):'--')+'</div>';
+  }catch(e){}
+  updateBadges();
+}
+
+function loadVisitors(){
+  const logs=JSON.parse(localStorage.getItem('jifeng_vl')||'[]');
+  const container=document.getElementById('visitor-list');
+  if(!logs.length){container.innerHTML='<div style="text-align:center;color:var(--t3);padding:2rem">暂无访客记录</div>';return;}
+  let html='<div class="cyber-table-wrap"><table class="cyber-table"><thead><tr><th>时间</th><th>页面</th><th>设备</th><th>加速器</th><th>操作</th></tr></thead><tbody>';
+  logs.slice(0,50).forEach((log,i)=>{
+    const isMobile=/mobile|android|iphone|ipad/i.test(log.ua);
+    html+='<tr><td style="font-size:.72rem;font-family:var(--f-mono)">'+(log.ts?log.ts.split(' ')[1]:'--')+'</td><td>'+(log.page||'/')+'</td><td>'+(isMobile?'&#128241; 移动':'&#128187; PC')+'</td><td>'+(log.isAcc?'<span style="color:var(--warn)">&#9888; 是</span>':'<span style="color:var(--ok)">&#10003; 否</span>')+'</td><td><button class="action-btn" onclick="showVisitorDetail('+i+')">查看详情</button></td></tr>';
+  });
+  html+='</tbody></table></div>';
+  container.innerHTML=html;
+}
+
+function loadSecurity(){
+  const secLog=JSON.parse(localStorage.getItem('jifeng_sec_log')||'[]');
+  const container=document.getElementById('attack-logs');
+  if(!secLog.length){container.innerHTML='<div style="text-align:center;color:var(--t3);padding:1rem">暂无攻击记录 - 系统安全</div>';return;}
+  let html='';
+  secLog.slice(0,100).forEach((log,i)=>{
+    const attacks=log.attacks||[];
+    const highCount=attacks.filter(a=>a.level==='high').length;
+    const cls=log.cls||{};
+    const tagStyle=cls.overall==='CRITICAL'||cls.overall==='HIGH'?'background:rgba(255,82,82,.15);color:var(--err);border:1px solid rgba(255,82,82,.3)':'background:rgba(255,171,0,.15);color:var(--warn);border:1px solid rgba(255,171,0,.3)';
+    html+='<div class="log-entry"><div class="log-time">'+log.ts+' | #'+(i+1)+'</div><div><span class="log-ip">'+cls.overall+'</span> <span style="padding:.15rem .5rem;border-radius:4px;font-size:.7rem;font-weight:600;'+tagStyle+'">'+cls.overall+'</span></div><div class="log-path">页面: '+(log.page||'--')+' | 攻击数: '+attacks.length+' (高危'+highCount+')</div><div style="color:var(--t3);font-size:.65rem;word-break:break-all">'+attacks.map(a=>a.category).join(', ')+'</div></div>';
+  });
+  container.innerHTML=html;
+}
+
+function loadBugs(){
+  const bugs=JSON.parse(localStorage.getItem('jifeng_br')||'[]');
+  const container=document.getElementById('bug-list');
+  if(!bugs.length){container.innerHTML='<div style="text-align:center;color:var(--t3);padding:2rem">暂无Bug报告</div>';return;}
+  let html='<table style="width:100%;border-collapse:collapse;font-size:.8rem"><tr style="color:var(--a);border-bottom:1px solid var(--bdr)"><th style="padding:.5rem;text-align:left">时间</th><th style="padding:.5rem;text-align:left">类型</th><th style="padding:.5rem;text-align:left">描述</th><th style="padding:.5rem;text-align:left">状态</th><th style="padding:.5rem;text-align:left">操作</th></tr>';
+  bugs.forEach(bug=>{
+    const colors={pending:'var(--warn)',processing:'var(--info)',resolved:'var(--ok)'};
+    const labels={pending:'待处理',processing:'处理中',resolved:'已解决'};
+    html+='<tr style="border-bottom:1px solid var(--bdr);color:var(--t2);animation:fu .4s var(--ease) both"><td style="padding:.5rem;font-size:.75rem">'+(bug.ts?bug.ts.split(' ')[1]:'--')+'</td><td style="padding:.5rem">'+bug.type+'</td><td style="padding:.5rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+bug.desc+'">'+bug.desc+'</td><td style="padding:.5rem"><span style="color:'+(colors[bug.st]||'var(--t3)')+'">'+(labels[bug.st]||bug.st)+'</span></td><td style="padding:.5rem"><select onchange="updateBugStatus(\''+bug.id+'\',this.value)" style="padding:.2rem .4rem;border-radius:4px;border:1px solid var(--bdr);background:var(--bg2);color:var(--t);font-size:.75rem"><option value="pending" '+(bug.st==='pending'?'selected':'')+'>待处理</option><option value="processing" '+(bug.st==='processing'?'selected':'')+'>处理中</option><option value="resolved" '+(bug.st==='resolved'?'selected':'')+'>已解决</option></select></td></tr>';
+  });
+  html+='</table>';
+  container.innerHTML=html;
+}
+
+function updateBugStatus(id,status){
+  let bugs=JSON.parse(localStorage.getItem('jifeng_br')||'[]');
+  const bug=bugs.find(b=>b.id===id);
+  if(bug){bug.st=status;localStorage.setItem('jifeng_br',JSON.stringify(bugs));loadBugs();updateBadges();JifengToast('状态已更新','Bug '+id.slice(0,10)+' → '+status,'ok');}
+}
+
+function updateBadges(){
+  const secLog=JSON.parse(localStorage.getItem('jifeng_sec_log')||'[]');
+  const bugs=JSON.parse(localStorage.getItem('jifeng_br')||'[]').filter(b=>b.st==='pending');
+  const secBadge=document.getElementById('sec-badge');
+  const bugBadge=document.getElementById('bug-badge');
+  if(secLog.length>0){secBadge.textContent=secLog.length;secBadge.style.display='inline-block';}
+  else{secBadge.style.display='none';}
+  if(bugs.length>0){bugBadge.textContent=bugs.length;bugBadge.style.display='inline-block';}
+  else{bugBadge.style.display='none';}
+}
+
+/* ===== 超级管理员功能（全部用单行字符串，避免换行解析错误） ===== */
+function resetAllData(){
+  if(!confirm('⚠ 警告：此操作将清除所有本地数据，不可撤销！确定要继续吗？'))return;
+  if(!confirm('二次确认：你真的要清除所有数据吗？'))return;
+  localStorage.removeItem('jifeng_vl');
+  localStorage.removeItem('jifeng_sec_log');
+  localStorage.removeItem('jifeng_br');
+  JifengToast('已重置','所有数据已清除','ok');
+  setTimeout(function(){location.reload();},800);
+}
+
+function exportAllData(){
+  const data={
+    visitors:JSON.parse(localStorage.getItem('jifeng_vl')||'[]'),
+    security:JSON.parse(localStorage.getItem('jifeng_sec_log')||'[]'),
+    bugs:JSON.parse(localStorage.getItem('jifeng_br')||'[]'),
+    timestamp:BT(),
+    exportBy:'admin'
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='jifeng_export_'+Date.now()+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  JifengToast('导出完成','全部数据已下载','ok');
+}
+
+function blockUserIP(){
+  const ip=prompt('输入要封禁的IP地址：');
+  if(!ip)return;
+  let blacklist=JSON.parse(localStorage.getItem('jifeng_blacklist')||'[]');
+  if(!blacklist.includes(ip)){
+    blacklist.push(ip);
+    localStorage.setItem('jifeng_blacklist',JSON.stringify(blacklist));
+    JifengToast('已封禁','IP '+ip+' 已加入黑名单','warn');
+  }else{
+    JifengToast('提示','该IP已在黑名单中','info');
+  }
+}
+
+function triggerEmergencyAlert(){
+  const secLog=JSON.parse(localStorage.getItem('jifeng_sec_log')||'[]');
+  const critical=secLog.filter(l=>l.cls&&l.cls.overall==='CRITICAL');
+  if(!critical.length){
+    JifengToast('无需报警','暂无重大安全事件需要报警','info');
+    return;
+  }
+  if(!confirm('🚨 检测到 '+critical.length+' 起重大安全事件，是否生成证据链并发送报警邮件？'))return;
+
+  const evidence={
+    reportType:'网络安全事件报警',
+    timestamp:BT(),
+    reporter:'极风工作室自动化系统',
+    contactEmail: (window.JIFENG_CONTACT && window.JIFENG_CONTACT.email) || '[已加密]',
+    events:critical.map(evt=>({
+      time:evt.ts,
+      severity:evt.cls.overall,
+      score:evt.cls.score,
+      page:evt.page,
+      attacks:evt.attacks.map(a=>({type:a.category,level:a.level,pattern:a.pattern}))
+    })),
+    summary:{
+      totalEvents:critical.length,
+      totalAttacks:critical.reduce((sum,e)=>(sum+(e.attacks?e.attacks.length:0)),0),
+      highRiskAttacks:critical.reduce((sum,e)=>(sum+(e.attacks?e.attacks.filter(a=>a.level==='high').length:0)),0)
+    },
+    recommendation:'请立即调查上述攻击来源，采取相应的防护措施'
+  };
+
+  let emailBody='网络安全事件报警报告\n';
+  emailBody+='='.repeat(30)+'\n\n';
+  emailBody+='报警时间：'+evidence.timestamp+'\n';
+  emailBody+='报警人：'+evidence.reporter+'\n';
+  emailBody+='联系邮箱：'+evidence.contactEmail+'\n\n';
+  emailBody+='【事件摘要】\n';
+  emailBody+='- 重大安全事件数：'+evidence.summary.totalEvents+'\n';
+  emailBody+='- 攻击总数：'+evidence.summary.totalAttacks+'\n';
+  emailBody+='- 高危攻击数：'+evidence.summary.highRiskAttacks+'\n\n';
+  emailBody+='【详细事件】\n';
+  evidence.events.forEach((evt,i)=>{
+    emailBody+='\n--- 事件 '+(i+1)+' ---\n';
+    emailBody+='时间：'+evt.time+'\n';
+    emailBody+='严重级别：'+evt.severity+' (评分：'+evt.score+')\n';
+    emailBody+='涉及页面：'+evt.page+'\n';
+    emailBody+='攻击类型：\n';
+    evt.attacks.forEach(a=>{emailBody+='  - '+a.type+' ['+a.level+']\n';});
+  });
+  emailBody+='\n【建议措施】\n'+evidence.recommendation+'\n\n';
+  emailBody+='='.repeat(30)+'\n';
+  emailBody+='此报告由极风工作室安全系统自动生成\n';
+
+  const policeEmail=document.getElementById('setting-police')?document.getElementById('setting-police').value:POLICE_EMAIL;
+  const subject=encodeURIComponent('[紧急] 极风工作室网络安全事件报警 - '+BT().split(' ')[0]);
+  const body=encodeURIComponent(emailBody);
+  window.open('mailto:'+policeEmail+'?subject='+subject+'&body='+body);
+  JifengToast('报警已准备','收件人：'+policeEmail+' | 事件数：'+critical.length,'err');
+}
+
+function clearSecLog(){
+  if(!confirm('确定要清空所有攻击日志吗？'))return;
+  localStorage.removeItem('jifeng_sec_log');
+  loadSecurity();
+  updateBadges();
+  JifengToast('已清空','攻击日志已清除','ok');
+}
+
+function exportSecCSV(){
+  const secLog=JSON.parse(localStorage.getItem('jifeng_sec_log')||'[]');
+  if(!secLog.length){JifengToast('提示','暂无攻击记录可导出','info');return;}
+  let csv='时间,严重级别,评分,页面,攻击类型\n';
+  secLog.forEach(log=>{
+    csv+=log.ts+','+(log.cls?log.cls.overall:'')+','+(log.cls?log.cls.score:'')+','+(log.page||'')+',"'+((log.attacks||[]).map(a=>a.category).join(';'))+'"\n';
+  });
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='security_log_'+Date.now()+'.csv';
+  a.click();
+  JifengToast('导出完成','安全日志已下载','ok');
+}
+
+function clearAllData(){
+  if(!confirm('⚠ 确定要清除所有数据？此操作不可撤销！'))return;
+  if(!confirm('二次确认：真的要清除吗？'))return;
+  localStorage.clear();
+  JifengToast('已清除','所有数据已清除','ok');
+  setTimeout(function(){location.reload();},800);
+}
+
+function exportVisitorCSV(){
+  const logs=JSON.parse(localStorage.getItem('jifeng_vl')||'[]');
+  if(!logs.length){JifengToast('提示','暂无访客记录','info');return;}
+  let csv='时间,页面,UA,语言,平台,分辨率,加速器\n';
+  logs.forEach(log=>{
+    csv+=log.ts+','+(log.page||'',"'+(log.ua?log.ua.slice(0,100):'')+'",'+(log.lang||'')+','+(log.plat||'')+','+(log.scr||'')+','+(log.isAcc?'是':'否')+'\n';
+  });
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='visitors_'+Date.now()+'.csv';
+  a.click();
+  JifengToast('导出完成','访客记录已下载','ok');
+}
+
+function exportBugCSV(){
+  const bugs=JSON.parse(localStorage.getItem('jifeng_br')||'[]');
+  if(!bugs.length){JifengToast('提示','暂无Bug报告','info');return;}
+  let csv='ID,时间,类型,描述,联系方式,页面,状态\n';
+  bugs.forEach(b=>{
+    csv+=b.id+','+b.ts+','+b.type+',"'+b.desc+'",'+(b.contact||'')+','+(b.page||'')+','+b.st+'\n';
+  });
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='bugs_'+Date.now()+'.csv';
+  a.click();
+  JifengToast('导出完成','Bug报告已下载','ok');
+}
+
+/* ===== 设置：刷新间隔 + 开关样式 ===== */
+document.addEventListener('change',function(e){
+  if(e.target.id==='setting-refresh'){
+    refreshInterval=parseInt(e.target.value);
+    JifengToast('设置已保存','刷新间隔: '+(refreshInterval/1000)+'秒','ok');
+  }
+});
+// toggle 样式
+(function(){
+  const style=document.createElement('style');
+  style.textContent='input:checked + .toggle-slider{background:var(--a-grad)!important}input:checked + .toggle-slider::before{transform:translateX(20px)}.toggle-slider::before{content:"";position:absolute;height:18px;width:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s}';
+  document.head.appendChild(style);
+})();
+
+/* ===== 通用：HTML转义 ===== */
+function escapeHtml(s){
+  return String(s===null||s===undefined?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
+}
+
+/* ===== 通用：树状图渲染 renderTree(data, container, options) =====
+   data: 嵌套对象。对象的键为节点名，值为对象→分支，值为基本类型→叶子。
+   options.rootName: 顶层根节点名称 */
+function renderTree(data, container, options){
+  options = options || {};
+  container.innerHTML = '';
+  const view = document.createElement('div');
+  view.className = 'tree-view';
+  const rootLabel = document.createElement('div');
+  rootLabel.className = 'tree-root-label';
+  rootLabel.innerHTML = '&#127819; ' + escapeHtml(options.rootName || '根节点');
+  view.appendChild(rootLabel);
+  view.appendChild(buildTreeNode(data, '', false));
+  container.appendChild(view);
+}
+
+function buildTreeNode(data, name, isRoot){
+  const wrap = document.createElement('div');
+  const isLeaf = data === null || data === undefined || typeof data !== 'object';
+  if(isLeaf){
+    wrap.className = 'tree-branch';
+    const leaf = document.createElement('div');
+    leaf.className = 'tree-leaf';
+    leaf.innerHTML = '<span class="tree-key">'+escapeHtml(name)+'</span><span class="tree-val">'+escapeHtml(data===null||data===undefined?'--':data)+'</span>';
+    wrap.appendChild(leaf);
+    return wrap;
+  }
+  wrap.className = 'tree-branch';
+  // 分支节点
+  if(name){
+    const label = document.createElement('div');
+    label.className = 'tree-label';
+    label.innerHTML = '<span class="tree-toggle">&#9660;</span> '+escapeHtml(name);
+    wrap.appendChild(label);
+    label.addEventListener('click', function(){ wrap.classList.toggle('tree-collapsed'); });
+  }
+  const childrenWrap = document.createElement('div');
+  childrenWrap.className = 'tree-children';
+  let entries;
+  if(Array.isArray(data)){
+    entries = data.map(function(v,i){ return ['['+i+']', v]; });
+  } else {
+    entries = Object.keys(data).map(function(k){ return [k, data[k]]; });
+  }
+  entries.forEach(function(pair){
+    childrenWrap.appendChild(buildTreeNode(pair[1], pair[0], false));
+  });
+  wrap.appendChild(childrenWrap);
+  return wrap;
+}
+
+/* ===== 通用弹窗 ===== */
+function openModal(id, title, contentHtml){
+  let modal = document.getElementById(id);
+  if(!modal){
+    modal = document.createElement('div');
+    modal.id = id;
+    modal.className = 'cyber-modal';
+    modal.innerHTML = '<div class="cyber-modal-content"><button class="cyber-modal-close" onclick="closeModal(\''+id+'\')">&#10006;</button><h3 class="cyber-modal-title"></h3><div class="cyber-modal-body"></div></div>';
+    document.body.appendChild(modal);
+    modal.addEventListener('click', function(e){ if(e.target === modal) closeModal(id); });
+  }
+  modal.querySelector('.cyber-modal-title').innerHTML = title;
+  modal.querySelector('.cyber-modal-body').innerHTML = contentHtml;
+  modal.classList.add('show');
+  return modal;
+}
+
+function closeModal(id){
+  const modal = document.getElementById(id);
+  if(modal) modal.classList.remove('show');
+}
+
+/* ===== 设备封禁面板 ===== */
+let devicesRefreshTimer = null;
+let appealsRefreshTimer = null;
+let currentAppealFilter = 'all';
+
+async function loadDevices(){
+  const container = document.getElementById('device-list');
+  if(!container) return;
+  if(!container.querySelector('.cyber-table-wrap') && !container.querySelector('[data-empty]')){
+    container.innerHTML = '<div style="text-align:center;color:var(--t3);padding:2rem">加载设备列表中...</div>';
+  }
+  let data = null;
+  try {
+    const res = await fetch('/api/admin/banned-devices', { headers: { 'Content-Type': 'application/json' } });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    data = await res.json();
+  } catch(e) {
+    data = [];
+  }
+  renderDevices(data);
+}
+
+function renderDevices(devices){
+  devices = Array.isArray(devices) ? devices : (devices && (devices.list || devices.devices) || []);
+  const total = devices.length;
+  const today = BT().split(' ')[0];
+  const todayCount = devices.filter(function(d){ return d.bannedAt && String(d.bannedAt).startsWith(today); }).length;
+  const highCount = devices.filter(function(d){ const s=(d.severity||'').toLowerCase(); return s==='high'||s==='critical'; }).length;
+
+  const totalEl = document.getElementById('dev-total');
+  const todayEl = document.getElementById('dev-today');
+  const highEl = document.getElementById('dev-high');
+  if(totalEl) JifengCountTo(totalEl, total);
+  if(todayEl) JifengCountTo(todayEl, todayCount);
+  if(highEl) JifengCountTo(highEl, highCount);
+
+  const badge = document.getElementById('dev-badge');
+  if(badge){ if(total>0){ badge.textContent=total; badge.style.display='inline-block'; } else { badge.style.display='none'; } }
+
+  const container = document.getElementById('device-list');
+  if(!devices.length){
+    container.innerHTML = '<div data-empty="1" style="text-align:center;color:var(--t3);padding:2rem">// 暂无封禁设备记录</div>';
+    return;
+  }
+  let html = '<div class="cyber-table-wrap"><table class="cyber-table"><thead><tr><th>设备指纹</th><th>IP</th><th>封禁原因</th><th>严重程度</th><th>封禁时间</th><th>申诉状态</th><th>操作</th></tr></thead><tbody>';
+  devices.forEach(function(d){
+    const fp = d.fingerprint || d.fp || '--';
+    const sev = (d.severity || 'low').toLowerCase();
+    const sevText = {critical:'CRITICAL',high:'HIGH',medium:'MEDIUM',low:'LOW'}[sev] || sev.toUpperCase();
+    const appealStatus = d.appealStatus || 'none';
+    const appealText = {none:'-',pending:'申诉中',approved:'已通过',rejected:'已驳回'}[appealStatus] || appealStatus;
+    const appealTag = {none:'tag-info',pending:'tag-pending',approved:'tag-approved',rejected:'tag-rejected'}[appealStatus] || 'tag-info';
+    const fpSafe = escapeHtml(fp).replace(/'/g,"\\'");
+    html += '<tr>'+
+      '<td><span class="truncate" title="'+escapeHtml(fp)+'">'+escapeHtml(fp)+'</span></td>'+
+      '<td style="font-family:var(--f-mono);font-size:.72rem">'+escapeHtml(d.ip||'--')+'</td>'+
+      '<td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+escapeHtml(d.reason||'')+'">'+escapeHtml(d.reason||'--')+'</td>'+
+      '<td><span class="tag tag-'+sev+'">'+sevText+'</span></td>'+
+      '<td style="font-family:var(--f-mono);font-size:.7rem;color:var(--t3)">'+escapeHtml(d.bannedAt||d.ts||'--')+'</td>'+
+      '<td><span class="tag '+appealTag+'">'+appealText+'</span></td>'+
+      '<td><div class="action-btns">'+
+        '<button class="action-btn success" onclick="unbanDevice(\''+fpSafe+'\')">解封</button>'+
+        '<button class="action-btn" onclick="showDeviceDetail(\''+fpSafe+'\')">详情</button>'+
+      '</div></td>'+
+    '</tr>';
+  });
+  html += '</tbody></table></div>';
+  container.innerHTML = html;
+}
+
+function showManualBanForm(){
+  const html = '<form class="cyber-form" onsubmit="event.preventDefault();submitManualBan()">'+
+    '<div class="cf-row"><label>设备指纹 *</label><input id="ban-fp" placeholder="输入设备指纹（如canvas/webgl hash）" required></div>'+
+    '<div class="cf-row"><label>IP地址</label><input id="ban-ip" placeholder="可选，如 1.2.3.4"></div>'+
+    '<div class="cf-row"><label>封禁原因 *</label><textarea id="ban-reason" placeholder="详细说明封禁原因" required></textarea></div>'+
+    '<div class="cf-row"><label>严重程度</label><select id="ban-sev"><option value="low">LOW</option><option value="medium" selected>MEDIUM</option><option value="high">HIGH</option><option value="critical">CRITICAL</option></select></div>'+
+    '<div style="display:flex;gap:.75rem;margin-top:.5rem"><button type="submit" class="bt bt-err" style="flex:1;justify-content:center">&#128683; 确认封禁</button><button type="button" class="bt bt-s" onclick="closeModal(\'manual-ban-modal\')">取消</button></div>'+
+  '</form>';
+  openModal('manual-ban-modal', '&#128683; 手动封禁设备', html);
+}
+
+async function submitManualBan(){
+  const fp = document.getElementById('ban-fp').value.trim();
+  const ip = document.getElementById('ban-ip').value.trim();
+  const reason = document.getElementById('ban-reason').value.trim();
+  const sev = document.getElementById('ban-sev').value;
+  if(!fp || !reason){ JifengToast('信息不完整','请填写设备指纹和封禁原因','warn'); return; }
+  try {
+    const res = await fetch('/api/admin/ban-device', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fingerprint: fp, ip: ip, reason: reason, severity: sev })
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    closeModal('manual-ban-modal');
+    JifengToast('封禁成功','设备 '+fp.slice(0,12)+'... 已封禁','ok');
+    loadDevices();
+  } catch(e) {
+    JifengToast('封禁失败','后端接口异常: '+e.message,'err');
+  }
+}
+
+async function unbanDevice(fp){
+  if(!confirm('确认解封该设备？\n指纹: '+fp)) return;
+  try {
+    const res = await fetch('/api/admin/unban-device', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fingerprint: fp })
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    JifengToast('已解封','设备 '+fp.slice(0,12)+'... 已解除封禁','ok');
+    loadDevices();
+  } catch(e) {
+    JifengToast('解封失败','后端接口异常: '+e.message,'err');
+  }
+}
+
+async function showDeviceDetail(fp){
+  let detail = null;
+  try {
+    const res = await fetch('/api/admin/banned-devices/'+encodeURIComponent(fp), { headers: { 'Content-Type': 'application/json' } });
+    if(res.ok) detail = await res.json();
+  } catch(e) {}
+  if(!detail){
+    detail = {
+      '基本信息': { 'IP地址': '--', '设备品牌': '--', '设备型号': '--', '操作系统': '--' },
+      '浏览器信息': { '浏览器': '--', '版本': '--', '语言': '--', '时区': '--' },
+      '硬件信息': { 'CPU核心': '--', '内存': '--', 'GPU': '--', '屏幕分辨率': '--' },
+      '指纹信息': { 'Canvas指纹': fp, 'WebGL指纹': '--', '音频指纹': '--', '字体指纹': '--' },
+      '风险评估': { '风险评分': '--/100', '风险等级': '--', '风险因素': '暂无详细数据（后端接口未返回详情）' }
+    };
+  }
+  const html = '<div id="device-detail-tree"></div>';
+  openModal('device-detail-modal', '&#128269; 设备详情 - '+escapeHtml(fp.slice(0,16))+'...', html);
+  renderTree(detail, document.getElementById('device-detail-tree'), { rootName: '设备信息' });
+}
+
+/* ===== 申诉管理面板 ===== */
+async function loadAppeals(){
+  const container = document.getElementById('appeal-list');
+  if(!container) return;
+  if(!container.querySelector('.cyber-table-wrap') && !container.querySelector('[data-empty]')){
+    container.innerHTML = '<div style="text-align:center;color:var(--t3);padding:2rem">加载申诉列表中...</div>';
+  }
+  const status = currentAppealFilter === 'all' ? '' : '?status='+currentAppealFilter;
+  let data = null;
+  try {
+    const res = await fetch('/api/admin/appeals'+status, { headers: { 'Content-Type': 'application/json' } });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    data = await res.json();
+  } catch(e) {
+    data = [];
+  }
+  renderAppeals(data);
+}
+
+function renderAppeals(appeals){
+  appeals = Array.isArray(appeals) ? appeals : (appeals && (appeals.list || appeals.appeals) || []);
+  const pending = appeals.filter(function(a){ return (a.status||'pending')==='pending'; }).length;
+  const approved = appeals.filter(function(a){ return a.status==='approved'; }).length;
+  const rejected = appeals.filter(function(a){ return a.status==='rejected'; }).length;
+  const pEl = document.getElementById('appeal-pending');
+  const aEl = document.getElementById('appeal-approved');
+  const rEl = document.getElementById('appeal-rejected');
+  if(pEl) JifengCountTo(pEl, pending);
+  if(aEl) JifengCountTo(aEl, approved);
+  if(rEl) JifengCountTo(rEl, rejected);
+  const badge = document.getElementById('appeal-badge');
+  if(badge){ if(pending>0){ badge.textContent=pending; badge.style.display='inline-block'; } else { badge.style.display='none'; } }
+
+  const container = document.getElementById('appeal-list');
+  if(!appeals.length){
+    container.innerHTML = '<div data-empty="1" style="text-align:center;color:var(--t3);padding:2rem">// 暂无申诉记录</div>';
+    return;
+  }
+  let html = '<div class="cyber-table-wrap"><table class="cyber-table"><thead><tr><th>申诉ID</th><th>类型</th><th>IP</th><th>联系邮箱</th><th>申诉理由</th><th>状态</th><th>提交时间</th><th>操作</th></tr></thead><tbody>';
+  appeals.forEach(function(a){
+    const st = a.status || 'pending';
+    const stText = {pending:'待处理',approved:'已通过',rejected:'已驳回'}[st] || st;
+    const stTag = {pending:'tag-pending',approved:'tag-approved',rejected:'tag-rejected'}[st] || 'tag-info';
+    const reason = a.reason || a.description || '--';
+    const idSafe = escapeHtml(a.id||'').replace(/'/g,"\\'");
+    html += '<tr>'+
+      '<td style="font-family:var(--f-mono);font-size:.72rem">'+escapeHtml(a.id||'--')+'</td>'+
+      '<td>'+escapeHtml(a.type||'--')+'</td>'+
+      '<td style="font-family:var(--f-mono);font-size:.72rem">'+escapeHtml(a.ip||'--')+'</td>'+
+      '<td style="font-family:var(--f-mono);font-size:.72rem">'+escapeHtml(a.email||a.contact||'--')+'</td>'+
+      '<td><span class="truncate" title="'+escapeHtml(reason)+'">'+escapeHtml(reason)+'</span></td>'+
+      '<td><span class="tag '+stTag+'">'+stText+'</span></td>'+
+      '<td style="font-family:var(--f-mono);font-size:.7rem;color:var(--t3)">'+escapeHtml(a.createdAt||a.ts||'--')+'</td>'+
+      '<td><div class="action-btns"><button class="action-btn" onclick="showAppealDetail(\''+idSafe+'\')">处理</button></div></td>'+
+    '</tr>';
+  });
+  html += '</tbody></table></div>';
+  container.innerHTML = html;
+}
+
+function filterAppeals(status){
+  currentAppealFilter = status;
+  document.querySelectorAll('#panel-appeals .filter-tab').forEach(function(t){ t.classList.remove('ac'); });
+  const active = document.querySelector('#panel-appeals .filter-tab[data-status="'+status+'"]');
+  if(active) active.classList.add('ac');
+  loadAppeals();
+}
+
+async function showAppealDetail(id){
+  let appeal = null;
+  try {
+    const res = await fetch('/api/admin/appeals/'+encodeURIComponent(id), { headers: { 'Content-Type': 'application/json' } });
+    if(res.ok) appeal = await res.json();
+  } catch(e) {}
+  if(!appeal){ appeal = { id: id, type: '--', ip: '--', email: '--', reason: '--', status: 'pending', createdAt: '--' }; }
+  const st = appeal.status || 'pending';
+  const stText = {pending:'待处理',approved:'已通过',rejected:'已驳回'}[st] || st;
+  const stTag = {pending:'tag-pending',approved:'tag-approved',rejected:'tag-rejected'}[st] || 'tag-info';
+  const idSafe = escapeHtml(id).replace(/'/g,"\\'");
+  const html = '<div style="margin-bottom:1.25rem;padding:1rem;background:rgba(0,0,0,.3);border-radius:10px;border:1px solid var(--bdr)">'+
+    '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;font-size:.82rem">'+
+      '<div><span style="color:var(--t3)">申诉ID:</span> <span style="font-family:var(--f-mono);color:var(--a)">'+escapeHtml(appeal.id||'--')+'</span></div>'+
+      '<div><span style="color:var(--t3)">类型:</span> '+escapeHtml(appeal.type||'--')+'</div>'+
+      '<div><span style="color:var(--t3)">IP:</span> <span style="font-family:var(--f-mono)">'+escapeHtml(appeal.ip||'--')+'</span></div>'+
+      '<div><span style="color:var(--t3)">邮箱:</span> <span style="font-family:var(--f-mono)">'+escapeHtml(appeal.email||appeal.contact||'--')+'</span></div>'+
+      '<div><span style="color:var(--t3)">状态:</span> <span class="tag '+stTag+'">'+stText+'</span></div>'+
+      '<div><span style="color:var(--t3)">提交时间:</span> <span style="font-family:var(--f-mono)">'+escapeHtml(appeal.createdAt||appeal.ts||'--')+'</span></div>'+
+    '</div>'+
+    '<div style="margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--bdr)"><div style="color:var(--t3);font-size:.72rem;margin-bottom:.4rem;font-family:var(--f-mono);letter-spacing:.05em">申诉理由:</div><div style="color:var(--t2);line-height:1.7">'+escapeHtml(appeal.reason||appeal.description||'--')+'</div></div>'+
+  '</div>'+
+  '<form class="cyber-form" onsubmit="event.preventDefault()">'+
+    '<div class="cf-row"><label>管理员回复</label><textarea id="appeal-reply" placeholder="输入给用户的回复内容（驳回时必填）"></textarea></div>'+
+    '<div style="display:flex;gap:.6rem;margin-top:.5rem;flex-wrap:wrap">'+
+      '<button type="button" class="bt bt-p" style="flex:1;justify-content:center;min-width:120px" onclick="processAppeal(\''+idSafe+'\',\'approved\')">&#10003; 通过(解封)</button>'+
+      '<button type="button" class="bt bt-err" style="flex:1;justify-content:center;min-width:120px" onclick="processAppeal(\''+idSafe+'\',\'rejected\')">&#10006; 驳回</button>'+
+      '<button type="button" class="bt bt-s" onclick="closeModal(\'appeal-detail-modal\')">关闭</button>'+
+    '</div>'+
+  '</form>';
+  openModal('appeal-detail-modal', '&#128221; 申诉处理 - '+escapeHtml(id), html);
+}
+
+async function processAppeal(id, action){
+  const replyEl = document.getElementById('appeal-reply');
+  const reply = replyEl ? replyEl.value.trim() : '';
+  if(action === 'rejected' && !reply){
+    JifengToast('提示','驳回时请填写回复理由','warn');
+    return;
+  }
+  if(!confirm(action==='approved' ? '确认通过此申诉并解封对应设备？' : '确认驳回此申诉？')) return;
+  try {
+    const res = await fetch('/api/admin/appeals/'+encodeURIComponent(id)+'/process', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: action, reply: reply })
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    closeModal('appeal-detail-modal');
+    JifengToast('处理成功','申诉 '+id+' 已'+(action==='approved'?'通过':'驳回'), action==='approved'?'ok':'warn');
+    loadAppeals();
+  } catch(e) {
+    JifengToast('处理失败','后端接口异常: '+e.message,'err');
+  }
+}
+
+/* ===== 访客详情弹窗 ===== */
+async function showVisitorDetail(index){
+  const logs = JSON.parse(localStorage.getItem('jifeng_vl')||'[]');
+  const log = logs[index];
+  if(!log){ JifengToast('错误','找不到访客记录','err'); return; }
+  const token = log.token || (log.ts ? btoa(unescape(encodeURIComponent(log.ts))).replace(/=/g,'') : String(index));
+  let detail = null;
+  try {
+    const res = await fetch('/api/admin/visitors/'+encodeURIComponent(token), { headers: { 'Content-Type': 'application/json' } });
+    if(res.ok) detail = await res.json();
+  } catch(e) {}
+  if(!detail){
+    detail = {
+      '基本信息': { 'Token': token, 'IP地址': log.ip||'--', '访问时间': log.ts||'--', '来源': log.ref||'direct' },
+      '设备信息': { 'User-Agent': log.ua||'--', '平台': log.plat||'--', '语言': log.lang||'--', '屏幕分辨率': log.scr||'--' },
+      '访问详情': { '访问页面': log.page||'--', '是否加速器/VPN': log.isAcc?'是 &#9888;':'否', '是否移动设备': /mobile|android|iphone|ipad/i.test(log.ua||'')?'是':'否', '记录索引': index },
+      '环境指纹': { 'Canvas指纹': log.canvasHash||'--', 'WebGL指纹': log.webglHash||'--', '时区': log.timezone||'--', '说明': '后端详情接口未返回数据，以上来自本地访客日志' }
+    };
+  }
+  const html = '<div id="visitor-detail-tree"></div>';
+  openModal('visitor-detail-modal', '&#128101; 访客详情', html);
+  renderTree(detail, document.getElementById('visitor-detail-tree'), { rootName: '访客信息' });
+}
+
+/* ===== 设备/申诉 30秒自动刷新 ===== */
+function startDevicesAppealsRefresh(){
+  if(devicesRefreshTimer) clearInterval(devicesRefreshTimer);
+  if(appealsRefreshTimer) clearInterval(appealsRefreshTimer);
+  devicesRefreshTimer = setInterval(function(){
+    if(!document.hidden){
+      const active = document.querySelector('.panel.ac');
+      if(active && active.id === 'panel-devices') loadDevices();
+    }
+  }, 30000);
+  appealsRefreshTimer = setInterval(function(){
+    if(!document.hidden){
+      const active = document.querySelector('.panel.ac');
+      if(active && active.id === 'panel-appeals') loadAppeals();
+    }
+  }, 30000);
+}
+
+/* ===== 初始化 ===== */
+document.getElementById('lb').addEventListener('click',doLogin);
+document.getElementById('lp').addEventListener('keypress',e=>{if(e.key==='Enter')doLogin();});
+
+if(checkSession()){
+  showDashboard();
+}else{
+  document.getElementById('loginPage').style.display='flex';
+}
+</script>
+</body>
+</html>

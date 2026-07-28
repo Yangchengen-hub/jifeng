@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: jifeng-studio
+    runtime: node
+    plan: free
+    buildCommand: npm ci && mkdir -p data
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_PATH
+        value: ./data/jifeng.db
+      - key: JWT_SECRET
+        sync: false
+      - key: ADMIN_SECRET_PATH
+        sync: false
+      - key: ADMIN_ACCESS_KEY
+        sync: false
+      # QQ邮箱配置（需要用户设置授权码）
+      - key: EMAIL_SERVICE
+        value: QQ
+      - key: EMAIL_HOST
+        value: smtp.qq.com
+      - key: EMAIL_PORT
+        value: "465"
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: CRYPTO_KEY
+        sync: false
+      - key: SITE_URL
+        sync: false
+    healthCheckPath: /
+    numInstances: 1
+    maxIdleTime: 15

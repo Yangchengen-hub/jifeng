@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains; preload">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.github.com; frame-ancestors 'none'; base-uri 'self'; upgrade-insecure-requests;">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-XSS-Protection" content="1; mode=block">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb()">
+<title>极风环境检测 | JifengEnvDetect</title>
+<link rel="stylesheet" href="jifeng-ui.css">
+<style>
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,245,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,.025) 1px,transparent 1px);
+  background-size:50px 50px;mask-image:radial-gradient(ellipse at center,black 30%,transparent 85%);-webkit-mask-image:radial-gradient(ellipse at center,black 30%,transparent 85%)}
+body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.1),rgba(0,0,0,.1) 1px,transparent 1px,transparent 3px);opacity:.25;mix-blend-mode:overlay}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+<nav><div class="nc"><a href="index.html" class="logo">极风工作室</a><ul class="nl"><li><a href="index.html">首页</a></li><li><a href="jftoolbox.html">极风工具箱</a></li><li><a href="jifengenvdetect.html" class="ac">极风环境检测</a></li><li><a href="dashboard.html">控制台</a></li><li><a href="https://github.com/Yangchengen-hub" target="_blank">GitHub</a></li></ul></div></nav>
+<section class="hr"><div class="hc"><div style="font-size:3rem;animation:float 4s ease-in-out infinite">&#128269;</div><h1>极风<span class="ac">环境检测</span></h1><p class="hs">Android环境安全审计工具<br>7大检测探针，全面排查安全隐患</p><div class="lb"><div class="li"><div class="lv" id="jes">--</div><div class="ll">Stars</div></div><div class="li"><div class="lv">7</div><div class="ll">检测项</div></div><div class="li"><div class="lv" id="jev">--</div><div class="ll">最新版本</div></div><div class="li"><div class="lv"><span class="ld"></span></div><div class="ll">活跃</div></div></div><div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap"><a href="https://github.com/Yangchengen-hub/JifengEnvDetect/releases" target="_blank" class="bt bt-p">&#128230; 下载APK</a><a href="https://github.com/Yangchengen-hub/JifengEnvDetect" target="_blank" class="bt bt-s">&#128187; 查看源码</a></div></div></section>
+<section id="changelog"><div class="ct"><h2 class="st">最新<span class="ac">更新</span></h2><div id="release-info" style="color:var(--t2)">正在加载...</div><div id="release-changes" style="margin-top:1rem"></div></div></section>
+<section id="features"><div class="ct"><h2 class="st">检测<span class="ac">探针</span></h2><div class="pg"><div class="cd r"><h3>&#9889; Root状态检测</h3><p style="color:var(--t2);font-size:.9rem;margin-top:.75rem">检测su二进制文件、Magisk、KingRoot等常见Root方案</p></div><div class="cd r"><h3>&#128272; SafetyNet状态</h3><p style="color:var(--t2);font-size:.9rem;margin-top:.75rem">检测Google SafetyNet认证状态，判断设备是否通过完整性验证</p></div><div class="cd r"><h3>&#128187; 调试状态</h3><p style="color:var(--t2);font-size:.9rem;margin-top:.75rem">检测USB调试、ADB状态、开发者选项是否开启</p></div><div class="cd r"><h3>&#128275; 签名验证</h3><p style="color:var(--t2);font-size:.9rem;margin-top:.75rem">验证APK签名完整性，检测是否被二次打包或篡改</p></div><div class="cd r"><h3>&#128737;&#65039; 安全补丁</h3><p style="color:var(--t2);font-size:.9rem;margin-top:.75rem">检查Android安全补丁级别，评估系统安全性</p></div><div class="cd r"><h3>&#128300; 模拟器检测</h3><p style="color:var(--t2);font-size:.9rem;margin-top:.75rem">识别常见模拟器环境，如BlueStacks、LDPlayer等</p></div></div></div></section>
+<section id="releases"><div class="ct"><h2 class="st">发布<span class="ac">历史</span></h2><div id="release-list" style="color:var(--t2)">正在加载...</div></div></section>
+<ft><div style="max-width:1200px;margin:0 auto">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;text-align:left;margin-bottom:2rem">
+<div><h4 style="color:var(--a);margin-bottom:1rem">极风工作室</h4><p style="color:var(--t3);font-size:.8rem">专注安卓玩机工具开发<br>为发烧友打造专业工具</p></div>
+<div><h4 style="color:var(--a);margin-bottom:1rem">联系我们</h4><div style="display:flex;gap:.5rem;flex-wrap:wrap">
+<a href="/appeal.html" style="color:var(--t3);font-size:.75rem;text-decoration:none">联系管理员</a>
+</div></div>
+<div><h4 style="color:var(--a);margin-bottom:1rem">开源鸣谢</h4><div style="display:flex;flex-wrap:wrap;gap:.5rem">
+<a href="https://kotlinlang.org/" target="_blank" style="color:var(--t3);font-size:.7rem;text-decoration:none">Kotlin</a>
+<a href="https://pages.github.com/" target="_blank" style="color:var(--t3);font-size:.7rem;text-decoration:none">GitHub Pages</a>
+</div></div></div>
+<p style="color:var(--t3);font-size:.75rem">极风工作室 &copy; 2026 | 北京时间 <span id="ftt"></span></p>
+</div></ft>
+<div id="bb" style="position:fixed;bottom:24px;right:24px;z-index:998;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--a),#ff8533);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(255,105,0,.4);font-size:1.5rem">&#128030;</div>
+<script src="jifeng-rt.js"></script>
+<script src="jifeng-ui.js"></script>
+<script>
+async function loadJED(){
+  const GH=window.JifengGH;
+  const[repo,rel,rels]=await Promise.all([
+    GH.fetchRepo('Yangchengen-hub/JifengEnvDetect','e'),
+    GH.fetchRel('Yangchengen-hub/JifengEnvDetect','e'),
+    GH.fetchReleases('Yangchengen-hub/JifengEnvDetect','e',5)
+  ]);
+  if(repo)document.getElementById('jes').textContent=repo.stargazers_count;
+  if(rel)document.getElementById('jev').textContent=rel.tag_name;
+  if(rel){
+    const info=document.getElementById('release-info');
+    const changes=document.getElementById('release-changes');
+    const date=new Date(rel.published_at).toLocaleDateString('zh-CN',{timeZone:'Asia/Shanghai'});
+    info.innerHTML='<div class="cd" style="font-size:1.1rem;font-weight:600;margin-bottom:.5rem">'+rel.name+'</div><div style="font-size:.85rem;color:var(--t3)">发布于 '+date+' | 下载 '+(rel.download_count||0)+' 次</div>';
+    if(rel.body){
+      changes.innerHTML='<div class="cd" style="white-space:pre-wrap;font-size:.85rem;line-height:1.6">'+rel.body.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>';
+    }
+  }
+  if(rels&&rels.length){
+    const list=document.getElementById('release-list');
+    list.innerHTML=rels.map(r=>{
+      const date=new Date(r.published_at).toLocaleDateString('zh-CN',{timeZone:'Asia/Shanghai'});
+      return'<div class="cd r" style="margin-bottom:.75rem"><div style="display:flex;justify-content:space-between;align-items:center"><strong>'+r.tag_name+'</strong><span style="color:var(--t3);font-size:.75rem">'+date+'</span></div><p style="color:var(--t2);font-size:.85rem;margin-top:.5rem">'+(r.name||'')+'</p><div style="display:flex;gap:.5rem;margin-top:.75rem;flex-wrap:wrap">'+(r.assets||[]).map(a=>'<a href="'+a.browser_download_url+'" class="bt bt-s" style="padding:.3rem .6rem;font-size:.7rem">&#128230; '+a.name+'</a>').join('')+'</div></div>';
+    }).join('');
+    document.querySelectorAll('#release-list .r').forEach(function(el){el.classList.add('v');});
+  }
+}
+loadJED();setInterval(loadJED,30000);
+</script>
+</body>
+</html>

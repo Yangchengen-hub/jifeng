@@ -1,0 +1,2654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>极风工作室 · CYBER 安全运维控制台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-card: #1a1a28;
+  --bg-hover: #252538;
+  --border: rgba(0, 245, 255, 0.15);
+  --text-primary: #e8e8f0;
+  --text-secondary: #9898a8;
+  --text-muted: #5a5a6e;
+  --accent: #00f5ff;
+  --accent-2: #7b2ff7;
+  --accent-3: #ff00d4;
+  --accent-grad: linear-gradient(135deg, #00f5ff, #7b2ff7, #ff00d4);
+  --accent-glow: rgba(0, 245, 255, 0.35);
+  --success: #39ff14;
+  --warning: #ffea00;
+  --danger: #ff2a6d;
+  --info: #00f5ff;
+  --critical: #ff2a6d;
+  --f-display: 'Orbitron', 'Noto Sans SC', sans-serif;
+  --f-body: 'Noto Sans SC', system-ui, sans-serif;
+  --f-mono: 'JetBrains Mono', monospace;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes neonPulse {
+  0%, 100% { box-shadow: 0 0 10px var(--accent-glow), 0 0 20px rgba(123, 47, 247, 0.2); }
+  50% { box-shadow: 0 0 20px var(--accent-glow), 0 0 40px rgba(123, 47, 247, 0.3); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+body {
+  font-family: var(--f-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 245, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 245, 255, 0.025) 1px, transparent 1px);
+  background-size: 50px 50px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 85%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 85%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.1),
+    rgba(0, 0, 0, 0.1) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: 0.25;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 1;
+}
+
+#loginPage, #dashboard { position: relative; z-index: 2; }
+
+/* ============ 登录页（赛博版） ============ */
+#loginPage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 30% 40%, rgba(0, 245, 255, 0.06), transparent 55%),
+              radial-gradient(ellipse at 70% 60%, rgba(123, 47, 247, 0.08), transparent 55%);
+  position: relative;
+  overflow: hidden;
+}
+
+#loginPage::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 245, 255, 0.1) 0%, transparent 70%);
+  top: -200px;
+  right: -150px;
+  pointer-events: none;
+  filter: blur(60px);
+}
+
+#loginPage::after {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(123, 47, 247, 0.12) 0%, transparent 70%);
+  bottom: -150px;
+  left: -100px;
+  pointer-events: none;
+  filter: blur(60px);
+}
+
+.login-container {
+  width: 100%;
+  max-width: 440px;
+  padding: 40px 36px;
+  background: linear-gradient(135deg, rgba(26, 26, 40, 0.8), rgba(18, 18, 26, 0.6));
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  border-radius: 20px;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 245, 255, 0.08);
+  animation: neonPulse 3s ease-in-out infinite;
+}
+
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent-grad);
+  background-size: 200% 100%;
+  animation: gradientShift 3s linear infinite;
+  border-radius: 20px 20px 0 0;
+}
+
+.login-logo {
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 20px;
+  background: var(--accent-grad);
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease infinite;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 900;
+  font-family: var(--f-display);
+  color: #fff;
+  box-shadow: 0 10px 35px var(--accent-glow), 0 0 50px rgba(123, 47, 247, 0.3);
+  letter-spacing: 0.05em;
+}
+
+.login-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  font-family: var(--f-display);
+  letter-spacing: 0.08em;
+  background: var(--accent-grad);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 5s ease infinite;
+}
+
+.login-subtitle {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+  font-family: var(--f-mono);
+  letter-spacing: 0.05em;
+}
+
+.form-group { margin-bottom: 16px; }
+
+.form-label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-family: var(--f-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 18px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: all 0.3s;
+  outline: none;
+  font-family: var(--f-body);
+  backdrop-filter: blur(10px);
+}
+
+.form-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 245, 255, 0.12), 0 0 25px rgba(0, 245, 255, 0.2);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.captcha-group {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.captcha-input { flex: 1; }
+
+.captcha-box {
+  width: 130px;
+  height: 46px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: all 0.3s;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  text-shadow: 0 0 10px var(--accent-glow);
+  user-select: none;
+}
+
+.captcha-box:hover { 
+  border-color: var(--accent); 
+  box-shadow: 0 0 15px rgba(0, 245, 255, 0.2);
+}
+.captcha-box svg { width: 100%; height: 100%; }
+
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  margin-top: 24px;
+  background: var(--accent-grad);
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease infinite;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: var(--f-display);
+  letter-spacing: 0.1em;
+  box-shadow: 0 4px 25px var(--accent-glow), 0 0 40px rgba(123, 47, 247, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s;
+}
+
+.login-btn:hover:not(:disabled)::before { left: 100%; }
+
+.login-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 35px var(--accent-glow), 0 0 60px rgba(123, 47, 247, 0.35);
+}
+
+.login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.login-error {
+  color: var(--danger);
+  font-size: 13px;
+  margin-top: 14px;
+  text-align: center;
+  min-height: 18px;
+  font-family: var(--f-mono);
+}
+
+.security-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(57, 255, 20, 0.08);
+  border: 1px solid rgba(57, 255, 20, 0.2);
+  border-radius: 10px;
+  margin-top: 22px;
+  font-size: 11px;
+  color: var(--success);
+  font-family: var(--f-mono);
+}
+
+/* ============ 主控制台（赛博版） ============ */
+#dashboard { display: none; min-height: 100vh; }
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10, 10, 15, 0.9);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topbar::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--accent-grad);
+  background-size: 200% 100%;
+  animation: gradientShift 4s linear infinite;
+  opacity: 0.4;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.topbar-logo {
+  width: 40px;
+  height: 40px;
+  background: var(--accent-grad);
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease infinite;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 900;
+  color: white;
+  font-family: var(--f-display);
+  box-shadow: 0 4px 20px var(--accent-glow);
+  letter-spacing: 0.05em;
+}
+
+.topbar-title {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--f-display);
+  letter-spacing: 0.08em;
+  background: var(--accent-grad);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 5s ease infinite;
+}
+
+.topbar-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--f-mono);
+  letter-spacing: 0.05em;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  background: rgba(57, 255, 20, 0.1);
+  border: 1px solid rgba(57, 255, 20, 0.3);
+  border-radius: 20px;
+  font-size: 11px;
+  color: var(--success);
+  font-family: var(--f-mono);
+  font-weight: 600;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success);
+  animation: pulse 2s infinite;
+  box-shadow: 0 0 10px var(--success);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--success); }
+  50% { opacity: 0.5; box-shadow: 0 0 4px var(--success); }
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-grad);
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 2px 12px var(--accent-glow);
+}
+
+.logout-btn {
+  padding: 7px 16px;
+  background: rgba(255, 42, 109, 0.1);
+  border: 1px solid rgba(255, 42, 109, 0.3);
+  color: var(--danger);
+  border-radius: 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: var(--f-body);
+  font-weight: 500;
+}
+
+.logout-btn:hover {
+  background: rgba(255, 42, 109, 0.2);
+  box-shadow: 0 0 15px rgba(255, 42, 109, 0.2);
+}
+
+/* ============ Tab 导航（赛博版） ============ */
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 28px;
+  background: rgba(18, 18, 26, 0.6);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.tab {
+  padding: 13px 20px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all 0.3s;
+  font-family: var(--f-body);
+  position: relative;
+}
+
+.tab:hover { 
+  color: var(--text-secondary); 
+  background: rgba(0, 245, 255, 0.04);
+}
+.tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  text-shadow: 0 0 10px var(--accent-glow);
+  background: rgba(0, 245, 255, 0.06);
+}
+
+/* ============ 主内容区 ============ */
+.content {
+  padding: 28px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.tab-content { display: none; }
+.tab-content.active { 
+  display: block; 
+  animation: tabFadeIn 0.4s ease;
+}
+
+@keyframes tabFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============ 卡片 ============ */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-icon {
+  font-size: 18px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ============ KPI 卡片 ============ */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent);
+}
+
+.kpi-card.success::before { background: var(--success); }
+.kpi-card.warning::before { background: var(--warning); }
+.kpi-card.danger::before { background: var(--danger); }
+.kpi-card.info::before { background: var(--info); }
+
+.kpi-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.kpi-value {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.kpi-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ============ 开关 ============ */
+.toggle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.toggle-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.toggle-item:hover {
+  border-color: var(--accent);
+}
+
+.toggle-info {
+  flex: 1;
+}
+
+.toggle-name {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.toggle-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.switch {
+  position: relative;
+  width: 42px;
+  height: 22px;
+  background: var(--border);
+  border-radius: 22px;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.switch::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.2s;
+}
+
+.switch.on {
+  background: var(--success);
+}
+
+.switch.on::after {
+  transform: translateX(20px);
+}
+
+/* ============ 表格 ============ */
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+th {
+  background: var(--bg-secondary);
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+tr:hover td {
+  background: rgba(51, 65, 85, 0.2);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.mono {
+  font-family: 'SF Mono', Monaco, Consolas, monospace;
+  font-size: 11px;
+}
+
+/* ============ 徽章 ============ */
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-critical { background: rgba(220, 38, 38, 0.15); color: var(--critical); border: 1px solid rgba(220, 38, 38, 0.3); }
+.badge-high { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+.badge-medium { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+.badge-low { background: rgba(59, 130, 246, 0.15); color: var(--info); border: 1px solid rgba(59, 130, 246, 0.3); }
+.badge-success { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+
+.risk-bar {
+  width: 80px;
+  height: 6px;
+  background: var(--bg-secondary);
+  border-radius: 3px;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.risk-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+/* ============ 按钮 ============ */
+.btn {
+  padding: 7px 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-primary:hover { background: #ff8533; }
+
+.btn-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger:hover { background: rgba(239, 68, 68, 0.25); }
+
+.btn-success {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--success);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.btn-success:hover { background: rgba(16, 185, 129, 0.25); }
+
+.btn-sm {
+  padding: 4px 10px;
+  font-size: 11px;
+}
+
+/* ============ 输入框 ============ */
+.input {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+}
+
+.input:focus { border-color: var(--accent); }
+
+textarea.input {
+  resize: vertical;
+  min-height: 60px;
+  font-family: 'SF Mono', Monaco, Consolas, monospace;
+}
+
+/* ============ 工具栏 ============ */
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.toolbar .input { max-width: 220px; }
+
+.spacer { flex: 1; }
+
+/* ============ 模态框 ============ */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.show { display: flex; }
+
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+/* ============ Toast 通知 ============ */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2000;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 13px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  transform: translateX(400px);
+  transition: transform 0.3s;
+  max-width: 320px;
+}
+
+.toast.show { transform: translateX(0); }
+.toast.success { border-color: var(--success); color: var(--success); }
+.toast.error { border-color: var(--danger); color: var(--danger); }
+.toast.info { border-color: var(--info); color: var(--info); }
+
+/* ============ 网站总开关大按钮 ============ */
+.master-switch {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(255,105,0,0.1), rgba(255,105,0,0.03));
+  border: 1px solid rgba(255,105,0,0.3);
+  border-radius: 12px;
+}
+
+.master-switch-info {
+  flex: 1;
+}
+
+.master-switch-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.master-switch-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.master-switch-btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.master-switch-btn.on {
+  background: var(--success);
+  color: white;
+}
+
+.master-switch-btn.off {
+  background: var(--danger);
+  color: white;
+}
+
+.master-switch-btn:hover { transform: translateY(-1px); }
+
+/* ============ 加载动画 ============ */
+.loader {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ============ 响应式 ============ */
+@media (max-width: 768px) {
+  .topbar { padding: 10px 16px; }
+  .content { padding: 16px; }
+  .topbar-subtitle { display: none; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .toggle-grid { grid-template-columns: 1fr; }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.empty-state-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+  opacity: 0.3;
+}
+
+/* 风险评分颜色 */
+.risk-low { color: var(--success); }
+.risk-medium { color: var(--warning); }
+.risk-high { color: var(--danger); }
+.risk-critical { color: var(--critical); }
+
+.refresh-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.refresh-btn:hover {
+  border-color: var(--accent);
+  transform: rotate(180deg);
+}
+
+select.input {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+  padding-right: 32px;
+  appearance: none;
+}
+
+.checkbox-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.checkbox-item input {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+</style>
+</head>
+<body>
+
+<!-- ============ 登录页 ============ -->
+<div id="loginPage">
+  <div class="login-container">
+    <div class="login-logo">JF</div>
+    <div class="login-title">安全运维控制台</div>
+    <div class="login-subtitle">仅限授权管理员访问</div>
+
+    <div class="form-group">
+      <label class="form-label">管理员账号</label>
+      <input type="text" class="form-input" id="username" placeholder="请输入用户名" autocomplete="off">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">密码</label>
+      <input type="password" class="form-input" id="password" placeholder="请输入密码">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">验证码</label>
+      <div class="captcha-group">
+        <input type="text" class="form-input captcha-input" id="captchaAnswer" placeholder="请输入验证码" maxlength="10" autocomplete="off">
+        <div class="captcha-box" id="captchaBox" onclick="loadLoginCaptcha()" title="点击刷新验证码"></div>
+      </div>
+    </div>
+
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">登录控制台</button>
+    <div class="login-error" id="loginError"></div>
+
+    <div class="security-note">
+      <span>🔒</span>
+      <span>多重验证码 + 行为检测 + CSRF 防护已启用</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 主控制台 ============ -->
+<div id="dashboard">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">JF</div>
+      <div>
+        <div class="topbar-title">极风工作室安全控制台</div>
+        <div class="topbar-subtitle" id="serverTime">--</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="status-indicator" id="siteStatusIndicator">
+        <span class="status-dot"></span>
+        <span id="siteStatusText">运行中</span>
+      </div>
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">J</div>
+        <span id="userName">JIFENG</span>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">退出</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('overview', this)">📊 总览</button>
+    <button class="tab" onclick="switchTab('control', this)">🎛️ 实时控制</button>
+    <button class="tab" onclick="switchTab('banned', this)">🚫 IP 封禁</button>
+    <button class="tab" onclick="switchTab('scans', this)">🔍 安全扫描</button>
+    <button class="tab" onclick="switchTab('events', this)">⚠️ 安全事件</button>
+    <button class="tab" onclick="switchTab('visitors', this)">👥 访客日志</button>
+    <button class="tab" onclick="switchTab('downloads', this)">📦 下载日志</button>
+    <button class="tab" onclick="switchTab('ai-analysis', this)">🤖 AI 分析</button>
+    <button class="tab" onclick="switchTab('settings', this)">⚙️ 设置</button>
+  </div>
+
+  <div class="content">
+
+    <!-- 总览 -->
+    <div class="tab-content active" id="tab-overview">
+      <div class="kpi-grid" id="kpiGrid">
+        <div class="kpi-card success">
+          <div class="kpi-label">今日访客</div>
+          <div class="kpi-value" id="kpiVisitors">--</div>
+          <div class="kpi-meta" id="kpiVisitorsMeta">--</div>
+        </div>
+        <div class="kpi-card info">
+          <div class="kpi-label">访问次数</div>
+          <div class="kpi-value" id="kpiVisits">--</div>
+          <div class="kpi-meta">24小时内</div>
+        </div>
+        <div class="kpi-card warning">
+          <div class="kpi-label">机器人访问</div>
+          <div class="kpi-value" id="kpiBots">--</div>
+          <div class="kpi-meta" id="kpiBotsMeta">--</div>
+        </div>
+        <div class="kpi-card danger">
+          <div class="kpi-label">已拦截请求</div>
+          <div class="kpi-value" id="kpiBlocked">--</div>
+          <div class="kpi-meta">24小时内</div>
+        </div>
+        <div class="kpi-card danger">
+          <div class="kpi-label">已封禁 IP</div>
+          <div class="kpi-value" id="kpiBanned">--</div>
+          <div class="kpi-meta" id="kpiBannedMeta">实时</div>
+        </div>
+        <div class="kpi-card warning">
+          <div class="kpi-label">高危扫描</div>
+          <div class="kpi-value" id="kpiHighRisk">--</div>
+          <div class="kpi-meta">今日</div>
+        </div>
+        <div class="kpi-card info">
+          <div class="kpi-label">5分钟活跃</div>
+          <div class="kpi-value" id="kpiActive">--</div>
+          <div class="kpi-meta">在线访客</div>
+        </div>
+        <div class="kpi-card success">
+          <div class="kpi-label">运行时长</div>
+          <div class="kpi-value" id="kpiUptime">--</div>
+          <div class="kpi-meta" id="kpiNodeInfo">--</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="card-icon">🛡️</span>安全防护状态</div>
+            <button class="btn btn-sm btn-primary" onclick="loadOverview()">刷新</button>
+          </div>
+          <div id="protectionStatus"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="card-icon">🌐</span>热门页面</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>路径</th><th>访问量</th><th>独立访客</th></tr>
+              </thead>
+              <tbody id="topPagesBody">
+                <tr><td colspan="3" class="loading-state"><span class="loader"></span> 加载中...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">📈</span>最近安全事件</div>
+          <button class="btn btn-sm btn-primary" onclick="loadOverview()">刷新</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>时间</th>
+                <th>类型</th>
+                <th>级别</th>
+                <th>IP</th>
+                <th>描述</th>
+              </tr>
+            </thead>
+            <tbody id="recentEventsBody">
+              <tr><td colspan="5" class="loading-state"><span class="loader"></span> 加载中...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 实时控制 -->
+    <div class="tab-content" id="tab-control">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">🔴</span>网站总开关</div>
+        </div>
+        <div class="master-switch">
+          <div class="master-switch-info">
+            <div class="master-switch-title" id="masterSwitchTitle">网站运行中</div>
+            <div class="master-switch-desc" id="masterSwitchDesc">点击下方按钮可一键关闭整个网站（仅管理员可访问）</div>
+          </div>
+          <button class="master-switch-btn on" id="masterSwitchBtn" onclick="toggleSite()">关闭网站</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">🎛️</span>安全服务开关</div>
+          <button class="btn btn-sm btn-primary" onclick="loadSiteStatus()">刷新</button>
+        </div>
+        <div class="toggle-grid" id="togglesGrid">
+          <div class="loading-state"><span class="loader"></span> 加载中...</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">⚙️</span>自动封禁设置</div>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <label style="font-size:13px;color:var(--text-secondary);">高危扫描阈值（次）</label>
+          <input type="number" class="input" id="autoBanThreshold" min="1" max="100" value="3" style="max-width:120px;">
+          <button class="btn btn-primary btn-sm" onclick="updateAutoBanThreshold()">保存</button>
+          <span style="font-size:11px;color:var(--text-muted);">同一 IP 1 小时内触发此次数的高危扫描后自动封禁</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">🖥️</span>服务器信息</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <tbody id="serverInfoBody">
+              <tr><td colspan="2" class="loading-state"><span class="loader"></span> 加载中...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- IP 封禁 -->
+    <div class="tab-content" id="tab-banned">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">🚫</span>IP 封禁管理</div>
+          <div class="card-actions">
+            <button class="btn btn-sm btn-success" onclick="showBanModal()">+ 手动封禁</button>
+            <button class="btn btn-sm btn-danger" onclick="clearAllBans()">清空所有</button>
+            <button class="btn btn-sm btn-primary" onclick="loadBannedIPs()">刷新</button>
+          </div>
+        </div>
+        <div class="toolbar">
+          <input type="text" class="input" id="banSearch" placeholder="搜索 IP 或原因..." oninput="filterBanned()">
+          <span class="spacer"></span>
+          <span style="font-size:12px;color:var(--text-muted);">共 <strong id="banTotal">0</strong> 条记录</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="banSelectAll" onchange="toggleAllBan(this)"></th>
+                <th>IP</th>
+                <th>原因</th>
+                <th>级别</th>
+                <th>封禁者</th>
+                <th>时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="bannedIpsBody">
+              <tr><td colspan="7" class="loading-state"><span class="loader"></span> 加载中...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;">
+          <button class="btn btn-sm btn-success" onclick="batchUnban()">批量解封选中</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 安全扫描 -->
+    <div class="tab-content" id="tab-scans">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">🔍</span>实时安全扫描日志</div>
+          <div class="card-actions">
+            <select class="input" id="scanMinScore" onchange="loadScans()" style="max-width:160px;">
+              <option value="0">全部</option>
+              <option value="30">中风险以上 (≥30)</option>
+              <option value="60">高风险以上 (≥60)</option>
+              <option value="80">严重风险 (≥80)</option>
+            </select>
+            <button class="btn btn-sm btn-primary" onclick="loadScans()">刷新</button>
+          </div>
+        </div>
+        <div class="toolbar">
+          <span style="font-size:12px;color:var(--text-muted);">共 <strong id="scanTotal">0</strong> 条记录</span>
+          <span class="spacer"></span>
+          <button class="btn btn-sm btn-danger" onclick="clearScans()">清空日志</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>时间</th>
+                <th>IP</th>
+                <th>风险评分</th>
+                <th>风险等级</th>
+                <th>威胁项</th>
+                <th>动作</th>
+              </tr>
+            </thead>
+            <tbody id="scansBody">
+              <tr><td colspan="6" class="loading-state"><span class="loader"></span> 加载中...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 安全事件 -->
+    <div class="tab-content" id="tab-events">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">⚠️</span>安全事件</div>
+          <div class="card-actions">
+            <select class="input" id="eventSeverity" onchange="loadEvents()" style="max-width:160px;">
+              <option value="all">全部级别</option>
+              <option value="critical">严重</option>
+              <option value="high">高危</option>
+              <option value="medium">中危</option>
+              <option value="low">低危</option>
+            </select>
+            <button class="btn btn-sm btn-primary" onclick="loadEvents()">刷新</button>
+          </div>
+        </div>
+        <div class="toolbar">
+          <span style="font-size:12px;color:var(--text-muted);">共 <strong id="eventTotal">0</strong> 条记录</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>时间</th>
+                <th>类型</th>
+                <th>级别</th>
+                <th>IP</th>
+                <th>路径</th>
+                <th>描述</th>
+                <th>状态</th>
+              </tr>
+            </thead>
+            <tbody id="eventsBody">
+              <tr><td colspan="7" class="loading-state"><span class="loader"></span> 加载中...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 访客日志 -->
+    <div class="tab-content" id="tab-visitors">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">👥</span>访客访问日志</div>
+          <div class="card-actions">
+            <button class="btn btn-sm btn-primary" onclick="loadVisitors()">刷新</button>
+          </div>
+        </div>
+        <div class="toolbar">
+          <input type="text" class="input" id="visitorSearch" placeholder="搜索 IP/路径/UA..." oninput="filterVisitors()" style="max-width:300px;">
+          <span class="spacer"></span>
+          <span style="font-size:12px;color:var(--text-muted);">共 <strong id="visitorTotal">0</strong> 条记录</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>时间</th>
+                <th>IP</th>
+                <th>方法</th>
+                <th>路径</th>
+                <th>状态</th>
+                <th>浏览器/OS</th>
+                <th>设备</th>
+                <th>机器人</th>
+                <th>响应时间</th>
+              </tr>
+            </thead>
+            <tbody id="visitorsBody">
+              <tr><td colspan="9" class="loading-state"><span class="loader"></span> 加载中...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 下载日志 -->
+    <div class="tab-content" id="tab-downloads">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">📦</span>下载日志</div>
+          <button class="btn btn-sm btn-primary" onclick="loadDownloads()">刷新</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>时间</th>
+                <th>IP</th>
+                <th>文件名</th>
+                <th>用户代理</th>
+                <th>验证码验证</th>
+              </tr>
+            </thead>
+            <tbody id="downloadsBody">
+              <tr><td colspan="5" class="loading-state"><span class="loader"></span> 加载中...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI 分析 -->
+    <div class="tab-content" id="tab-ai-analysis">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">🤖</span>AI 沙盒状态</div>
+          <button class="btn btn-sm btn-primary" onclick="loadAIStatus()">刷新</button>
+        </div>
+        <div id="aiStatusContent"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">🔍</span>AI 风险分析记录</div>
+          <div class="card-actions">
+            <select class="input" id="aiRiskLevel" onchange="loadAILogs()" style="max-width:160px;">
+              <option value="all">全部等级</option>
+              <option value="critical">严重</option>
+              <option value="high">高危</option>
+              <option value="medium">中危</option>
+              <option value="low">低危</option>
+              <option value="safe">安全</option>
+            </select>
+            <button class="btn btn-sm btn-primary" onclick="loadAILogs()">刷新</button>
+          </div>
+        </div>
+        <div class="toolbar">
+          <span style="font-size:12px;color:var(--text-muted);">共 <strong id="aiTotal">0</strong> 条记录</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>时间</th>
+                <th>IP</th>
+                <th>风险评分</th>
+                <th>风险等级</th>
+                <th>置信度</th>
+                <th>风险因素</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="aiLogsBody">
+              <tr><td colspan="7" class="loading-state"><span class="loader"></span> 加载中...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">🎯</span>手动 AI 分析</div>
+          <span style="font-size:11px;color:var(--text-muted);">输入 IP 地址进行 AI 风险评估</span>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 280px;">
+            <div class="form-group">
+              <label class="form-label">IP 地址 *</label>
+              <input type="text" class="input" id="aiAnalyzeIp" placeholder="例如: 192.168.1.1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">分析原因</label>
+              <input type="text" class="input" id="aiAnalyzeReason" placeholder="可选，用于记录分析原因">
+            </div>
+            <button class="btn btn-primary" onclick="performAIAnalysis()">执行 AI 分析</button>
+          </div>
+          <div id="aiAnalysisResult" style="flex: 1; min-width: 300px; display: none;">
+            <div style="padding: 16px; background: var(--bg-secondary); border-radius: 10px;">
+              <div style="font-size:14px;font-weight:600;margin-bottom:12px;">分析结果</div>
+              <div id="aiResultContent"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 设置 -->
+    <div class="tab-content" id="tab-settings">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">🔑</span>修改密码</div>
+        </div>
+        <div style="max-width: 420px;">
+          <div class="form-group">
+            <label class="form-label">原密码</label>
+            <input type="password" class="form-input" id="oldPassword">
+          </div>
+          <div class="form-group">
+            <label class="form-label">新密码（至少 6 位）</label>
+            <input type="password" class="form-input" id="newPassword">
+          </div>
+          <div class="form-group">
+            <label class="form-label">确认新密码</label>
+            <input type="password" class="form-input" id="confirmPassword">
+          </div>
+          <button class="btn btn-primary" onclick="changePassword()">更新密码</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">📋</span>系统配置</div>
+          <button class="btn btn-sm btn-primary" onclick="loadConfig()">刷新</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>配置项</th><th>当前值</th><th>更新时间</th></tr>
+            </thead>
+            <tbody id="configBody">
+              <tr><td colspan="3" class="loading-state"><span class="loader"></span> 加载中...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-icon">👥</span>管理员列表</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>用户名</th><th>角色</th><th>最后登录</th><th>登录 IP</th></tr>
+            </thead>
+            <tbody id="adminsBody">
+              <tr><td colspan="5" class="loading-state"><span class="loader"></span> 加载中...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 手动封禁模态框 -->
+<div class="modal-overlay" id="banModal">
+  <div class="modal">
+    <div class="modal-title">手动封禁 IP</div>
+    <div class="form-group">
+      <label class="form-label">IP 地址 *</label>
+      <input type="text" class="input" id="banIp" placeholder="例如: 192.168.1.1">
+    </div>
+    <div class="form-group">
+      <label class="form-label">封禁原因 *</label>
+      <textarea class="input" id="banReason" placeholder="请输入封禁原因"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">严重级别</label>
+      <select class="input" id="banSeverity">
+        <option value="low">低危</option>
+        <option value="medium">中危</option>
+        <option value="high" selected>高危</option>
+        <option value="critical">严重</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">过期时间（留空表示永久）</label>
+      <input type="datetime-local" class="input" id="banExpires">
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('banModal')">取消</button>
+      <button class="btn btn-danger" onclick="submitBan()">确认封禁</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ 全局状态 ============
+let csrfToken = '';
+let currentLoginCaptcha = { token: '', svg: '' };
+let allBannedIPs = [];
+let allVisitors = [];
+
+// ============ 登录 ============
+async function loadLoginCaptcha() {
+  try {
+    const res = await fetch('/captcha?purpose=login', { cache: 'no-store' });
+    const data = await res.json();
+    currentLoginCaptcha = data;
+    csrfToken = data.csrfToken;
+    document.getElementById('captchaBox').innerHTML = data.svg;
+  } catch (e) {
+    console.error('加载验证码失败:', e);
+  }
+}
+
+// 行为数据收集（用于机器人检测）
+let behaviorData = {
+  inputStartTime: 0,
+  mouseMovements: 0,
+  keyPressCount: 0
+};
+
+document.addEventListener('mousemove', () => { behaviorData.mouseMovements++; });
+document.addEventListener('keydown', () => { behaviorData.keyPressCount++; });
+
+document.getElementById('captchaAnswer').addEventListener('focus', () => {
+  behaviorData.inputStartTime = Date.now();
+});
+
+document.getElementById('captchaAnswer').addEventListener('input', () => {
+  behaviorData.keyPressCount++;
+});
+
+async function doLogin() {
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  const captcha_answer = document.getElementById('captchaAnswer').value.trim();
+  const btn = document.getElementById('loginBtn');
+  const err = document.getElementById('loginError');
+
+  if (!username || !password) {
+    err.textContent = '请输入用户名和密码';
+    return;
+  }
+  if (!captcha_answer) {
+    err.textContent = '请输入验证码';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loader"></span> 登录中...';
+  err.textContent = '';
+
+  const inputTime = Date.now() - behaviorData.inputStartTime;
+
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username,
+        password,
+        captcha_token: currentLoginCaptcha.token,
+        captcha_answer,
+        csrf_token: csrfToken,
+        behavior_data: {
+          inputTime,
+          mouseMovements: behaviorData.mouseMovements,
+          keyPressCount: behaviorData.keyPressCount
+        }
+      })
+    });
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      document.getElementById('userName').textContent = data.admin.username;
+      document.getElementById('userAvatar').textContent = data.admin.username.charAt(0).toUpperCase();
+      showToast('登录成功，欢迎回来！', 'success');
+      loadAll();
+      startAutoRefresh();
+    } else {
+      err.textContent = data.error || '登录失败';
+      if (data.csrf_token) csrfToken = data.csrf_token;
+      await loadLoginCaptcha();
+      document.getElementById('captchaAnswer').value = '';
+      // 重置行为数据
+      behaviorData = { inputStartTime: 0, mouseMovements: 0, keyPressCount: 0 };
+    }
+  } catch (e) {
+    err.textContent = '网络错误: ' + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '登录控制台';
+  }
+}
+
+document.getElementById('password').addEventListener('keypress', e => {
+  if (e.key === 'Enter') doLogin();
+});
+document.getElementById('captchaAnswer').addEventListener('keypress', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+async function doLogout() {
+  if (!confirm('确定要退出登录吗？')) return;
+  await fetch('/api/logout', { method: 'POST' });
+  location.reload();
+}
+
+// ============ Tab 切换 ============
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+
+  // 按需加载数据
+  switch (name) {
+    case 'overview': loadOverview(); break;
+    case 'control': loadSiteStatus(); break;
+    case 'banned': loadBannedIPs(); break;
+    case 'scans': loadScans(); break;
+    case 'events': loadEvents(); break;
+    case 'visitors': loadVisitors(); break;
+    case 'downloads': loadDownloads(); break;
+    case 'ai-analysis': loadAIStatus(); loadAILogs(); break;
+    case 'settings': loadConfig(); loadAdmins(); break;
+  }
+}
+
+function loadAll() {
+  loadOverview();
+}
+
+// ============ 总览 ============
+async function loadOverview() {
+  try {
+    const res = await fetch('/api/admin/stats?hours=24');
+    const data = await res.json();
+
+    const a = data.access;
+    const s = data.security;
+    const r = data.realtime;
+
+    document.getElementById('kpiVisitors').textContent = a.uniqueVisitors || 0;
+    document.getElementById('kpiVisits').textContent = a.totalVisits || 0;
+    document.getElementById('kpiBots').textContent = a.botVisits || 0;
+    document.getElementById('kpiBlocked').textContent = s.totalBlocked || 0;
+    document.getElementById('kpiBanned').textContent = r.banned_ips_count || 0;
+    document.getElementById('kpiHighRisk').textContent = r.high_risk_scans || 0;
+    document.getElementById('kpiActive').textContent = r.active_visitors || 0;
+
+    if (a.botVisits > 0) {
+      const ratio = ((a.botVisits / a.totalVisits) * 100).toFixed(1);
+      document.getElementById('kpiBotsMeta').textContent = `占比 ${ratio}%`;
+    }
+
+    // 热门页面
+    const topPagesBody = document.getElementById('topPagesBody');
+    if (a.topPages && a.topPages.length > 0) {
+      topPagesBody.innerHTML = a.topPages.slice(0, 10).map(p => `
+        <tr>
+          <td class="mono">${escapeHtml(p.path)}</td>
+          <td>${p.views}</td>
+          <td>${p.visitors}</td>
+        </tr>
+      `).join('');
+    } else {
+      topPagesBody.innerHTML = '<tr><td colspan="3" class="empty-state"><div class="empty-state-icon">📄</div>暂无数据</td></tr>';
+    }
+
+    // 最近事件
+    const recentEventsBody = document.getElementById('recentEventsBody');
+    if (s.recentEvents && s.recentEvents.length > 0) {
+      recentEventsBody.innerHTML = s.recentEvents.slice(0, 15).map(e => `
+        <tr>
+          <td class="mono">${formatTime(e.created_at)}</td>
+          <td>${escapeHtml(e.type)}</td>
+          <td><span class="badge badge-${e.severity}">${severityText(e.severity)}</span></td>
+          <td class="mono">${escapeHtml(e.ip)}</td>
+          <td>${escapeHtml(e.description || '')}</td>
+        </tr>
+      `).join('');
+    } else {
+      recentEventsBody.innerHTML = '<tr><td colspan="5" class="empty-state"><div class="empty-state-icon">✅</div>暂无安全事件</td></tr>';
+    }
+
+    // 防护状态
+    loadSiteStatus();
+  } catch (e) {
+    console.error('loadOverview error', e);
+  }
+}
+
+// ============ 实时控制 ============
+async function loadSiteStatus() {
+  try {
+    const res = await fetch('/api/admin/site-status');
+    const data = await res.json();
+
+    // 服务器信息
+    const mem = data.memory_usage || {};
+    const memMB = (mem.rss / 1024 / 1024).toFixed(1);
+    const uptime = formatUptime(data.server_uptime);
+
+    document.getElementById('kpiUptime').textContent = uptime;
+    document.getElementById('kpiNodeInfo').textContent = `Node ${data.node_version} · 端口 ${data.server_port}`;
+
+    // 总开关
+    const masterBtn = document.getElementById('masterSwitchBtn');
+    if (data.site_enabled) {
+      masterBtn.textContent = '关闭网站';
+      masterBtn.className = 'master-switch-btn on';
+      document.getElementById('masterSwitchTitle').textContent = '网站运行中';
+      document.getElementById('masterSwitchDesc').textContent = '网站对公众开放访问';
+      document.getElementById('siteStatusText').textContent = '运行中';
+      document.getElementById('siteStatusIndicator').style.background = 'rgba(16, 185, 129, 0.1)';
+      document.getElementById('siteStatusIndicator').style.borderColor = 'rgba(16, 185, 129, 0.3)';
+      document.getElementById('siteStatusIndicator').style.color = 'var(--success)';
+    } else {
+      masterBtn.textContent = '开启网站';
+      masterBtn.className = 'master-switch-btn off';
+      document.getElementById('masterSwitchTitle').textContent = '网站已关闭';
+      document.getElementById('masterSwitchDesc').textContent = '当前网站对公众不可访问（仅管理员可访问后台）';
+      document.getElementById('siteStatusText').textContent = '已关闭';
+      document.getElementById('siteStatusIndicator').style.background = 'rgba(239, 68, 68, 0.1)';
+      document.getElementById('siteStatusIndicator').style.borderColor = 'rgba(239, 68, 68, 0.3)';
+      document.getElementById('siteStatusIndicator').style.color = 'var(--danger)';
+    }
+
+    // 服务开关
+    const toggles = [
+      { key: 'waf_enabled', name: 'WAF 防火墙', desc: '拦截 SQL注入/XSS/路径遍历/命令注入 等攻击', value: data.waf_enabled },
+      { key: 'bot_protection_enabled', name: '机器人防护', desc: '拦截爬虫/扫描器/自动化工具', value: data.bot_protection_enabled },
+      { key: 'rate_limit_enabled', name: '速率限制', desc: '限制单 IP 请求频率', value: data.rate_limit_enabled },
+      { key: 'download_captcha_enabled', name: '下载验证码', desc: '下载文件需通过多重验证码', value: data.download_captcha_enabled },
+      { key: 'login_captcha_enabled', name: '登录验证码', desc: '管理员登录需通过验证码', value: data.login_captcha_enabled },
+      { key: 'auto_ban_enabled', name: '自动封禁', desc: '高危 IP 自动加入黑名单', value: data.auto_ban_enabled }
+    ];
+
+    document.getElementById('togglesGrid').innerHTML = toggles.map(t => `
+      <div class="toggle-item">
+        <div class="toggle-info">
+          <div class="toggle-name">${t.name}</div>
+          <div class="toggle-desc">${t.desc}</div>
+        </div>
+        <div class="switch ${t.value ? 'on' : ''}" onclick="toggleService('${t.key}', ${!t.value})"></div>
+      </div>
+    `).join('');
+
+    // 防护状态
+    const protectionStatus = document.getElementById('protectionStatus');
+    protectionStatus.innerHTML = toggles.map(t => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(51,65,85,0.3);">
+        <span style="font-size:13px;">${t.name}</span>
+        <span class="badge badge-${t.value ? 'success' : 'low'}">${t.value ? '已启用' : '已禁用'}</span>
+      </div>
+    `).join('');
+
+    // 自动封禁阈值
+    document.getElementById('autoBanThreshold').value = data.auto_ban_threshold || 3;
+
+    // 服务器信息表
+    document.getElementById('serverInfoBody').innerHTML = `
+      <tr><td style="color:var(--text-muted);">运行端口</td><td class="mono">${data.server_port}</td></tr>
+      <tr><td style="color:var(--text-muted);">运行时长</td><td class="mono">${uptime}</td></tr>
+      <tr><td style="color:var(--text-muted);">Node.js 版本</td><td class="mono">${data.node_version}</td></tr>
+      <tr><td style="color:var(--text-muted);">平台</td><td class="mono">${data.platform}</td></tr>
+      <tr><td style="color:var(--text-muted);">进程 PID</td><td class="mono">${data.pid}</td></tr>
+      <tr><td style="color:var(--text-muted);">内存使用</td><td class="mono">${memMB} MB (RSS)</td></tr>
+      <tr><td style="color:var(--text-muted);">当前时间</td><td class="mono">${data.timestamp}</td></tr>
+    `;
+  } catch (e) {
+    console.error('loadSiteStatus error', e);
+  }
+}
+
+async function toggleSite() {
+  const current = document.getElementById('masterSwitchBtn').classList.contains('on');
+  const next = !current;
+  if (!confirm(`确定要${next ? '开启' : '关闭'}网站吗？${next ? '' : '\n关闭后公众将无法访问网站！'}`)) return;
+
+  try {
+    const res = await fetch('/api/admin/toggle-site', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ enabled: next })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(`网站已${next ? '开启' : '关闭'}`, 'success');
+      loadSiteStatus();
+    } else {
+      showToast(data.error || '操作失败', 'error');
+    }
+  } catch (e) {
+    showToast('网络错误: ' + e.message, 'error');
+  }
+}
+
+async function toggleService(service, enabled) {
+  try {
+    const res = await fetch('/api/admin/toggle-service', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ service, enabled })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(`${service} 已${enabled ? '开启' : '关闭'}`, 'success');
+      loadSiteStatus();
+    } else {
+      showToast(data.error || '操作失败', 'error');
+    }
+  } catch (e) {
+    showToast('网络错误: ' + e.message, 'error');
+  }
+}
+
+async function updateAutoBanThreshold() {
+  const value = parseInt(document.getElementById('autoBanThreshold').value);
+  if (isNaN(value) || value < 1) {
+    showToast('请输入有效数字', 'error');
+    return;
+  }
+  try {
+    const res = await fetch('/api/admin/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ configs: { auto_ban_threshold: String(value) } })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('阈值已更新', 'success');
+    } else {
+      showToast(data.error || '更新失败', 'error');
+    }
+  } catch (e) {
+    showToast('网络错误: ' + e.message, 'error');
+  }
+}
+
+// ============ IP 封禁 ============
+async function loadBannedIPs() {
+  try {
+    const res = await fetch('/api/admin/banned-ips?limit=500');
+    const data = await res.json();
+    allBannedIPs = data.ips || [];
+    document.getElementById('banTotal').textContent = data.total;
+    renderBanned(allBannedIPs);
+  } catch (e) {
+    console.error('loadBannedIPs error', e);
+  }
+}
+
+function renderBanned(ips) {
+  const body = document.getElementById('bannedIpsBody');
+  if (!ips || ips.length === 0) {
+    body.innerHTML = '<tr><td colspan="7" class="empty-state"><div class="empty-state-icon">🚫</div>暂无封禁 IP</td></tr>';
+    return;
+  }
+  body.innerHTML = ips.map(ip => `
+    <tr>
+      <td><input type="checkbox" class="ban-checkbox" value="${escapeHtml(ip.ip)}"></td>
+      <td class="mono">${escapeHtml(ip.ip)}</td>
+      <td>${escapeHtml(ip.reason || '')}</td>
+      <td><span class="badge badge-${ip.severity}">${severityText(ip.severity)}</span></td>
+      <td>${escapeHtml(ip.banned_by || 'system')}</td>
+      <td class="mono">${formatTime(ip.created_at)}</td>
+      <td><button class="btn btn-sm btn-success" onclick="unbanIP('${escapeHtml(ip.ip)}')">解封</button></td>
+    </tr>
+  `).join('');
+}
+
+function filterBanned() {
+  const q = document.getElementById('banSearch').value.toLowerCase();
+  const filtered = allBannedIPs.filter(ip =>
+    ip.ip.toLowerCase().includes(q) || (ip.reason || '').toLowerCase().includes(q)
+  );
+  renderBanned(filtered);
+}
+
+function toggleAllBan(checkbox) {
+  document.querySelectorAll('.ban-checkbox').forEach(c => c.checked = checkbox.checked);
+}
+
+async function batchUnban() {
+  const selected = Array.from(document.querySelectorAll('.ban-checkbox:checked')).map(c => c.value);
+  if (selected.length === 0) {
+    showToast('请先选择要解封的 IP', 'error');
+    return;
+  }
+  if (!confirm(`确定要批量解封 ${selected.length} 个 IP 吗？`)) return;
+  try {
+    const res = await fetch('/api/admin/unban-batch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ips: selected })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(`已解封 ${data.count} 个 IP`, 'success');
+      loadBannedIPs();
+    }
+  } catch (e) {
+    showToast('网络错误', 'error');
+  }
+}
+
+async function unbanIP(ip) {
+  if (!confirm(`确定要解封 IP ${ip} 吗？`)) return;
+  try {
+    const res = await fetch('/api/admin/unban-ip', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ip })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(`IP ${ip} 已解封`, 'success');
+      loadBannedIPs();
+    }
+  } catch (e) {
+    showToast('网络错误', 'error');
+  }
+}
+
+async function clearAllBans() {
+  if (!confirm('⚠️ 确定要清空所有封禁 IP 吗？\n此操作不可撤销！')) return;
+  if (!confirm('再次确认：真的要清空全部吗？')) return;
+  try {
+    const res = await fetch('/api/admin/clear-bans', { method: 'POST' });
+    const data = await res.json();
+    if (data.success) {
+      showToast(`已清空 ${data.count} 条封禁`, 'success');
+      loadBannedIPs();
+    }
+  } catch (e) {
+    showToast('网络错误', 'error');
+  }
+}
+
+function showBanModal() {
+  document.getElementById('banModal').classList.add('show');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+async function submitBan() {
+  const ip = document.getElementById('banIp').value.trim();
+  const reason = document.getElementById('banReason').value.trim();
+  const severity = document.getElementById('banSeverity').value;
+  const expires_at = document.getElementById('banExpires').value;
+
+  if (!ip || !reason) {
+    showToast('IP 和原因为必填', 'error');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/admin/ban-ip', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ip, reason, severity, expires_at: expires_at || null })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(`IP ${ip} 已封禁`, 'success');
+      closeModal('banModal');
+      document.getElementById('banIp').value = '';
+      document.getElementById('banReason').value = '';
+      document.getElementById('banExpires').value = '';
+      loadBannedIPs();
+    } else {
+      showToast(data.error || '封禁失败', 'error');
+    }
+  } catch (e) {
+    showToast('网络错误', 'error');
+  }
+}
+
+// ============ 安全扫描 ============
+async function loadScans() {
+  const minScore = document.getElementById('scanMinScore').value;
+  try {
+    const res = await fetch(`/api/admin/scan-logs?limit=200&min_score=${minScore}`);
+    const data = await res.json();
+    document.getElementById('scanTotal').textContent = data.total;
+    const body = document.getElementById('scansBody');
+    if (!data.logs || data.logs.length === 0) {
+      body.innerHTML = '<tr><td colspan="6" class="empty-state"><div class="empty-state-icon">🔍</div>暂无扫描记录</td></tr>';
+      return;
+    }
+    body.innerHTML = data.logs.map(l => {
+      const threats = JSON.parse(l.threats_found || '[]');
+      const riskClass = l.risk_score >= 80 ? 'risk-critical' :
+                       l.risk_score >= 60 ? 'risk-high' :
+                       l.risk_score >= 30 ? 'risk-medium' : 'risk-low';
+      const fillColor = l.risk_score >= 80 ? 'var(--critical)' :
+                       l.risk_score >= 60 ? 'var(--danger)' :
+                       l.risk_score >= 30 ? 'var(--warning)' : 'var(--success)';
+      return `
+        <tr>
+          <td class="mono">${formatTime(l.created_at)}</td>
+          <td class="mono">${escapeHtml(l.ip)}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="${riskClass}" style="font-weight:700;">${l.risk_score}</span>
+              <div class="risk-bar"><div class="risk-fill" style="width:${Math.min(l.risk_score, 100)}%;background:${fillColor};"></div></div>
+            </div>
+          </td>
+          <td><span class="badge badge-${l.risk_score >= 80 ? 'critical' : l.risk_score >= 60 ? 'high' : l.risk_score >= 30 ? 'medium' : 'low'}">${l.risk_score >= 80 ? '严重' : l.risk_score >= 60 ? '高危' : l.risk_score >= 30 ? '中危' : '低危'}</span></td>
+          <td class="mono" style="font-size:11px;">${threats.map(t => escapeHtml(t)).join('<br>')}</td>
+          <td><span class="badge badge-${l.action_taken === 'auto_ban' ? 'critical' : l.action_taken === 'blocked' ? 'high' : l.action_taken === 'logged' ? 'low' : 'low'}">${actionText(l.action_taken)}</span></td>
+        </tr>
+      `;
+    }).join('');
+  } catch (e) {
+    console.error('loadScans error', e);
+  }
+}
+
+async function clearScans() {
+  if (!confirm('确定清空所有扫描日志？此操作不可撤销！')) return;
+  try {
+    const res = await fetch('/api/admin/scan-logs/clear', { method: 'POST' });
+    if (res.ok) {
+      showToast('已清空扫描日志', 'success');
+      loadScans();
+    }
+  } catch (e) {
+    showToast('网络错误', 'error');
+  }
+}
+
+// ============ 安全事件 ============
+async function loadEvents() {
+  const severity = document.getElementById('eventSeverity').value;
+  try {
+    const res = await fetch(`/api/admin/security-events?limit=200&severity=${severity}`);
+    const data = await res.json();
+    document.getElementById('eventTotal').textContent = data.total;
+    const body = document.getElementById('eventsBody');
+    if (!data.events || data.events.length === 0) {
+      body.innerHTML = '<tr><td colspan="7" class="empty-state"><div class="empty-state-icon">✅</div>暂无安全事件</td></tr>';
+      return;
+    }
+    body.innerHTML = data.events.map(e => `
+      <tr>
+        <td class="mono">${formatTime(e.created_at)}</td>
+        <td>${escapeHtml(e.type)}</td>
+        <td><span class="badge badge-${e.severity}">${severityText(e.severity)}</span></td>
+        <td class="mono">${escapeHtml(e.ip)}</td>
+        <td class="mono" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(e.path || '')}</td>
+        <td>${escapeHtml(e.description || '')}</td>
+        <td>${e.blocked ? '<span class="badge badge-high">已拦截</span>' : '<span class="badge badge-low">已记录</span>'}</td>
+      </tr>
+    `).join('');
+  } catch (e) {
+    console.error('loadEvents error', e);
+  }
+}
+
+// ============ 访客日志 ============
+async function loadVisitors() {
+  try {
+    const res = await fetch('/api/admin/logs/access?limit=200');
+    const data = await res.json();
+    allVisitors = data.logs || [];
+    document.getElementById('visitorTotal').textContent = data.total;
+    renderVisitors(allVisitors);
+  } catch (e) {
+    console.error('loadVisitors error', e);
+  }
+}
+
+function renderVisitors(visitors) {
+  const body = document.getElementById('visitorsBody');
+  if (!visitors || visitors.length === 0) {
+    body.innerHTML = '<tr><td colspan="9" class="empty-state"><div class="empty-state-icon">👥</div>暂无访客记录</td></tr>';
+    return;
+  }
+  body.innerHTML = visitors.map(v => `
+    <tr>
+      <td class="mono">${formatTime(v.created_at)}</td>
+      <td class="mono">${escapeHtml(v.ip)}</td>
+      <td><span class="badge badge-${v.method === 'GET' ? 'low' : v.method === 'POST' ? 'medium' : 'high'}">${v.method}</span></td>
+      <td class="mono" style="max-width:240px;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(v.path)}</td>
+      <td><span class="badge badge-${v.status_code >= 500 ? 'critical' : v.status_code >= 400 ? 'high' : v.status_code >= 300 ? 'medium' : 'success'}">${v.status_code}</span></td>
+      <td>${escapeHtml(v.browser)} / ${escapeHtml(v.os)}</td>
+      <td>${v.is_mobile ? '📱' : '💻'} ${escapeHtml(v.device_type)}</td>
+      <td>${v.is_bot ? `<span class="badge badge-medium">${escapeHtml(v.bot_name || 'bot')}</span>` : '<span class="badge badge-success">人类</span>'}</td>
+      <td class="mono">${v.response_time || 0}ms</td>
+    </tr>
+  `).join('');
+}
+
+function filterVisitors() {
+  const q = document.getElementById('visitorSearch').value.toLowerCase();
+  const filtered = allVisitors.filter(v =>
+    v.ip.toLowerCase().includes(q) ||
+    (v.path || '').toLowerCase().includes(q) ||
+    (v.user_agent || '').toLowerCase().includes(q)
+  );
+  renderVisitors(filtered);
+}
+
+// ============ 下载日志 ============
+async function loadDownloads() {
+  try {
+    const res = await fetch('/api/admin/download-logs?limit=200');
+    const data = await res.json();
+    const body = document.getElementById('downloadsBody');
+    if (!data.logs || data.logs.length === 0) {
+      body.innerHTML = '<tr><td colspan="5" class="empty-state"><div class="empty-state-icon">📦</div>暂无下载记录</td></tr>';
+      return;
+    }
+    body.innerHTML = data.logs.map(l => `
+      <tr>
+        <td class="mono">${formatTime(l.created_at)}</td>
+        <td class="mono">${escapeHtml(l.ip)}</td>
+        <td>${escapeHtml(l.file_name)}</td>
+        <td class="mono" style="max-width:280px;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(l.user_agent || '')}</td>
+        <td>${l.captcha_verified ? '<span class="badge badge-success">已验证</span>' : '<span class="badge badge-high">未验证</span>'}</td>
+      </tr>
+    `).join('');
+  } catch (e) {
+    console.error('loadDownloads error', e);
+  }
+}
+
+// ============ AI 分析 ============
+async function loadAIStatus() {
+  try {
+    const res = await fetch('/api/admin/ai-status');
+    const data = await res.json();
+    if (!data.success) {
+      document.getElementById('aiStatusContent').innerHTML = '<div class="empty-state">加载失败</div>';
+      return;
+    }
+
+    const today = data.today_stats || {};
+    const recent = data.recent_analysis || [];
+
+    const severityColors = {
+      critical: 'var(--critical)',
+      high: 'var(--danger)',
+      medium: 'var(--warning)',
+      low: 'var(--info)',
+      safe: 'var(--success)'
+    };
+
+    const recentByLevel = {};
+    recent.forEach(r => {
+      recentByLevel[r.risk_level] = r.count;
+    });
+
+    document.getElementById('aiStatusContent').innerHTML = `
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+        <div class="kpi-card" style="border-top-color: var(--accent);">
+          <div class="kpi-label">今日分析总数</div>
+          <div class="kpi-value">${today.total || 0}</div>
+          <div class="kpi-meta">AI 沙盒运行中</div>
+        </div>
+        <div class="kpi-card" style="border-top-color: ${severityColors.critical}; background: rgba(220,38,38,0.05);">
+          <div class="kpi-label">严重风险</div>
+          <div class="kpi-value" style="color: ${severityColors.critical};">${today.critical || 0}</div>
+          <div class="kpi-meta">过去 24 小时</div>
+        </div>
+        <div class="kpi-card" style="border-top-color: ${severityColors.high}; background: rgba(239,68,68,0.05);">
+          <div class="kpi-label">高危风险</div>
+          <div class="kpi-value" style="color: ${severityColors.high};">${today.high || 0}</div>
+          <div class="kpi-meta">过去 24 小时</div>
+        </div>
+        <div class="kpi-card" style="border-top-color: ${severityColors.medium}; background: rgba(245,158,11,0.05);">
+          <div class="kpi-label">中低风险</div>
+          <div class="kpi-value" style="color: ${severityColors.medium};">${(today.medium || 0) + (today.low || 0)}</div>
+          <div class="kpi-meta">过去 24 小时</div>
+        </div>
+      </div>
+      <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">模型信息</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;">
+          <span class="badge badge-success">模型: ${data.model}</span>
+          <span class="badge badge-info">状态: ${data.status}</span>
+          <span class="badge badge-medium">平均置信度: ${(data.avg_confidence * 100).toFixed(0)}%</span>
+        </div>
+      </div>
+      <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">最近 1 小时分析统计</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          ${['critical', 'high', 'medium', 'low', 'safe'].map(l => `
+            <span class="badge badge-${l}" style="background:rgba(${l === 'critical' ? '220,38,38' : l === 'high' ? '239,68,68' : l === 'medium' ? '245,158,11' : l === 'low' ? '59,130,246' : '16,185,129'},0.15);">
+              ${severityText(l)}: ${recentByLevel[l] || 0}
+            </span>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  } catch (e) {
+    console.error('loadAIStatus error', e);
+    document.getElementById('aiStatusContent').innerHTML = '<div class="empty-state"><div class="empty-state-icon">🤖</div>加载失败</div>';
+  }
+}
+
+async function loadAILogs() {
+  const riskLevel = document.getElementById('aiRiskLevel').value;
+  try {
+    const res = await fetch(`/api/admin/ai-logs?limit=200&risk_level=${riskLevel}`);
+    const data = await res.json();
+    document.getElementById('aiTotal').textContent = data.total;
+    const body = document.getElementById('aiLogsBody');
+    if (!data.logs || data.logs.length === 0) {
+      body.innerHTML = '<tr><td colspan="7" class="empty-state"><div class="empty-state-icon">🤖</div>暂无 AI 分析记录</td></tr>';
+      return;
+    }
+    body.innerHTML = data.logs.map(l => {
+      const riskFactors = JSON.parse(l.risk_factors || '[]');
+      const riskClass = l.risk_level === 'critical' ? 'risk-critical' :
+                        l.risk_level === 'high' ? 'risk-high' :
+                        l.risk_level === 'medium' ? 'risk-medium' :
+                        l.risk_level === 'low' ? 'risk-low' : '';
+      const fillColor = l.risk_level === 'critical' ? 'var(--critical)' :
+                        l.risk_level === 'high' ? 'var(--danger)' :
+                        l.risk_level === 'medium' ? 'var(--warning)' :
+                        l.risk_level === 'low' ? 'var(--info)' : 'var(--success)';
+      return `
+        <tr>
+          <td class="mono">${formatTime(l.created_at)}</td>
+          <td class="mono">${escapeHtml(l.ip)}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="${riskClass}" style="font-weight:700;">${l.risk_score}</span>
+              <div class="risk-bar"><div class="risk-fill" style="width:${Math.min(l.risk_score, 100)}%;background:${fillColor};"></div></div>
+            </div>
+          </td>
+          <td><span class="badge badge-${l.risk_level}">${severityText(l.risk_level)}</span></td>
+          <td>${(l.confidence * 100).toFixed(0)}%</td>
+          <td class="mono" style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;">${riskFactors.length > 0 ? riskFactors.map(f => escapeHtml(f)).join(', ') : '-'}</td>
+          <td>
+            <button class="btn btn-sm btn-danger" onclick="aiAnalyzeAndBlock('${escapeHtml(l.ip)}')">分析并封禁</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  } catch (e) {
+    console.error('loadAILogs error', e);
+  }
+}
+
+async function performAIAnalysis() {
+  const ip = document.getElementById('aiAnalyzeIp').value.trim();
+  const reason = document.getElementById('aiAnalyzeReason').value.trim();
+
+  if (!ip) {
+    showToast('请输入 IP 地址', 'error');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/admin/ai-analyze-and-block', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ip, reason })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      const ai = data.ai_analysis;
+      const riskClass = ai.risk_level === 'critical' ? 'risk-critical' :
+                        ai.risk_level === 'high' ? 'risk-high' :
+                        ai.risk_level === 'medium' ? 'risk-medium' :
+                        ai.risk_level === 'low' ? 'risk-low' : '';
+
+      document.getElementById('aiAnalysisResult').style.display = 'block';
+      document.getElementById('aiResultContent').innerHTML = `
+        <div style="margin-bottom:12px;">
+          <span style="color:var(--text-muted);">IP:</span>
+          <span class="mono" style="margin-left:8px;">${escapeHtml(ip)}</span>
+        </div>
+        <div style="margin-bottom:12px;">
+          <span style="color:var(--text-muted);">风险评分:</span>
+          <span class="${riskClass}" style="margin-left:8px;font-size:20px;font-weight:700;">${ai.risk_score}</span>
+        </div>
+        <div style="margin-bottom:12px;">
+          <span style="color:var(--text-muted);">风险等级:</span>
+          <span class="badge badge-${ai.risk_level}" style="margin-left:8px;">${severityText(ai.risk_level)}</span>
+        </div>
+        <div style="margin-bottom:12px;">
+          <span style="color:var(--text-muted);">置信度:</span>
+          <span style="margin-left:8px;">${(ai.confidence * 100).toFixed(0)}%</span>
+        </div>
+        ${ai.risk_factors && ai.risk_factors.length > 0 ? `
+          <div style="margin-bottom:12px;">
+            <span style="color:var(--text-muted);">风险因素:</span>
+            <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;">
+              ${ai.risk_factors.map(f => `<span class="badge badge-high">${escapeHtml(f)}</span>`).join('')}
+            </div>
+          </div>
+        ` : ''}
+        ${ai.recommendations && ai.recommendations.length > 0 ? `
+          <div style="margin-bottom:12px;">
+            <span style="color:var(--text-muted);">建议:</span>
+            <div style="margin-top:6px;font-size:12px;color:var(--text-secondary);">
+              ${ai.recommendations.map(r => `<div>• ${escapeHtml(r)}</div>`).join('')}
+            </div>
+          </div>
+        ` : ''}
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+          <span style="color:var(--text-muted);">操作:</span>
+          <span class="badge badge-${data.action === 'banned' ? 'critical' : 'success'}" style="margin-left:8px;">${data.action === 'banned' ? '已封禁' : '仅分析'}</span>
+        </div>
+      `;
+
+      if (data.action === 'banned') {
+        showToast(`IP ${ip} 已被 AI 自动封禁`, 'success');
+        loadBannedIPs();
+      } else {
+        showToast('AI 分析完成', 'success');
+      }
+      loadAILogs();
+    } else {
+      showToast(data.error || '分析失败', 'error');
+    }
+  } catch (e) {
+    showToast('网络错误: ' + e.message, 'error');
+  }
+}
+
+async function aiAnalyzeAndBlock(ip) {
+  if (!confirm(`确定对 IP ${ip} 进行 AI 分析并可能封禁吗？`)) return;
+  try {
+    const res = await fetch('/api/admin/ai-analyze-and-block', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ip, reason: 'AI 手动分析封禁' })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(`IP ${ip}: AI 分析完成，${data.action === 'banned' ? '已封禁' : '未封禁'}`, data.action === 'banned' ? 'success' : 'info');
+      loadAILogs();
+      loadBannedIPs();
+    } else {
+      showToast(data.error || '操作失败', 'error');
+    }
+  } catch (e) {
+    showToast('网络错误', 'error');
+  }
+}
+
+// ============ 设置 ============
+async function loadConfig() {
+  try {
+    const res = await fetch('/api/admin/config');
+    const data = await res.json();
+    const body = document.getElementById('configBody');
+    if (!data.configs || data.configs.length === 0) {
+      body.innerHTML = '<tr><td colspan="3" class="empty-state">暂无配置</td></tr>';
+      return;
+    }
+    body.innerHTML = data.configs.map(c => {
+      let displayValue = c.value;
+      // 隐藏敏感信息
+      if (c.key === 'admin_access_token' && c.value.length > 8) {
+        displayValue = c.value.slice(0, 8) + '...';
+      }
+      return `
+        <tr>
+          <td class="mono">${escapeHtml(c.key)}</td>
+          <td class="mono">${escapeHtml(displayValue)}</td>
+          <td class="mono">${formatTime(c.updated_at)}</td>
+        </tr>
+      `;
+    }).join('');
+  } catch (e) {
+    console.error('loadConfig error', e);
+  }
+}
+
+async function loadAdmins() {
+  try {
+    const res = await fetch('/api/admin/admins');
+    const data = await res.json();
+    const body = document.getElementById('adminsBody');
+    if (!data.admins || data.admins.length === 0) {
+      body.innerHTML = '<tr><td colspan="5" class="empty-state">暂无管理员</td></tr>';
+      return;
+    }
+    body.innerHTML = data.admins.map(a => `
+      <tr>
+        <td>${a.id}</td>
+        <td><strong>${escapeHtml(a.username)}</strong></td>
+        <td><span class="badge badge-${a.role === 'superadmin' ? 'critical' : 'medium'}">${escapeHtml(a.role)}</span></td>
+        <td class="mono">${a.last_login_at ? formatTime(a.last_login_at) : '从未'}</td>
+        <td class="mono">${escapeHtml(a.last_login_ip || '-')}</td>
+      </tr>
+    `).join('');
+  } catch (e) {
+    console.error('loadAdmins error', e);
+  }
+}
+
+async function changePassword() {
+  const old_password = document.getElementById('oldPassword').value;
+  const new_password = document.getElementById('newPassword').value;
+  const confirm_password = document.getElementById('confirmPassword').value;
+
+  if (!old_password || !new_password) {
+    showToast('请填写原密码和新密码', 'error');
+    return;
+  }
+  if (new_password.length < 6) {
+    showToast('新密码至少 6 位', 'error');
+    return;
+  }
+  if (new_password !== confirm_password) {
+    showToast('两次输入的新密码不一致', 'error');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/admin/change-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ old_password, new_password })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('密码已更新', 'success');
+      document.getElementById('oldPassword').value = '';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
+    } else {
+      showToast(data.error || '更新失败', 'error');
+    }
+  } catch (e) {
+    showToast('网络错误', 'error');
+  }
+}
+
+// ============ 工具函数 ============
+function showToast(msg, type = 'info') {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = 'toast ' + type + ' show';
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function formatTime(t) {
+  if (!t) return '-';
+  try {
+    const d = new Date(t + 'Z');
+    return d.toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
+  } catch (e) {
+    return t;
+  }
+}
+
+function formatUptime(seconds) {
+  if (!seconds) return '--';
+  const d = Math.floor(seconds / 86400);
+  const h = Math.floor((seconds % 86400) / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (d > 0) return `${d}天${h}时${m}分`;
+  if (h > 0) return `${h}时${m}分`;
+  return `${m}分`;
+}
+
+function severityText(s) {
+  return { critical: '严重', high: '高危', medium: '中危', low: '低危' }[s] || s;
+}
+
+function actionText(a) {
+  return { auto_ban: '自动封禁', blocked: '已拦截', logged: '已记录' }[a] || a;
+}
+
+function escapeHtml(s) {
+  if (s === null || s === undefined) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// 服务器时间更新
+function updateServerTime() {
+  document.getElementById('serverTime').textContent = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
+}
+setInterval(updateServerTime, 1000);
+updateServerTime();
+
+// 自动刷新
+let autoRefreshTimer = null;
+function startAutoRefresh() {
+  if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+  autoRefreshTimer = setInterval(() => {
+    const activeTab = document.querySelector('.tab.active');
+    if (activeTab) {
+      const tabContent = document.querySelector('.tab-content.active');
+      if (tabContent && tabContent.id === 'tab-overview') {
+        loadOverview();
+      }
+    }
+  }, 30000); // 30 秒刷新一次
+}
+
+// 关闭模态框点击外部
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => {
+    if (e.target === m) m.classList.remove('show');
+  });
+});
+
+// 启动
+loadLoginCaptcha();
+</script>
+</body>
+</html>

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="极风工作室 - 极致安卓玩机工具开发，打造最强玩机体验">
+<meta name="keywords" content="极风工作室,安卓玩机,Magisk,LSPosed,模块,刷机,ROOT">
+<title>极风工作室 · JIFENG STUDIO</title>
+<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains; preload">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-XSS-Protection" content="1; mode=block">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+<link rel="stylesheet" href="jifeng-ui.css">
+</head>
+<body>
+
+<div class="cyber-grid"></div>
+<div class="scanlines"></div>
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="orb orb-4"></div>
+</div>
+
+<nav id="navbar">
+  <div class="nc">
+    <a href="#" class="logo">⚡ JIFENG</a>
+    <ul class="nl">
+      <li><a href="#home" class="ac">首页</a></li>
+      <li><a href="#products">产品</a></li>
+      <li><a href="#features">特性</a></li>
+      <li><a href="#notice">公告</a></li>
+      <li><a href="#about">关于</a></li>
+    </ul>
+    <a href="#products" class="bt bt-p" id="downloadNavBtn">立即下载</a>
+  </div>
+</nav>
+
+<!-- ============ HERO 英雄区 ============ -->
+<section class="hr" id="home">
+  <div class="hc">
+    <div style="font-family:var(--f-mono);color:var(--a);font-size:.8rem;letter-spacing:.3em;margin-bottom:1.5rem;opacity:.7">
+      // SYSTEM INITIALIZED · v3.0.0 · ONLINE
+    </div>
+    <h1 data-text="极致玩机 无限可能">
+      极致玩机<br><span class="ac">无限可能</span>
+    </h1>
+    <p class="hs">
+      专注<span class="hl">安卓玩机工具</span>深度开发，为发烧而生。
+      从系统定制到模块开发，解锁你设备的<span class="hl">全部潜能</span>。
+    </p>
+
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem">
+      <a href="#products" class="bt bt-p">🚀 探索产品</a>
+      <a href="#about" class="bt bt-s">💡 了解更多</a>
+    </div>
+
+    <div class="lb">
+      <div class="li r">
+        <div class="lv">50K+</div>
+        <div class="ll">活跃用户</div>
+      </div>
+      <div class="li r">
+        <div class="lv">12+</div>
+        <div class="ll">精品工具</div>
+      </div>
+      <div class="li r">
+        <div class="lv">99.9%</div>
+        <div class="ll">稳定运行</div>
+      </div>
+      <div class="li r">
+        <div class="lv"><span class="ld"></span>LIVE</div>
+        <div class="ll">实时防护</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-bottom">
+    <span>SCROLL TO EXPLORE</span>
+    <div class="arrow"></div>
+  </div>
+</section>
+
+<!-- ============ 产品展示 ============ -->
+<section id="products">
+  <div class="ct">
+    <h2 class="st r">核心<span class="ac">产品</span></h2>
+    <p class="st-sub r">// PRODUCTS · 精心打造的玩机工具矩阵</p>
+
+    <div class="pg">
+      <div class="cd product-card r">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+        <div class="product-icon">🔧</div>
+        <h3>极风工具箱 Pro</h3>
+        <p>一站式安卓玩机工具箱，集成ROOT管理、模块安装、系统优化、备份恢复等50+实用功能。</p>
+        <div class="product-meta">
+          <span>📦 <span class="mv">v3.2.1</span></span>
+          <span>📊 <span class="mv">12.5 MB</span></span>
+          <span>⭐ <span class="mv">4.9★</span></span>
+        </div>
+        <div class="product-actions">
+          <a href="#" class="bt bt-p" onclick="openDownload('toolbox-pro');return false;">下载</a>
+          <button class="bt bt-s" onclick="toggleChangelog(this)">更新日志</button>
+        </div>
+        <div class="changelog">
+          <h4>// CHANGELOG v3.2.1</h4>
+          <ul>
+            <li>新增 Android 14 深度适配</li>
+            <li>优化 Magisk 模块管理引擎</li>
+            <li>修复部分设备兼容性问题</li>
+            <li>UI 界面全新赛博风格重构</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cd product-card r">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+        <div class="product-icon" style="background:linear-gradient(135deg,#7b2ff7,#ff00d4)">🎨</div>
+        <h3>极风美化中心</h3>
+        <p>海量主题、字体、图标包、开机动画一键美化，让你的手机与众不同，彰显个性。</p>
+        <div class="product-meta">
+          <span>📦 <span class="mv">v2.5.0</span></span>
+          <span>📊 <span class="mv">8.3 MB</span></span>
+          <span>⭐ <span class="mv">4.8★</span></span>
+        </div>
+        <div class="product-actions">
+          <a href="#" class="bt bt-p" onclick="openDownload('theme-center');return false;">下载</a>
+          <button class="bt bt-s" onclick="toggleChangelog(this)">更新日志</button>
+        </div>
+        <div class="changelog">
+          <h4>// CHANGELOG v2.5.0</h4>
+          <ul>
+            <li>新增赛博朋克主题系列</li>
+            <li>支持 MIUI / ColorOS / OriginOS</li>
+            <li>新增动态壁纸引擎</li>
+            <li>优化主题应用速度 40%</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cd product-card r">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+        <div class="product-icon" style="background:linear-gradient(135deg,#39ff14,#00f5ff)">⚡</div>
+        <h3>极风性能大师</h3>
+        <p>智能温控、CPU/GPU 调度调控、游戏帧率优化、电池健康管理，让性能与续航兼得。</p>
+        <div class="product-meta">
+          <span>📦 <span class="mv">v4.1.2</span></span>
+          <span>📊 <span class="mv">6.7 MB</span></span>
+          <span>⭐ <span class="mv">4.9★</span></span>
+        </div>
+        <div class="product-actions">
+          <a href="#" class="bt bt-p" onclick="openDownload('perf-master');return false;">下载</a>
+          <button class="bt bt-s" onclick="toggleChangelog(this)">更新日志</button>
+        </div>
+        <div class="changelog">
+          <h4>// CHANGELOG v4.1.2</h4>
+          <ul>
+            <li>全新 AI 智能调度引擎 v2</li>
+            <li>新增游戏空间一键开启</li>
+            <li>支持高通/联发科双平台</li>
+            <li>功耗再优化，续航提升15%</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cd product-card r">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+        <div class="product-icon" style="background:linear-gradient(135deg,#ffea00,#ff6b00)">🔒</div>
+        <h3>极风隐私卫士</h3>
+        <p>应用权限管理、隐私伪装、数据加密、防追踪保护，全方位守护你的隐私安全。</p>
+        <div class="product-meta">
+          <span>📦 <span class="mv">v2.0.3</span></span>
+          <span>📊 <span class="mv">5.2 MB</span></span>
+          <span>⭐ <span class="mv">4.7★</span></span>
+        </div>
+        <div class="product-actions">
+          <a href="#" class="bt bt-p" onclick="openDownload('privacy-guard');return false;">下载</a>
+          <button class="bt bt-s" onclick="toggleChangelog(this)">更新日志</button>
+        </div>
+        <div class="changelog">
+          <h4>// CHANGELOG v2.0.3</h4>
+          <ul>
+            <li>新增隐私风险智能评估</li>
+            <li>支持应用数据全盘加密</li>
+            <li>新增伪装位置模拟器</li>
+            <li>优化权限拦截准确率</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 核心特性 ============ -->
+<section id="features">
+  <div class="ct">
+    <h2 class="st r">核心<span class="ac">特性</span></h2>
+    <p class="st-sub r">// FEATURES · 发烧级玩机体验</p>
+
+    <div class="features-grid">
+      <div class="feature-item r">
+        <div class="fi-icon">🛡️</div>
+        <h4>安全稳定</h4>
+        <p>严格测试验证，确保每个功能都稳定可靠</p>
+      </div>
+      <div class="feature-item r">
+        <div class="fi-icon">🚀</div>
+        <h4>极速流畅</h4>
+        <p>轻量高效架构，不占用多余系统资源</p>
+      </div>
+      <div class="feature-item r">
+        <div class="fi-icon">🎯</div>
+        <h4>精准适配</h4>
+        <p>支持主流品牌机型，深度定制优化</p>
+      </div>
+      <div class="feature-item r">
+        <div class="fi-icon">🔄</div>
+        <h4>持续更新</h4>
+        <p>高频迭代更新，紧跟系统版本演进</p>
+      </div>
+      <div class="feature-item r">
+        <div class="fi-icon">💬</div>
+        <h4>社区驱动</h4>
+        <p>活跃用户社区，需求快速响应落地</p>
+      </div>
+      <div class="feature-item r">
+        <div class="fi-icon">🎨</div>
+        <h4>个性定制</h4>
+        <p>丰富的自定义选项，打造专属体验</p>
+      </div>
+    </div>
+
+    <div style="margin-top:3rem" class="r">
+      <div class="cd" style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center">
+        <div>
+          <h3 style="font-family:var(--f-display);font-size:1.5rem;margin-bottom:1rem;letter-spacing:.03em">
+            AI 智能<span style="background:var(--a-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">风险评估</span>
+          </h3>
+          <p style="color:var(--t2);margin-bottom:1rem;font-size:.9rem;line-height:1.8">
+            搭载极风自研 AI 沙盒引擎，实时分析每个操作的安全风险，智能判断是否拦截。
+            多维度特征融合，精准识别恶意行为。
+          </p>
+          <div style="display:flex;flex-direction:column;gap:.75rem;margin-top:1.5rem">
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:.3rem">
+                <span>WAF 防火墙</span><span style="color:var(--a);font-family:var(--f-mono)">99.7%</span>
+              </div>
+              <div class="data-bar"><div class="data-bar-fill" style="width:99.7%"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:.3rem">
+                <span>机器人检测</span><span style="color:var(--a);font-family:var(--f-mono)">98.5%</span>
+              </div>
+              <div class="data-bar"><div class="data-bar-fill" style="width:98.5%"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:.3rem">
+                <span>AI 风险识别</span><span style="color:var(--a);font-family:var(--f-mono)">96.3%</span>
+              </div>
+              <div class="data-bar"><div class="data-bar-fill" style="width:96.3%"></div></div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:6rem;margin-bottom:1rem;animation:float 4s ease-in-out infinite">🤖</div>
+          <div style="font-family:var(--f-mono);font-size:.8rem;color:var(--t3);">
+            <div>AI-SANDBOX v2.0</div>
+            <div style="margin-top:.3rem;color:var(--ok)">● ONLINE</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 公告区 ============ -->
+<section id="notice">
+  <div class="ct">
+    <h2 class="st r">最新<span class="ac">公告</span></h2>
+    <p class="st-sub r">// NOTICE · 重要通知与动态</p>
+
+    <div class="notice-list">
+      <div class="notice-item r">
+        <span class="notice-icon">🎉</span>
+        <span class="notice-text">极风工具箱 Pro v3.2.1 正式发布，支持 Android 14 深度适配，全新赛博风格 UI</span>
+        <span class="notice-date">2025-01-15</span>
+      </div>
+      <div class="notice-item r">
+        <span class="notice-icon">⚡</span>
+        <span class="notice-text">性能大师 v4.1.2 更新，AI 调度引擎 v2 上线，游戏帧率更稳更丝滑</span>
+        <span class="notice-date">2025-01-10</span>
+      </div>
+      <div class="notice-item r">
+        <span class="notice-icon">🔧</span>
+        <span class="notice-text">官网安全防护系统全面升级，新增 AI 沙盒实时风险分析功能</span>
+        <span class="notice-date">2025-01-05</span>
+      </div>
+      <div class="notice-item r">
+        <span class="notice-icon">💡</span>
+        <span class="notice-text">极风社区开放注册，欢迎各位玩机爱好者加入交流讨论</span>
+        <span class="notice-date">2024-12-28</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 关于我们 ============ -->
+<section id="about">
+  <div class="ct">
+    <h2 class="st r">关于<span class="ac">我们</span></h2>
+    <p class="st-sub r">// ABOUT · 为发烧而生</p>
+
+    <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;align-items:center" class="r">
+      <div class="cd" style="padding:2.5rem">
+        <h3 style="font-family:var(--f-display);font-size:1.6rem;margin-bottom:1.25rem;letter-spacing:.03em">
+          极风<span style="background:var(--a-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">工作室</span>
+        </h3>
+        <p style="color:var(--t2);line-height:2;font-size:.95rem">
+          我们是一群热爱安卓玩机的开发者，致力于打造最专业、最强大的玩机工具。
+          从 2019 年成立至今，我们始终坚持<span style="color:var(--a);font-weight:600">"为发烧而生"</span>的理念，
+          不断突破技术边界，为用户带来极致的玩机体验。
+        </p>
+        <p style="color:var(--t2);line-height:2;font-size:.95rem;margin-top:1rem">
+          我们相信每一台设备都有无限可能，而我们的使命就是帮你解锁这些可能。
+        </p>
+        <div style="margin-top:1.5rem;display:flex;gap:.75rem;flex-wrap:wrap">
+          <span class="sec-tag sec-tag-low">Magisk</span>
+          <span class="sec-tag sec-tag-low">LSPosed</span>
+          <span class="sec-tag sec-tag-low">Xposed</span>
+          <span class="sec-tag sec-tag-medium">KernelSU</span>
+          <span class="sec-tag sec-tag-high">Android 14</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:1.25rem">
+        <div class="cd" style="padding:1.5rem">
+          <div style="font-size:2rem;margin-bottom:.5rem">📧</div>
+          <div style="font-weight:600;margin-bottom:.25rem">联系邮箱</div>
+          <div style="color:var(--t2);font-size:.85rem;font-family:var(--f-mono)">support@jifeng.studio</div>
+        </div>
+        <div class="cd" style="padding:1.5rem">
+          <div style="font-size:2rem;margin-bottom:.5rem">💬</div>
+          <div style="font-weight:600;margin-bottom:.25rem">用户社区</div>
+          <div style="color:var(--t2);font-size:.85rem">加入 QQ 群与万千机友交流</div>
+        </div>
+        <div class="cd" style="padding:1.5rem">
+          <div style="font-size:2rem;margin-bottom:.5rem">⭐</div>
+          <div style="font-weight:600;margin-bottom:.25rem">开源项目</div>
+          <div style="color:var(--t2);font-size:.85rem">部分工具已在 GitHub 开源</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Footer ============ -->
+<ft>
+  <div class="ft-grid">
+    <div class="ft-col">
+      <h4>⚡ 极风工作室</h4>
+      <p>为发烧而生，打造极致安卓玩机体验。<br>JIFENG STUDIO · Since 2019</p>
+    </div>
+    <div class="ft-col">
+      <h4>产品</h4>
+      <div class="ft-links">
+        <a href="#products">极风工具箱 Pro</a>
+        <a href="#products">极风美化中心</a>
+        <a href="#products">极风性能大师</a>
+        <a href="#products">极风隐私卫士</a>
+      </div>
+    </div>
+    <div class="ft-col">
+      <h4>资源</h4>
+      <div class="ft-links">
+        <a href="#notice">公告中心</a>
+        <a href="#about">关于我们</a>
+        <a href="#">使用教程</a>
+        <a href="#">常见问题</a>
+      </div>
+    </div>
+    <div class="ft-col">
+      <h4>技术栈</h4>
+      <div class="ft-tags">
+        <span>Android</span>
+        <span>Kotlin</span>
+        <span>Magisk</span>
+        <span>LSPosed</span>
+        <span>Root</span>
+        <span>AOSP</span>
+      </div>
+    </div>
+  </div>
+  <div class="ft-bottom">
+    <p>© 2025 <span>JIFENG STUDIO</span> · 极风工作室 · All Rights Reserved</p>
+    <p style="margin-top:.5rem;opacity:.6">
+      <span>Powered by ⚡ JIFENG Cyber Security System v3.0</span>
+    </p>
+  </div>
+</ft>
+
+<!-- ============ 免责弹窗 ============ -->
+<div id="dm">
+  <div>
+    <div class="dm-icon">⚠️</div>
+    <h2>重要免责声明</h2>
+    <div class="dm-text">
+      本网站提供的所有工具仅供<strong>学习研究</strong>使用。<br><br>
+      下载、安装或使用我们的产品即表示您已了解并同意：<br>
+      1. 工具需在合法范围内使用<br>
+      2. 因不当操作造成的损失由用户自行承担<br>
+      3. 我们不对任何设备损坏或数据丢失负责<br>
+      4. 请遵守当地法律法规<br><br>
+      <strong>如您不同意以上条款，请立即关闭本页面。</strong>
+    </div>
+    <button class="db e" onclick="acceptDisclaimer()">我已阅读并同意</button>
+    <button class="dl" onclick="declineDisclaimer()">不同意，离开</button>
+  </div>
+</div>
+
+<!-- ============ 浮动AI按钮 ============ -->
+<div id="bb" onclick="toggleAI()">🤖</div>
+
+<!-- Toast 容器 -->
+<div id="toast-wrap"></div>
+
+<script>
+  // 导航栏滚动效果
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('navbar');
+    if (window.scrollY > 50) nav.classList.add('s');
+    else nav.classList.remove('s');
+  });
+
+  // 滚动入场动画
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('v');
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.r').forEach(el => observer.observe(el));
+
+  // 导航激活
+  document.querySelectorAll('.nl a').forEach(link => {
+    link.addEventListener('click', () => {
+      document.querySelectorAll('.nl a').forEach(l => l.classList.remove('ac'));
+      link.classList.add('ac');
+    });
+  });
+
+  // 免责声明逻辑
+  function checkDisclaimer() {
+    if (!localStorage.getItem('jifeng_disclaimer_accepted')) {
+      document.getElementById('dm').style.display = 'flex';
+    }
+  }
+  function acceptDisclaimer() {
+    localStorage.setItem('jifeng_disclaimer_accepted', '1');
+    document.getElementById('dm').style.display = 'none';
+    showToast('ok', '欢迎访问', '感谢您的信任，祝您使用愉快！');
+  }
+  function declineDisclaimer() {
+    showToast('err', '提示', '您需要同意免责声明才能继续浏览');
+  }
+  window.onload = checkDisclaimer;
+
+  // 下载功能
+  async function openDownload(product) {
+    if (!localStorage.getItem('jifeng_disclaimer_accepted')) {
+      document.getElementById('dm').style.display = 'flex';
+      return;
+    }
+    try {
+      showToast('info', '验证中', '正在进行安全验证...');
+      const res = await fetch('/api/captcha/generate?type=download');
+      const data = await res.json();
+      showToast('ok', '安全验证', '请完成验证码验证后下载');
+    } catch (e) {
+      showToast('ok', '准备下载', '即将开始下载...');
+      setTimeout(() => showToast('info', '提示', '演示版本，暂不提供真实下载'), 1000);
+    }
+  }
+
+  // 显示更新日志
+  function toggleChangelog(btn) {
+    const cl = btn.closest('.product-card').querySelector('.changelog');
+    if (cl.style.display === 'block') {
+      cl.style.display = 'none';
+      btn.textContent = '更新日志';
+    } else {
+      cl.style.display = 'block';
+      btn.textContent = '收起';
+    }
+  }
+
+  // Toast 通知
+  function showToast(type, title, body) {
+    const wrap = document.getElementById('toast-wrap');
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.innerHTML = `<div class="toast-title">${title}</div><div class="toast-body">${body}</div>`;
+    wrap.appendChild(toast);
+    setTimeout(() => { toast.classList.add('out'); setTimeout(() => toast.remove(), 400); }, 3500);
+  }
+
+  // AI 助手
+  let aiOpen = false;
+  function toggleAI() {
+    aiOpen = !aiOpen;
+    if (aiOpen) {
+      showToast('info', 'AI 助手', '极风 AI 助手已就绪，有什么可以帮您？');
+    } else {
+      showToast('ok', '已关闭', 'AI 助手已收起');
+    }
+  }
+
+  // 数字动画
+  function animateNumber(el, target, duration = 2000) {
+    const start = 0;
+    const startTime = performance.now();
+    function update(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      const current = Math.floor(start + (target - start) * easeOut);
+      el.textContent = current.toLocaleString() + (el.dataset.suffix || '');
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  }
+</script>
+</body>
+</html>
