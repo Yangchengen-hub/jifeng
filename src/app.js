@@ -1687,7 +1687,32 @@ function injectSecurityFeatures(html) {
   return html;
 }
 
-// 静态文件服务（防止目录遍历）
+// 拦截敏感路径，防止源码和配置文件被下载
+const SENSITIVE_PATHS = [
+  '/src/', '/api/', '/scripts/', '/.build_backup/',
+  '/node_modules/', '/views/', '/data/',
+  '/.env', '/.git', '/.vercel', '/.render',
+  '/DEPLOY_GUIDE.md', '/render.yaml', '/vercel.json',
+  '/package.json', '/package-lock.json', '/README',
+  '/jifeng-api', '/jifeng-admin'
+];
+
+app.use((req, res, next) => {
+  const pathname = req.path;
+  const blocked = SENSITIVE_PATHS.some(p => pathname.startsWith(p));
+  if (blocked) {
+    return res.status(404).send('Not Found');
+  }
+  next();
+});
+
+// 静态文件服务（仅允许特定类型文件）
+const ALLOWED_EXTENSIONS = [
+  '.html', '.css', '.js', '.svg', '.png', '.jpg', '.jpeg',
+  '.gif', '.ico', '.webp', '.woff', '.woff2', '.ttf',
+  '.eot', '.mp3', '.mp4', '.pdf', '.txt'
+];
+
 app.use(express.static(publicDir, {
   extensions: ['html'],
   index: 'index.html',
@@ -1696,11 +1721,21 @@ app.use(express.static(publicDir, {
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
       res.setHeader('Pragma', 'no-cache');
       res.setHeader('Expires', '0');
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=3600');
     }
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('X-XSS-Protection', '1; mode=block');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  },
+  filter: (req, file, cb) => {
+    const ext = path.extname(file).toLowerCase();
+    if (ALLOWED_EXTENSIONS.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+    }
   }
 }));
 
