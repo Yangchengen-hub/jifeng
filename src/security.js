@@ -300,11 +300,12 @@ function realTimeScan(req, threats, uaAnalysis, behaviorData = null) {
     }
   }
 
-  // 高危自动封禁 - AI 评分达到 critical 级别也触发封禁
+  // 高危自动封禁 - AI 评分达到 critical 级别也触发封禁（本地IP除外，防误封）
   const autoBanEnabled = getConfig('auto_ban_enabled') === 'true';
   const autoBanThreshold = parseInt(getConfig('auto_ban_threshold') || '3');
+  const isLocalIP = req._isLocal;
 
-  if (autoBanEnabled && (finalRiskScore >= 60 || aiAnalysis.risk_level === 'critical')) {
+  if (autoBanEnabled && !isLocalIP && (finalRiskScore >= 60 || aiAnalysis.risk_level === 'critical')) {
     const highRiskCount = db.prepare(`
       SELECT COUNT(*) as count FROM security_scans
       WHERE ip = ? AND risk_score >= 60 AND created_at > datetime('now', '-1 hour')
@@ -612,8 +613,13 @@ function wafMiddleware(req, res, next) {
   req.requestId = generateRequestId();
   req.startTime = Date.now();
 
-  // 1. 检查 IP 是否已被封禁
-  if (isIPBanned(req.ip)) {
+  // 本地/内网 IP 白名单（开发与管理端专用环境）
+  const localIPRanges = ['127.0.0.1', '::1', '::ffff:127.0.0.1', 'localhost', '::ffff:1::1'];
+  const isLocalIP = localIPRanges.some(p => req.ip === p || req.ip.startsWith(p));
+  req._isLocal = isLocalIP;
+
+  // 1. 检查 IP 是否已被封禁（本地IP除外，防止本地调试误封）
+  if (!isLocalIP && isIPBanned(req.ip)) {
     logSecurityEvent('banned_ip_access', 'critical', req, `已封禁 IP 尝试访问: ${req.ip}`, null);
     res.status(403);
     return res.render('blocked', {
@@ -649,8 +655,8 @@ function wafMiddleware(req, res, next) {
       const threat = criticalThreats[0] || highThreats[0];
       logSecurityEvent(threat.type, threat.severity, req, 'WAF blocked request', threats);
 
-      // 高危请求自动封禁
-      if (criticalThreats.length > 0 && getConfig('auto_ban_enabled') === 'true') {
+      // 高危请求自动封禁（本地IP除外）
+      if (!isLocalIP && criticalThreats.length > 0 && getConfig('auto_ban_enabled') === 'true') {
         banIP(req.ip, `WAF 自动封禁: ${threat.type}`, 'critical', 'waf_auto');
       }
 

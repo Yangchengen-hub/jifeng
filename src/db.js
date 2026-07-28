@@ -235,6 +235,52 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_ai_analysis_ip ON ai_analysis(ip);
   CREATE INDEX IF NOT EXISTS idx_ai_analysis_created_at ON ai_analysis(created_at);
   CREATE INDEX IF NOT EXISTS idx_sessions_ip ON sessions(ip);
+
+  CREATE TABLE IF NOT EXISTS download_links (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    file_name TEXT NOT NULL,
+    description TEXT,
+    version TEXT,
+    file_size TEXT,
+    icon TEXT DEFAULT '📦',
+    download_url TEXT NOT NULL,
+    is_active INTEGER DEFAULT 1,
+    sort_order INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(name, file_name, download_url)
+  );
+
+  CREATE TABLE IF NOT EXISTS site_content (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    section TEXT UNIQUE NOT NULL,
+    title TEXT,
+    content TEXT,
+    is_active INTEGER DEFAULT 1,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS repository_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT,
+    category TEXT DEFAULT 'default',
+    icon TEXT DEFAULT '📁',
+    repo_url TEXT,
+    download_url TEXT,
+    version TEXT,
+    stars INTEGER DEFAULT 0,
+    is_active INTEGER DEFAULT 1,
+    sort_order INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(name, repo_url)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_download_links_active ON download_links(is_active);
+  CREATE INDEX IF NOT EXISTS idx_repo_items_active ON repository_items(is_active);
+  CREATE INDEX IF NOT EXISTS idx_repo_items_category ON repository_items(category);
 `);
 
 // 初始化默认系统配置
@@ -254,6 +300,41 @@ const defaultConfigs = {
 const insertConfig = db.prepare('INSERT OR IGNORE INTO system_config (key, value) VALUES (?, ?)');
 for (const [key, value] of Object.entries(defaultConfigs)) {
   insertConfig.run(key, value);
+}
+
+// 初始化默认官网内容
+const defaultContents = [
+  ['hero_title', '极风工作室', '专注于极致体验的创作团队', 'JIFENG STUDIO', 1],
+  ['hero_subtitle', '安全·高效·创新', '极致的安全防护与用户体验', 'SECURE · EFFICIENT', 1],
+  ['announcement', '欢迎访问极风工作室', '本站采用多重安全防护机制，为您提供安全的下载与浏览体验', 'Welcome', 1],
+  ['about', '关于极风', '我们是一支专注于数字产品开发的团队，致力于为用户提供高品质的软件与服务。', 'About', 1],
+  ['footer', '© 2026 极风工作室', '保留所有权利', 'Footer', 1]
+];
+const insertContent = db.prepare('INSERT OR IGNORE INTO site_content (section, title, content, is_active, updated_at) VALUES (?, ?, ?, ?, datetime(\'now\'))');
+for (const [section, title, content, , is_active] of defaultContents) {
+  insertContent.run(section, title, content, is_active);
+}
+
+// 初始化默认下载链接
+const defaultDownloads = [
+  ['极风工具箱', 'jifeng-toolbox-v1.2.0.zip', '多功能系统工具集合', '1.2.0', '45MB', '🛠️', '/download/serve/jifeng-toolbox-v1.2.0.zip', 1, 0],
+  ['极风安全助手', 'jifeng-security-v2.0.0.zip', '全方位安全防护解决方案', '2.0.0', '38MB', '🛡️', '/download/serve/jifeng-security-v2.0.0.zip', 1, 1],
+  ['极风开发套件', 'jifeng-dev-kit-v0.9.5.zip', '开发者辅助工具包', '0.9.5', '22MB', '💻', '/download/serve/jifeng-dev-kit-v0.9.5.zip', 1, 2]
+];
+const insertDownload = db.prepare('INSERT OR IGNORE INTO download_links (name, file_name, description, version, file_size, icon, download_url, is_active, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+for (const d of defaultDownloads) {
+  insertDownload.run(...d);
+}
+
+// 初始化默认仓库项
+const defaultRepos = [
+  ['极风工具箱', '系统优化与清理工具', 'tool', '🛠️', 'https://github.com/jifeng/toolbox', '/download/serve/jifeng-toolbox.zip', '1.2.0', 128, 1, 0],
+  ['极风安全中心', '多维度安全防护工具', 'security', '🛡️', 'https://github.com/jifeng/security', '/download/serve/jifeng-security.zip', '2.0.0', 256, 1, 1],
+  ['极风UI组件库', '现代化前端UI组件', 'library', '🎨', 'https://github.com/jifeng/ui', '', '3.1.0', 512, 1, 2]
+];
+const insertRepo = db.prepare('INSERT OR IGNORE INTO repository_items (name, description, category, icon, repo_url, download_url, version, stars, is_active, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+for (const r of defaultRepos) {
+  insertRepo.run(...r);
 }
 
 // 创建或更新管理员账号 - 密码从环境变量读取（绝不硬编码）

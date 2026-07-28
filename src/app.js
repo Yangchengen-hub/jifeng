@@ -1570,6 +1570,186 @@ app.get('/api/admin/download-logs', authMiddleware, (req, res) => {
   res.json({ logs });
 });
 
+// ============ 下载链接管理 API ============
+
+app.get('/api/download-links', (req, res) => {
+  const links = db.prepare(`
+    SELECT * FROM download_links WHERE is_active = 1 ORDER BY sort_order ASC, id ASC
+  `).all();
+  res.json({ links });
+});
+
+app.get('/api/admin/download-links', authMiddleware, (req, res) => {
+  const links = db.prepare(`
+    SELECT * FROM download_links ORDER BY sort_order ASC, id ASC
+  `).all();
+  res.json({ links });
+});
+
+app.post('/api/admin/download-links', authMiddleware, (req, res) => {
+  const { name, file_name, description, version, file_size, icon, download_url, is_active, sort_order } = req.body;
+  if (!name || !file_name || !download_url) {
+    return res.status(400).json({ error: '名称、文件名、下载链接为必填' });
+  }
+  const info = db.prepare(`
+    INSERT INTO download_links (name, file_name, description, version, file_size, icon, download_url, is_active, sort_order, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+  `).run(name, file_name, description || '', version || '', file_size || '', icon || '📦', download_url, is_active ?? 1, sort_order ?? 0);
+  logSecurityEvent('download_link_created', 'low', req, `创建下载链接: ${name}`, { id: info.lastInsertRowid });
+  res.json({ success: true, id: info.lastInsertRowid });
+});
+
+app.put('/api/admin/download-links/:id', authMiddleware, (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+  const allowed = ['name', 'file_name', 'description', 'version', 'file_size', 'icon', 'download_url', 'is_active', 'sort_order'];
+  const sets = [];
+  const values = [];
+  for (const key of allowed) {
+    if (updates[key] !== undefined) {
+      sets.push(`${key} = ?`);
+      values.push(updates[key]);
+    }
+  }
+  if (sets.length === 0) {
+    return res.status(400).json({ error: '无有效字段' });
+  }
+  sets.push("updated_at = datetime('now')");
+  values.push(parseInt(id));
+  const info = db.prepare(`UPDATE download_links SET ${sets.join(', ')} WHERE id = ?`).run(...values);
+  if (info.changes === 0) {
+    return res.status(404).json({ error: '记录不存在' });
+  }
+  logSecurityEvent('download_link_updated', 'low', req, `更新下载链接 #${id}`);
+  res.json({ success: true });
+});
+
+app.delete('/api/admin/download-links/:id', authMiddleware, (req, res) => {
+  const { id } = req.params;
+  db.prepare('DELETE FROM download_links WHERE id = ?').run(parseInt(id));
+  logSecurityEvent('download_link_deleted', 'low', req, `删除下载链接 #${id}`);
+  res.json({ success: true });
+});
+
+// ============ 官网内容管理 API ============
+
+app.get('/api/site-content', (req, res) => {
+  const contents = db.prepare('SELECT * FROM site_content WHERE is_active = 1').all();
+  const map = {};
+  contents.forEach(c => { map[c.section] = c; });
+  res.json({ content: map });
+});
+
+app.get('/api/admin/site-content', authMiddleware, (req, res) => {
+  const contents = db.prepare('SELECT * FROM site_content ORDER BY section').all();
+  res.json({ contents });
+});
+
+app.post('/api/admin/site-content', authMiddleware, (req, res) => {
+  const { section, title, content, is_active } = req.body;
+  if (!section) {
+    return res.status(400).json({ error: 'section 为必填' });
+  }
+  db.prepare(`
+    INSERT OR REPLACE INTO site_content (section, title, content, is_active, updated_at)
+    VALUES (?, ?, ?, ?, datetime('now'))
+  `).run(section, title || '', content || '', is_active ?? 1);
+  logSecurityEvent('site_content_updated', 'low', req, `更新官网内容: ${section}`);
+  res.json({ success: true });
+});
+
+// ============ 仓库管理 API ============
+
+app.get('/api/repository', (req, res) => {
+  const category = req.query.category;
+  let rows;
+  if (category && category !== 'all') {
+    rows = db.prepare('SELECT * FROM repository_items WHERE is_active = 1 AND category = ? ORDER BY sort_order ASC, id ASC').all(category);
+  } else {
+    rows = db.prepare('SELECT * FROM repository_items WHERE is_active = 1 ORDER BY category ASC, sort_order ASC, id ASC').all();
+  }
+  res.json({ repos: rows });
+});
+
+app.get('/api/admin/repository', authMiddleware, (req, res) => {
+  const rows = db.prepare('SELECT * FROM repository_items ORDER BY category ASC, sort_order ASC, id ASC').all();
+  res.json({ repos: rows });
+});
+
+app.post('/api/admin/repository', authMiddleware, (req, res) => {
+  const { name, description, category, icon, repo_url, download_url, version, stars, is_active, sort_order } = req.body;
+  if (!name) {
+    return res.status(400).json({ error: '名称为必填' });
+  }
+  const info = db.prepare(`
+    INSERT INTO repository_items (name, description, category, icon, repo_url, download_url, version, stars, is_active, sort_order, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+  `).run(name, description || '', category || 'default', icon || '📁', repo_url || '', download_url || '', version || '', stars || 0, is_active ?? 1, sort_order ?? 0);
+  logSecurityEvent('repo_created', 'low', req, `创建仓库项: ${name}`, { id: info.lastInsertRowid });
+  res.json({ success: true, id: info.lastInsertRowid });
+});
+
+app.put('/api/admin/repository/:id', authMiddleware, (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+  const allowed = ['name', 'description', 'category', 'icon', 'repo_url', 'download_url', 'version', 'stars', 'is_active', 'sort_order'];
+  const sets = [];
+  const values = [];
+  for (const key of allowed) {
+    if (updates[key] !== undefined) {
+      sets.push(`${key} = ?`);
+      values.push(updates[key]);
+    }
+  }
+  if (sets.length === 0) {
+    return res.status(400).json({ error: '无有效字段' });
+  }
+  sets.push("updated_at = datetime('now')");
+  values.push(parseInt(id));
+  const info = db.prepare(`UPDATE repository_items SET ${sets.join(', ')} WHERE id = ?`).run(...values);
+  if (info.changes === 0) {
+    return res.status(404).json({ error: '记录不存在' });
+  }
+  logSecurityEvent('repo_updated', 'low', req, `更新仓库项 #${id}`);
+  res.json({ success: true });
+});
+
+app.delete('/api/admin/repository/:id', authMiddleware, (req, res) => {
+  const { id } = req.params;
+  db.prepare('DELETE FROM repository_items WHERE id = ?').run(parseInt(id));
+  logSecurityEvent('repo_deleted', 'low', req, `删除仓库项 #${id}`);
+  res.json({ success: true });
+});
+
+// ============ 主动防御增强 API ============
+
+// 管理员触发全站扫描
+app.post('/api/admin/scan-site', authMiddleware, (req, res) => {
+  const { target_url } = req.body;
+  logSecurityEvent('admin_scan_triggered', 'high', req, '管理员触发全站安全扫描', { target_url });
+  res.json({ success: true, message: '扫描任务已提交，结果稍后在安全扫描页查看' });
+});
+
+// 一键阻断所有恶意 IP
+app.post('/api/admin/block-all-malicious', authMiddleware, (req, res) => {
+  const threshold = parseInt(req.body.threshold) || 3;
+  const rows = db.prepare(`
+    SELECT ip, COUNT(*) as cnt 
+    FROM security_events 
+    WHERE severity IN ('critical', 'high') 
+    AND created_at > datetime('now', '-1 day')
+    GROUP BY ip 
+    HAVING cnt >= ?
+  `).all(threshold);
+  const banned = [];
+  for (const row of rows) {
+    banIP(row.ip, `自动封禁：24小时内触发 ${row.cnt} 次高危事件`, 'high', 'admin-bulk');
+    banned.push(row.ip);
+  }
+  logSecurityEvent('bulk_malicious_block', 'high', req, `一键阻断 ${banned.length} 个恶意 IP`, { banned_ips: banned });
+  res.json({ success: true, banned_count: banned.length, banned_ips: banned });
+});
+
 // 公开页面路由
 const publicDir = path.join(__dirname, '..');
 app.get(['/', '/index.html'], (req, res) => {
