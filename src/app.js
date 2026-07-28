@@ -1732,14 +1732,14 @@ app.use((err, req, res, next) => {
   }
 });
 
-// 创建 HTTP 服务器并初始化 WebSocket
-const server = http.createServer(app);
-wsServer.initWebSocketServer(server);
+if (require.main === module) {
+  const server = http.createServer(app);
+  wsServer.initWebSocketServer(server);
 
-server.listen(PORT, () => {
-  const secretPath = getConfig('admin_secret_path');
-  const accessToken = getConfig('admin_access_token');
-  console.log(`
+  server.listen(PORT, () => {
+    const secretPath = getConfig('admin_secret_path');
+    const accessToken = getConfig('admin_access_token');
+    console.log(`
 ╔════════════════════════════════════════════════╗
 ║     极风工作室 - 网站服务已启动                ║
 ╠════════════════════════════════════════════════╣
@@ -1765,6 +1765,7 @@ server.listen(PORT, () => {
 ║  - 邮件异常报警                                ║
 ╚════════════════════════════════════════════════╝
   `);
-});
+  });
+}
 
 module.exports = app;
