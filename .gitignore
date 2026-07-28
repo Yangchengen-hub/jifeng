@@ -53,16 +53,17 @@ build/
 coverage/
 .nyc_output/
 
-# ============ 安全相关（绝不上传）============
+# ============ 安全相关 ============
+# 注意：以下模块已改为从环境变量读取敏感配置，无硬编码密钥，可安全上传
+# 真正的密钥通过 Vercel/Render 环境变量注入，不在代码中
 .build_backup/
 scripts/obfuscate.js
-src/request-signature.js
-src/crypto-utils.js
-src/qq-auth.js
+# src/request-signature.js - 已改为从 REQUEST_SECRET 环境变量读取
+# src/crypto-utils.js - 已改为从 CRYPTO_KEY 环境变量读取
+# src/qq-auth.js - 已改为从 QQ_APP_ID/QQ_APP_KEY/QQ_REDIRECT_URI 环境变量读取
 
 # ============ 生产环境临时文件 ============
 # 注意：src/ 目录需要上传到 Vercel（Serverless 需要）
-# 但敏感文件通过上面的明确排除来保护
 
 # ============ Vercel / Render 本地配置 ============
 .vercel/
