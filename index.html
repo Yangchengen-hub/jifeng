@@ -27,7 +27,7 @@
 <nav id="navbar">
   <div class="nc">
     <a href="#" class="logo">⚡ JIFENG</a>
-    <ul class="nl">
+    <ul class="nl" id="navMenu">
       <li><a href="#home" class="ac">首页</a></li>
       <li><a href="#products">产品</a></li>
       <li><a href="#features">特性</a></li>
@@ -35,6 +35,7 @@
       <li><a href="#about">关于</a></li>
     </ul>
     <a href="#products" class="bt bt-p" id="downloadNavBtn">立即下载</a>
+    <button id="menuToggle" style="display:none;background:none;border:none;color:var(--a);font-size:1.5rem;cursor:pointer;padding:.5rem">&#9776;</button>
   </div>
 </nav>
 
@@ -458,8 +459,41 @@
     link.addEventListener('click', () => {
       document.querySelectorAll('.nl a').forEach(l => l.classList.remove('ac'));
       link.classList.add('ac');
+      // 移动端点击后关闭菜单
+      const navMenu = document.getElementById('navMenu');
+      if (navMenu) navMenu.classList.remove('show');
     });
   });
+
+  // 移动端菜单切换
+  const menuToggle = document.getElementById('menuToggle');
+  const navMenu = document.getElementById('navMenu');
+  if (menuToggle && navMenu) {
+    // 检测屏幕宽度
+    function checkWidth() {
+      if (window.innerWidth <= 767) {
+        menuToggle.style.display = 'flex';
+      } else {
+        menuToggle.style.display = 'none';
+        navMenu.classList.remove('show');
+      }
+    }
+    checkWidth();
+    window.addEventListener('resize', checkWidth);
+    
+    menuToggle.addEventListener('click', () => {
+      navMenu.classList.toggle('show');
+      menuToggle.textContent = navMenu.classList.contains('show') ? '✕' : '☰';
+    });
+    
+    // 点击页面其他地方关闭菜单
+    document.addEventListener('click', (e) => {
+      if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+        navMenu.classList.remove('show');
+        menuToggle.textContent = '☰';
+      }
+    });
+  }
 
   // 免责声明逻辑
   function checkDisclaimer() {

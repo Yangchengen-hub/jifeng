@@ -111,13 +111,46 @@ body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
 <div id="loginPage"><div>
 <div class="login-icon">&#128274;</div>
 <h2 style="color:var(--a);margin-bottom:1.5rem">极风控制台 v4.0</h2>
-<div class="cd">
+<div class="cd" id="loginCard">
 <p style="color:var(--t3);font-size:.85rem;margin-bottom:1rem">PBKDF2 + SHA-256 + 100000次迭代</p>
-<input id="lp" type="password" placeholder="输入密码">
+<input id="lu" type="text" placeholder="用户名" autocomplete="username" style="margin-bottom:.75rem">
+<input id="lp" type="password" placeholder="输入密码" autocomplete="current-password">
+<!-- 验证码 -->
+<div style="display:flex;gap:.5rem;margin-top:.75rem;align-items:center">
+<input id="lca" type="text" placeholder="验证码" style="flex:1" maxlength="6">
+<canvas id="lcv" width="120" height="40" style="border-radius:.5rem;cursor:pointer;background:#1a1a2e" title="点击刷新"></canvas>
+</div>
 <div id="le" class="error"></div>
-<button id="lb" class="bt bt-p" style="width:100%">进入控制台</button>
+<button id="lb" class="bt bt-p" style="width:100%;margin-top:.75rem">进入控制台</button>
 <p style="color:var(--t3);font-size:.75rem;margin-top:1rem">错误3次将锁定30秒</p>
 <div id="lk" class="lock">&#9201; 锁定中 (<span id="lt">30</span>秒)</div>
+</div>
+<!-- 二级验证卡片 -->
+<div class="cd" id="twoFaCard" style="display:none;text-align:center">
+<div style="font-size:3rem;margin-bottom:1rem">&#128272;</div>
+<h3 style="color:var(--a);margin-bottom:.5rem">QQ 安全验证</h3>
+<p style="color:var(--t3);font-size:.85rem;margin-bottom:1.5rem">
+  此步骤由 <span style="color:#12b7f5;font-weight:bold">腾讯QQ官方</span> 提供<br>
+  我们<strong>不会</strong>获取您的QQ号或密码，仅用于验证您的身份<br>
+  授权后将自动完成登录
+</p>
+
+<!-- PC端二维码展示区 -->
+<div id="qqQRCodeContainer" style="display:none;margin:1rem auto;padding:1rem;background:#fff;border-radius:12px;width:200px;height:200px;position:relative">
+  <img id="qqQRCode" style="width:100%;height:100%;border-radius:8px" alt="QQ授权二维码">
+  <div id="qqQRCodeLoading" style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.9);border-radius:12px;color:#333;font-size:.8rem">加载中...</div>
+</div>
+
+<!-- 移动端跳转按钮 -->
+<button id="qqMobileAuthBtn" class="bt" style="display:none;width:100%;background:linear-gradient(135deg,#12b7f5,#00aaff);color:#fff;border:none;font-size:1.1rem;padding:1rem">
+&#128241; 点击使用QQ或手机号登录
+</button>
+
+<p style="color:var(--t3);font-size:.75rem;margin-top:1rem">
+授权有效期：<span id="twoFaCountdown">300</span> 秒<br>
+<span id="twoFaStatus" style="color:var(--warn);display:none">等待授权中...</span>
+</p>
+<button id="cancel2FA" class="bt bt-ghost" style="width:100%;margin-top:.5rem">返回登录</button>
 </div>
 </div></div>
 
@@ -355,6 +388,19 @@ Bug 反馈
 </div>
 </div>
 </div>
+
+<!-- QQ 二级验证管理 -->
+<div class="cd" style="margin-bottom:1.25rem;border:1px solid rgba(18,183,245,.3);background:linear-gradient(135deg,rgba(18,183,245,.08),rgba(0,170,255,.04))">
+<div class="corner corner-tl" style="border-color:#12b7f5"></div><div class="corner corner-tr" style="border-color:#12b7f5"></div>
+<div class="corner corner-bl" style="border-color:#12b7f5"></div><div class="corner corner-br" style="border-color:#12b7f5"></div>
+<h4 style="color:#12b7f5;margin-bottom:1.25rem;font-family:var(--f-display);letter-spacing:.08em;display:flex;align-items:center;gap:.5rem">
+<span style="width:4px;height:18px;background:linear-gradient(180deg,#12b7f5,#00aaff);border-radius:2px"></span>
+&#128272; QQ 二级验证
+</h4>
+<div id="qqBindStatus" style="color:var(--t3);font-size:.85rem;margin-bottom:1rem">加载中...</div>
+<div id="qqBindActions" style="display:flex;gap:.75rem;flex-wrap:wrap"></div>
+</div>
+
 <div class="cd" style="border:1px solid rgba(255,42,109,.3);background:linear-gradient(135deg,rgba(255,42,109,.08),rgba(255,234,0,.05))">
 <div class="corner corner-tl" style="border-color:var(--err)"></div><div class="corner corner-tr" style="border-color:var(--err)"></div>
 <div class="corner corner-bl" style="border-color:var(--err)"></div><div class="corner corner-br" style="border-color:var(--err)"></div>
@@ -373,51 +419,232 @@ Bug 反馈
 <script src="jifeng-rt.js"></script>
 <script src="jifeng-ui.js"></script>
 <script>
-/* ===== 登录与会话（修复原版 confirm 换行导致的脚本解析失败） ===== */
+/* ===== 登录与会话 ===== */
 const SALT='jifeng_studio_salt_2026_secure';
 const ITER=100000;
-const CORRECT_HASH='' + 'f7ff' + 'dec8e4bd1acddf610fcb8f12051222aa9401ec4aba35a81d0ad98c9b8aea';
 const SESSION_KEY='jifeng_dash_session_v4';
 const POLICE_EMAIL='hefei@cyberpolice.cn';
 
-async function verifyPassword(pw){
-  const e=new TextEncoder();
-  const km=await crypto.subtle.importKey('raw',e.encode(pw),{name:'PBKDF2'},false,['deriveBits']);
-  const db=await crypto.subtle.deriveBits({name:'PBKDF2',salt:e.encode(SALT),iterations:ITER,hash:'SHA-256'},km,256);
-  return Array.from(new Uint8Array(db)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
 let loginAttempts=0;
 let lockTimer=null;
+let captchaToken='';
+let captchaAnswer='';
+let twoFAToken='';
+let twoFAInterval=null;
+let twoFACountdownTimer=null;
+
+// 生成简单验证码（本地预览，实际生产用服务端）
+function drawCaptcha(){
+  const c=document.getElementById('lcv');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code='';
+  for(let i=0;i<4;i++)code+=chars[Math.floor(Math.random()*chars.length)];
+  captchaAnswer=code;
+  captchaToken='local_'+Date.now();
+  ctx.fillStyle='#1a1a2e';
+  ctx.fillRect(0,0,120,40);
+  // 干扰线
+  for(let i=0;i<4;i++){
+    ctx.strokeStyle='rgba(0,170,255,'+(Math.random()*0.5+0.2)+')';
+    ctx.beginPath();
+    ctx.moveTo(Math.random()*120,Math.random()*40);
+    ctx.lineTo(Math.random()*120,Math.random()*40);
+    ctx.stroke();
+  }
+  // 干扰点
+  for(let i=0;i<30;i++){
+    ctx.fillStyle='rgba(255,255,255,'+(Math.random()*0.5)+')';
+    ctx.fillRect(Math.random()*120,Math.random()*40,2,2);
+  }
+  // 文字
+  for(let i=0;i<4;i++){
+    ctx.font=(Math.random()*6+22)+'px monospace';
+    ctx.fillStyle='hsl('+(Math.random()*60+180)+',100%,70%)';
+    ctx.save();
+    ctx.translate(18+i*24,26);
+    ctx.rotate((Math.random()-0.5)*0.5);
+    ctx.fillText(code[i],0,0);
+    ctx.restore();
+  }
+}
 
 async function doLogin(){
-  const inp=document.getElementById('lp');
+  const userInp=document.getElementById('lu');
+  const pwdInp=document.getElementById('lp');
+  const capInp=document.getElementById('lca');
   const err=document.getElementById('le');
   const btn=document.getElementById('lb');
   if(lockTimer){err.textContent='登录已锁定，请等待';return;}
-  if(!inp.value){err.textContent='请输入密码';return;}
+  if(!userInp.value){err.textContent='请输入用户名';return;}
+  if(!pwdInp.value){err.textContent='请输入密码';return;}
+  if(!capInp.value){err.textContent='请输入验证码';return;}
   btn.disabled=true;
   err.textContent='';
   try{
-    const hash=await verifyPassword(inp.value);
-    if(hash===CORRECT_HASH){
-      const session={token:hash,time:Date.now(),exp:Date.now()+30*60*1000};
-      localStorage.setItem(SESSION_KEY,JSON.stringify(session));
+    const res=await fetch('/api/login',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      credentials:'include',
+      body:JSON.stringify({
+        username:userInp.value,
+        password:pwdInp.value,
+        captcha_token:captchaToken,
+        captcha_answer:capInp.value.toUpperCase(),
+        csrf_token:window.__csrfToken||'',
+        behavior_data:{mouse_moves:Math.floor(Math.random()*50+20),time_spent:Math.floor(Math.random()*3000+1000)}
+      })
+    });
+    const data=await res.json();
+    if(res.ok&&data.success){
       loginAttempts=0;
-      showDashboard();
+      if(data.require_2fa){
+        // 需要 QQ 二级验证
+        twoFAToken=data.twofa_token;
+        show2FAStep(data.qq_auth_url);
+      }else{
+        // 直接登录成功
+        const session={token:'server',time:Date.now(),exp:Date.now()+24*60*60*1000,username:data.admin?.username};
+        localStorage.setItem(SESSION_KEY,JSON.stringify(session));
+        showDashboard();
+      }
     }else{
       loginAttempts++;
+      drawCaptcha();
+      if(data.csrf_token)window.__csrfToken=data.csrf_token;
       if(loginAttempts>=3){
         lockLogin();
       }else{
-        err.textContent='密码错误 ('+loginAttempts+'/3)';
+        err.textContent=data.error||'登录失败 ('+loginAttempts+'/3)';
         btn.disabled=false;
       }
     }
   }catch(e){
-    err.textContent='验证失败: '+e.message;
+    err.textContent='网络错误: '+e.message;
     btn.disabled=false;
   }
+}
+
+// 检测是否为移动端
+function isMobileDevice() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.matchMedia("(max-width: 768px)").matches;
+}
+
+function show2FAStep(qqAuthURL){
+  document.getElementById('loginCard').style.display='none';
+  document.getElementById('twoFaCard').style.display='block';
+  
+  const isMobile = isMobileDevice();
+  const qrContainer = document.getElementById('qqQRCodeContainer');
+  const mobileBtn = document.getElementById('qqMobileAuthBtn');
+  const statusEl = document.getElementById('twoFaStatus');
+  
+  // 构造带 twofa_token 的完整 URL
+  let fullAuthUrl = qqAuthURL;
+  if (fullAuthUrl && fullAuthUrl.indexOf('?') > -1) {
+    fullAuthUrl += '&twofa_token=' + encodeURIComponent(twoFAToken);
+  } else if (fullAuthUrl) {
+    fullAuthUrl += '?twofa_token=' + encodeURIComponent(twoFAToken);
+  }
+
+  if (isMobile) {
+    // 移动端：显示跳转按钮
+    qrContainer.style.display = 'none';
+    mobileBtn.style.display = 'block';
+    mobileBtn.onclick = () => {
+      statusEl.style.display = 'block';
+      statusEl.textContent = '正在跳转到腾讯官方登录页...';
+      window.location.href = fullAuthUrl;
+    };
+  } else {
+    // PC端：显示二维码
+    qrContainer.style.display = 'block';
+    mobileBtn.style.display = 'none';
+    
+    // 使用在线 API 生成二维码
+    const qrImg = document.getElementById('qqQRCode');
+    const qrLoading = document.getElementById('qqQRCodeLoading');
+    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(fullAuthUrl)}`;
+    
+    qrImg.onload = () => {
+      qrLoading.style.display = 'none';
+    };
+    qrImg.onerror = () => {
+      qrLoading.textContent = '二维码加载失败，请点击下方按钮';
+      qrLoading.style.cursor = 'pointer';
+      qrLoading.onclick = () => {
+        statusEl.style.display = 'block';
+        statusEl.textContent = '跳转中...';
+        window.open(fullAuthUrl, 'QQAuth', 'width=700,height=600');
+      };
+    };
+    qrImg.src = qrApiUrl;
+    
+    // 提示可以点击链接
+    statusEl.style.display = 'block';
+    statusEl.innerHTML = '请使用手机QQ扫描上方二维码<br>或 <a href="' + fullAuthUrl + '" target="_blank" style="color:#12b7f5;text-decoration:underline">点击此处</a> 在新窗口登录';
+  }
+
+  // 倒计时
+  let left = 300;
+  const cd = document.getElementById('twoFaCountdown');
+  cd.textContent = left;
+  twoFACountdownTimer = setInterval(() => {
+    left--;
+    cd.textContent = left;
+    if (left <= 0) {
+      clearInterval(twoFACountdownTimer);
+      cancel2FA();
+      showLoginError('二级验证超时，请重新登录');
+    }
+  }, 1000);
+  
+  // 轮询验证状态（PC和移动端都需要）
+  twoFAInterval = setInterval(async () => {
+    try {
+      const r = await fetch('/api/login/2fa-verify', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+        body: JSON.stringify({twofa_token: twoFAToken})
+      });
+      const d = await r.json();
+      if (r.ok && d.success) {
+        clearInterval(twoFAInterval);
+        clearInterval(twoFACountdownTimer);
+        const session = {
+          token: 'server_2fa',
+          time: Date.now(),
+          exp: Date.now() + 24 * 60 * 60 * 1000,
+          username: d.admin?.username
+        };
+        localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+        
+        // 如果是移动端，跳回控制台
+        if (isMobile) {
+          window.location.href = '/dashboard.html';
+        } else {
+          showDashboard();
+        }
+      }
+    } catch (e) {}
+  }, 2000);
+}
+
+function cancel2FA(){
+  if(twoFAInterval){clearInterval(twoFAInterval);twoFAInterval=null;}
+  if(twoFACountdownTimer){clearInterval(twoFACountdownTimer);twoFACountdownTimer=null;}
+  twoFAToken='';
+  document.getElementById('twoFaCard').style.display='none';
+  document.getElementById('loginCard').style.display='block';
+  document.getElementById('lb').disabled=false;
+  drawCaptcha();
+}
+
+function showLoginError(msg){
+  const err=document.getElementById('le');
+  if(err)err.textContent=msg;
 }
 
 function lockLogin(){
@@ -425,13 +652,14 @@ function lockLogin(){
   const lock=document.getElementById('lk');
   const lt=document.getElementById('lt');
   let r=30;
-  lock.style.display='block';
-  btn.disabled=true;
+  if(lock)lock.style.display='block';
+  if(btn)btn.disabled=true;
   lockTimer=setInterval(()=>{
     r--;if(lt)lt.textContent=r;
     if(r<=0){
       clearInterval(lockTimer);lockTimer=null;loginAttempts=0;
-      lock.style.display='none';btn.disabled=false;
+      if(lock)lock.style.display='none';if(btn)btn.disabled=false;
+      drawCaptcha();
     }
   },1000);
 }
@@ -456,9 +684,36 @@ function showDashboard(){
 }
 
 function logout(){
+  fetch('/api/logout',{method:'POST',credentials:'include'}).catch(()=>{});
   localStorage.removeItem(SESSION_KEY);
   location.reload();
 }
+
+// 监听 QQ 回调的 postMessage
+window.addEventListener('message',(e)=>{
+  if(e.data&&e.data.type==='qq_2fa_success'&&e.data.token){
+    // QQ 回调成功，直接设置 cookie（服务端已在回调时设置）
+    // 触发一次验证确认
+    setTimeout(async()=>{
+      try{
+        const r=await fetch('/api/login/2fa-verify',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          credentials:'include',
+          body:JSON.stringify({twofa_token:twoFAToken})
+        });
+        const d=await r.json();
+        if(r.ok&&d.success){
+          if(twoFAInterval)clearInterval(twoFAInterval);
+          if(twoFACountdownTimer)clearInterval(twoFACountdownTimer);
+          const session={token:'server_2fa',time:Date.now(),exp:Date.now()+24*60*60*1000,username:d.admin?.username};
+          localStorage.setItem(SESSION_KEY,JSON.stringify(session));
+          showDashboard();
+        }
+      }catch(err){}
+    },500);
+  }
+});
 
 /* ===== 导航 ===== */
 document.querySelectorAll('.dash-sidebar .nav-item').forEach(item=>{
@@ -474,8 +729,89 @@ document.querySelectorAll('.dash-sidebar .nav-item').forEach(item=>{
     if(item.dataset.panel==='devices')loadDevices();
     if(item.dataset.panel==='appeals')loadAppeals();
     if(item.dataset.panel==='bugs')loadBugs();
+    if(item.dataset.panel==='settings')loadQQBinding();
   });
 });
+
+/* ===== QQ 二级验证管理 ===== */
+async function loadQQBinding(){
+  const statusEl=document.getElementById('qqBindStatus');
+  const actionsEl=document.getElementById('qqBindActions');
+  if(!statusEl||!actionsEl)return;
+  try{
+    const r=await fetch('/api/admin/qq-binding',{credentials:'include'});
+    const d=await r.json();
+    if(!d.qq_configured){
+      statusEl.innerHTML='<span style="color:#888">&#9888; QQ 互联未配置，请到环境变量设置 QQ_APP_ID 和 QQ_APP_KEY</span>';
+      actionsEl.innerHTML='';
+      return;
+    }
+    if(d.bound&&d.binding){
+      const b=d.binding;
+      statusEl.innerHTML=`
+        <div style="display:flex;align-items:center;gap:.75rem">
+          <img src="${b.avatar||''}" style="width:48px;height:48px;border-radius:50%;border:2px solid #12b7f5" onerror="this.style.display='none'">
+          <div>
+            <div style="color:var(--t);font-weight:bold">${b.nickname||'QQ用户'}</div>
+            <div style="color:var(--t3);font-size:.75rem;font-family:var(--f-mono)">OpenID: ${b.openid_preview||'***'}</div>
+            <div style="color:var(--ok);font-size:.75rem;margin-top:.25rem">&#9989; 已绑定 · 二级验证已启用</div>
+          </div>
+        </div>
+      `;
+      actionsEl.innerHTML=`<button onclick="unbindQQ()" class="bt bt-err">&#128686; 解绑 QQ</button>`;
+    }else{
+      statusEl.innerHTML='<span style="color:var(--warn)">&#9888; 未绑定 QQ，建议绑定以启用二级验证</span>';
+      actionsEl.innerHTML=`<button onclick="bindQQ()" class="bt" style="background:linear-gradient(135deg,#12b7f5,#00aaff);color:#fff;border:none">&#128279; 绑定 QQ</button>`;
+    }
+  }catch(e){
+    statusEl.innerHTML='<span style="color:var(--err)">加载失败: '+e.message+'</span>';
+  }
+}
+
+async function bindQQ(){
+  try{
+    const r=await fetch('/api/admin/qq-bind-url',{credentials:'include'});
+    const d=await r.json();
+    if(d.auth_url){
+      window.open(d.auth_url,'QQBind','width=700,height=600');
+      // 监听绑定成功
+      const handler=function(e){
+        if(e.data&&e.data.type==='qq_bind_success'){
+          window.removeEventListener('message',handler);
+          JifengToast('绑定成功','QQ 二级验证已启用','ok');
+          loadQQBinding();
+        }
+      };
+      window.addEventListener('message',handler);
+      // 定时刷新状态
+      setTimeout(()=>{loadQQBinding();},3000);
+    }else{
+      JifengToast('错误',d.error||'获取授权链接失败','err');
+    }
+  }catch(e){
+    JifengToast('错误',e.message,'err');
+  }
+}
+
+async function unbindQQ(){
+  if(!confirm('确定要解绑 QQ 吗？解绑后登录将不再需要 QQ 二级验证。'))return;
+  try{
+    const r=await fetch('/api/admin/qq-unbind',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      credentials:'include'
+    });
+    const d=await r.json();
+    if(d.success){
+      JifengToast('解绑成功','QQ 二级验证已关闭','ok');
+      loadQQBinding();
+    }else{
+      JifengToast('错误',d.error||'解绑失败','err');
+    }
+  }catch(e){
+    JifengToast('错误',e.message,'err');
+  }
+}
 
 /* ===== 实时同步（定时轮询 localStorage） ===== */
 let refreshInterval=30000;
@@ -1187,6 +1523,14 @@ function startDevicesAppealsRefresh(){
 /* ===== 初始化 ===== */
 document.getElementById('lb').addEventListener('click',doLogin);
 document.getElementById('lp').addEventListener('keypress',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('lca').addEventListener('keypress',e=>{if(e.key==='Enter')doLogin();});
+const cv=document.getElementById('lcv');
+if(cv)cv.addEventListener('click',drawCaptcha);
+const cb=document.getElementById('cancel2FA');
+if(cb)cb.addEventListener('click',cancel2FA);
+
+// 初始化验证码
+drawCaptcha();
 
 if(checkSession()){
   showDashboard();

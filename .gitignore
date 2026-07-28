@@ -53,6 +53,13 @@ build/
 coverage/
 .nyc_output/
 
+# ============ 安全相关（绝不上传）============
+.build_backup/
+scripts/obfuscate.js
+src/request-signature.js
+src/crypto-utils.js
+src/qq-auth.js
+
 # ============ Vercel / Render 本地配置 ============
 .vercel/
 .render/

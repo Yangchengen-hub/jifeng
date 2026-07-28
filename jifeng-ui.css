@@ -495,3 +495,317 @@ html[data-theme="dark"]{color-scheme:dark}
 .data-bar-fill{height:100%;background:var(--a-grad);background-size:200% 100%;animation:gradientShift 3s linear infinite;
   border-radius:4px;transition:width 1s var(--ease-spring);position:relative;box-shadow:0 0 10px var(--a3)}
 .data-bar-fill::after{content:'';position:absolute;right:0;top:0;bottom:0;width:20px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5));animation:shimmer 1.5s infinite}
+
+/* ============================================================
+   高级响应式系统 · 多端深度适配
+   ============================================================ */
+
+/* ===== 大屏幕 (1400px+) ===== */
+@media(min-width:1400px){
+  .hr{min-height:100vh}
+  .hc{max-width:1400px}
+  .pg{grid-template-columns:repeat(3,1fr)}
+}
+
+/* ===== 平板横屏 (1024px - 1399px) ===== */
+@media(min-width:1024px) and (max-width:1399px){
+  .hr{min-height:auto;padding:6rem 2rem 4rem}
+  .hc{max-width:1000px}
+  .pg{grid-template-columns:repeat(2,1fr)}
+  .features-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* ===== 平板竖屏 (768px - 1023px) ===== */
+@media(min-width:768px) and (max-width:1023px){
+  .hr{min-height:auto;padding:5rem 1.5rem 3rem}
+  .hc{padding:0 1rem}
+  .nc{padding:0 1.5rem}
+  .nl{gap:1rem}
+  .pg{grid-template-columns:repeat(2,1fr);gap:1.25rem}
+  .features-grid{grid-template-columns:repeat(2,1fr)}
+  h1{font-size:clamp(2.5rem,6vw,4rem)}
+  .ft-grid{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ===== 大手机 / 小平板 (600px - 767px) ===== */
+@media(max-width:767px){
+  /* 全局调整 */
+  html{font-size:15px}
+  body{overflow-x:hidden}
+  
+  /* 导航 */
+  .nc{padding:0 1rem;flex-wrap:wrap;gap:.75rem}
+  .nl{display:none;width:100%;flex-direction:column;gap:0;padding:1rem 0;order:3;
+    background:var(--nav-bg-s);border-radius:12px;margin-top:.5rem}
+  .nl.show{display:flex}
+  .nl li{width:100%}
+  .nl a{display:block;padding:.8rem 1rem;border-radius:8px}
+  #menuToggle{display:flex}
+  .hr{min-height:auto;padding:4rem 1rem 2rem}
+  .hc{padding:0 .5rem}
+  
+  /* Hero */
+  h1{font-size:clamp(2rem,8vw,3rem);line-height:1.1}
+  .hs{font-size:1rem;padding:0 .5rem}
+  .lb{grid-template-columns:repeat(2,1fr);gap:.75rem;padding:.5rem}
+  .li{padding:.75rem}
+  .lv{font-size:1.5rem}
+  .hero-bottom{display:none}
+  
+  /* 产品 */
+  .pg{grid-template-columns:1fr;gap:1rem}
+  .product-card{padding:1.25rem}
+  .product-card .product-icon{width:56px;height:56px;font-size:1.5rem}
+  .product-card h3{font-size:1.15rem}
+  
+  /* Section */
+  .st{font-size:clamp(1.5rem,5vw,2rem)}
+  .st-sub{font-size:.85rem}
+  .ct{padding:3rem 1rem}
+  
+  /* Footer */
+  ft{padding:2rem 1rem 1.5rem}
+  .ft-grid{grid-template-columns:1fr;gap:1.5rem;text-align:center}
+  .ft-col{text-align:center}
+  .ft-col .ft-links{align-items:center}
+}
+
+/* ===== 小手机 (< 480px) ===== */
+@media(max-width:479px){
+  html{font-size:14px}
+  .hr{padding:3rem .75rem 1.5rem}
+  h1{font-size:1.75rem}
+  .hs{font-size:.9rem}
+  .bt{padding:.6rem 1.2rem;font-size:.85rem}
+  .lb{grid-template-columns:1fr 1fr;gap:.5rem}
+  .lv{font-size:1.25rem}
+  .ll{font-size:.7rem}
+  .cd{padding:1rem;border-radius:12px}
+  .product-card{padding:1rem}
+  .features-grid{grid-template-columns:1fr}
+  .notice-item{flex-direction:column;align-items:flex-start;gap:.5rem}
+}
+
+/* ===== 超小屏幕 (< 360px) ===== */
+@media(max-width:359px){
+  html{font-size:13px}
+  h1{font-size:1.5rem}
+  .lb{grid-template-columns:1fr}
+  .bt{width:100%;justify-content:center}
+}
+
+/* ===== 横屏手机特殊处理 ===== */
+@media(max-width:900px) and (orientation:landscape){
+  .hr{min-height:auto;padding:2rem 1rem}
+  h1{font-size:2rem}
+  .lb{grid-template-columns:repeat(4,1fr)}
+}
+
+/* ============================================================
+   高级过渡动画系统
+   ============================================================ */
+
+/* ===== 页面入场动画 ===== */
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(30px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+@keyframes fadeInScale{
+  from{opacity:0;transform:scale(.95)}
+  to{opacity:1;transform:scale(1)}
+}
+
+@keyframes slideInLeft{
+  from{opacity:0;transform:translateX(-30px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+@keyframes slideInRight{
+  from{opacity:0;transform:translateX(30px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+/* ===== 元素动画类 ===== */
+.animate-in{animation:fadeInUp .6s var(--ease) forwards;opacity:0}
+.animate-scale{animation:fadeInScale .5s var(--ease-spring) forwards;opacity:0}
+.animate-left{animation:slideInLeft .5s var(--ease) forwards;opacity:0}
+.animate-right{animation:slideInRight .5s var(--ease) forwards;opacity:0}
+
+/* 延迟 */
+.delay-1{animation-delay:.1s}
+.delay-2{animation-delay:.2s}
+.delay-3{animation-delay:.3s}
+.delay-4{animation-delay:.4s}
+.delay-5{animation-delay:.5s}
+
+/* ===== 按钮交互动画 ===== */
+.bt{
+  transition:all .3s var(--ease);
+  position:relative;
+  overflow:hidden;
+}
+.bt::before{
+  content:'';
+  position:absolute;
+  top:50%;left:50%;
+  width:0;height:0;
+  background:rgba(255,255,255,.3);
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  transition:width .4s,height .4s;
+}
+.bt:active::before{
+  width:200px;height:200px;
+}
+.bt:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 25px rgba(0,245,255,.3);
+}
+.bt:active{
+  transform:translateY(0) scale(.98);
+}
+
+/* ===== 卡片悬浮动画 ===== */
+.cd,.product-card,.notice-item{
+  transition:all .3s var(--ease),transform .2s var(--ease);
+}
+.cd:hover,.product-card:hover{
+  transform:translateY(-4px);
+  box-shadow:var(--glass-sh-hover);
+}
+
+/* ===== 导航动画 ===== */
+.nav-item,.nl a{
+  transition:all .25s var(--ease);
+}
+.nl a:hover{
+  transform:scale(1.05);
+}
+
+/* ===== 链接下划线动画 ===== */
+a{
+  position:relative;
+  transition:color .2s;
+}
+a::after{
+  content:'';
+  position:absolute;
+  bottom:-2px;left:0;right:0;
+  height:1px;
+  background:var(--a);
+  transform:scaleX(0);
+  transition:transform .3s var(--ease);
+}
+a:hover::after{
+  transform:scaleX(1);
+}
+
+/* ===== 输入框聚焦动画 ===== */
+input,select,textarea{
+  transition:all .25s var(--ease);
+  border:1px solid var(--bdr);
+}
+input:focus,select:focus,textarea:focus{
+  border-color:var(--a);
+  box-shadow:0 0 0 3px rgba(0,245,255,.15),0 0 20px rgba(0,245,255,.1);
+  outline:none;
+}
+
+/* ===== 加载动画 ===== */
+@keyframes pulse{
+  0%,100%{opacity:.5;transform:scale(1)}
+  50%{opacity:1;transform:scale(1.05)}
+}
+
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+
+.loading-pulse{animation:pulse 1.5s ease-in-out infinite}
+.loading-spin{animation:spin 1s linear infinite}
+
+/* ===== 骨架屏动画 ===== */
+.skeleton{
+  background:linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%);
+  background-size:200% 100%;
+  animation:skeleton 1.5s ease-in-out infinite;
+}
+@keyframes skeleton{
+  0%{background-position:200% 0}
+  100%{background-position:-200% 0}
+}
+
+/* ===== 成功/错误抖动动画 ===== */
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  10%,30%,50%,70%,90%{transform:translateX(-5px)}
+  20%,40%,60%,80%{transform:translateX(5px)}
+}
+@keyframes bounce{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.1)}
+}
+.shake{animation:shake .4s ease-in-out}
+.bounce{animation:bounce .3s ease-in-out}
+
+/* ===== 消息通知滑入 ===== */
+@keyframes slideInTop{
+  from{opacity:0;transform:translateY(-100%)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes slideOutTop{
+  from{opacity:1;transform:translateY(0)}
+  to{opacity:0;transform:translateY(-100%)}
+}
+.toast-in{animation:slideInTop .3s var(--ease-spring)}
+.toast-out{animation:slideOutTop .2s var(--ease) forwards}
+
+/* ===== 模态框动画 ===== */
+@keyframes modalIn{
+  from{opacity:0;transform:scale(.9) translateY(20px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
+}
+@keyframes modalOut{
+  from{opacity:1;transform:scale(1) translateY(0)}
+  to{opacity:0;transform:scale(.9) translateY(20px)}
+}
+.modal-in{animation:modalIn .3s var(--ease-spring)}
+.modal-out{animation:modalOut .2s var(--ease) forwards}
+
+/* ===== 列表项入场 ===== */
+@keyframes listItemIn{
+  from{opacity:0;transform:translateX(-20px)}
+  to{opacity:1;transform:translateX(0)}
+}
+.list-item{animation:listItemIn .3s var(--ease) forwards}
+.list-item:nth-child(1){animation-delay:0s}
+.list-item:nth-child(2){animation-delay:.05s}
+.list-item:nth-child(3){animation-delay:.1s}
+.list-item:nth-child(4){animation-delay:.15s}
+.list-item:nth-child(5){animation-delay:.2s}
+
+/* ===== 触摸设备优化 ===== */
+@media(hover:none){
+  .bt:hover{transform:none;box-shadow:none}
+  .cd:hover,.product-card:hover{transform:none;box-shadow:var(--glass-sh)}
+  a::after{display:none}
+}
+
+/* ===== 减少动画偏好 ===== */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+  .scanlines,.cyber-grid{display:none}
+}
+
+/* ===== 打印样式 ===== */
+@media print{
+  .cyber-grid,.scanlines,.bg-orbs,nav,.hero-bottom,#menuToggle{display:none!important}
+  body{background:#fff;color:#000}
+  .cd,.product-card{box-shadow:none;border:1px solid #ddd}
+  a{color:#000;text-decoration:underline}
+}

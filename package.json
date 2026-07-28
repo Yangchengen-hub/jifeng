@@ -32,5 +32,8 @@
     "nodemailer": "^6.9.8",
     "user-agents": "^2.1.133",
     "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "javascript-obfuscator": "^5.5.0"
   }
 }

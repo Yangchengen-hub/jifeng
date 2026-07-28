@@ -39,6 +39,13 @@ services:
         sync: false
       - key: SITE_URL
         sync: false
+      # QQ 互联 OAuth2.0 配置（QQ 登录二级验证）
+      - key: QQ_APP_ID
+        sync: false
+      - key: QQ_APP_KEY
+        sync: false
+      - key: QQ_REDIRECT_URI
+        sync: false
     healthCheckPath: /
     numInstances: 1
     maxIdleTime: 15

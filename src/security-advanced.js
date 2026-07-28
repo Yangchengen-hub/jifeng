@@ -195,6 +195,44 @@ function initSecurityTables() {
     CREATE INDEX IF NOT EXISTS idx_visitor_sessions_fp ON visitor_sessions(fingerprint_hash);
     CREATE INDEX IF NOT EXISTS idx_visitor_sessions_ip ON visitor_sessions(ip);
     CREATE INDEX IF NOT EXISTS idx_visitor_sessions_last ON visitor_sessions(last_activity);
+
+    -- QQ 授权绑定表
+    CREATE TABLE IF NOT EXISTS admin_qq_bindings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      admin_id INTEGER NOT NULL,
+      openid TEXT UNIQUE NOT NULL,
+      qq_number TEXT,
+      nickname TEXT,
+      avatar TEXT,
+      status TEXT DEFAULT 'active',
+      bind_token TEXT,
+      bind_token_expires DATETIME,
+      last_used_at DATETIME,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- 二级验证会话表（密码通过后，等待QQ授权）
+    CREATE TABLE IF NOT EXISTS two_fa_sessions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      session_token TEXT UNIQUE NOT NULL,
+      admin_id INTEGER NOT NULL,
+      ip TEXT NOT NULL,
+      user_agent TEXT,
+      verified INTEGER DEFAULT 0,
+      qq_openid TEXT,
+      qq_nickname TEXT,
+      qq_avatar TEXT,
+      bind_code TEXT,
+      bind_code_expires DATETIME,
+      verified_at DATETIME,
+      expires_at DATETIME NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_qq_bindings_admin ON admin_qq_bindings(admin_id);
+    CREATE INDEX IF NOT EXISTS idx_qq_bindings_openid ON admin_qq_bindings(openid);
+    CREATE INDEX IF NOT EXISTS idx_2fa_session ON two_fa_sessions(session_token);
   `);
 
   // 初始化加密存储的作者隐私信息

@@ -13,10 +13,11 @@ const { createCaptcha, verifyCaptcha } = require('./captcha');
 const { login, authMiddleware, changePassword, getAdminList } = require('./auth');
 const { getConfig, setConfig, isIPBanned, banIP, unbanIP } = require('./db');
 
-// 新增高级安全模块
 const advancedSecurity = require('./security-advanced');
 const emailService = require('./email-service');
 const wsServer = require('./websocket-server');
+const qqAuth = require('./qq-auth');
+const { verifyRequestSignature, applySignatureToResponse, isSensitivePath, generateServerToken } = require('./request-signature');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -57,6 +58,17 @@ app.use(helmet({
 app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: true, limit: '100kb' }));
 app.use(cookieParser());
+
+// API请求签名验证中间件（应用于敏感路径）
+app.use('/api/', (req, res, next) => {
+  if (isSensitivePath(req.path)) {
+    return verifyRequestSignature(req, res, next);
+  }
+  next();
+});
+
+// 响应签名中间件
+app.use(applySignatureToResponse);
 
 // IP 提取
 app.use((req, res, next) => {
@@ -131,7 +143,7 @@ app.get('/blocked-demo', (req, res) => {
   });
 });
 
-// 登录接口（带 CSRF 校验）
+// 登录接口（带 CSRF 校验 + QQ 二级验证）
 app.post('/api/login', rateLimitMiddleware(5, 60 * 1000, 'login'), (req, res) => {
   const { username, password, captcha_token, captcha_answer, csrf_token, behavior_data } = req.body;
 
@@ -139,7 +151,6 @@ app.post('/api/login', rateLimitMiddleware(5, 60 * 1000, 'login'), (req, res) =>
     return res.status(400).json({ error: '请输入用户名和密码' });
   }
 
-  // CSRF 校验
   if (!verifyCSRFToken(csrf_token, req.ip)) {
     return res.status(403).json({ error: '会话已过期，请刷新页面重试', csrf_error: true });
   }
@@ -162,7 +173,351 @@ app.post('/api/login', rateLimitMiddleware(5, 60 * 1000, 'login'), (req, res) =>
 
   if (result.success) {
     consumeCSRFToken(csrf_token);
+
+    // 检查是否配置了 QQ 二级验证
+    if (qqAuth.isQQConfigured()) {
+      // 密码验证通过，创建二级验证会话，等待 QQ 授权
+      const twoFA = qqAuth.create2FASession(result.admin.id, req.ip, req.headers['user-agent']);
+      if (twoFA.success) {
+        const qqAuthURL = qqAuth.getQQAuthURL(req.ip, '2fa');
+        return res.json({
+          success: true,
+          require_2fa: true,
+          twofa_token: twoFA.sessionToken,
+          qq_auth_url: qqAuthURL,
+          qq_configured: true,
+          admin: { id: result.admin.id, username: result.admin.username }
+        });
+      }
+    }
+
+    // 未配置 QQ 验证，直接登录
     res.cookie('admin_token', result.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000
+    });
+    res.json({ success: true, admin: result.admin, qq_configured: false });
+  } else {
+    consumeCSRFToken(csrf_token);
+    const newCSRF = generateCSRFToken();
+    csrfTokens.set(newCSRF, { createdAt: Date.now(), ip: req.ip });
+    res.status(401).json({ error: result.message, csrf_token: newCSRF });
+  }
+});
+
+// QQ 授权回调
+app.get('/auth/qq/callback', rateLimitMiddleware(10, 60 * 1000, 'qq_callback'), async (req, res) => {
+  const { code, state } = req.query;
+
+  if (!code || !state) {
+    return res.status(400).send('无效的 QQ 授权回调参数');
+  }
+
+  if (!qqAuth.validateOAuthState(state, req.ip)) {
+    return res.status(400).send('安全校验失败，请重新登录');
+  }
+
+  const tokenResult = await qqAuth.exchangeCodeForToken(code);
+  if (tokenResult.error || !tokenResult.access_token) {
+    return res.status(500).send(`QQ 授权失败: ${tokenResult.error || '未知错误'}`);
+  }
+
+  const openidResult = await qqAuth.getOpenID(tokenResult.access_token);
+  if (openidResult.error || !openidResult.openid) {
+    return res.status(500).send(`获取 QQ 身份失败: ${openidResult.error || '未知错误'}`);
+  }
+
+  const openid = openidResult.openid;
+  const userInfoResult = await qqAuth.getUserInfo(tokenResult.access_token, openid);
+  const nickname = userInfoResult.nickname || '';
+  const avatar = userInfoResult.figureurl_qq_2 || userInfoResult.figureurl_qq_1 || '';
+
+  // 检查是否为绑定流程（管理员在后台发起绑定）
+  const bindPurpose = state && state.length > 0;
+  const twoFAToken = req.query.twofa_token;
+
+  // 二级验证流程
+  if (twoFAToken) {
+    const verifyResult = qqAuth.verify2FASession(twoFAToken, req.ip);
+    if (!verifyResult.valid) {
+      return res.send(`
+        <html><body style="background:#0a0a0f;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif">
+          <div style="text-align:center">
+            <div style="font-size:48px;margin-bottom:16px">&#9888;</div>
+            <h2>二级验证失败</h2>
+            <p>${verifyResult.reason || '会话已过期，请重新登录'}</p>
+            <p style="color:#888;font-size:14px">3 秒后自动关闭...</p>
+          </div>
+          <script>setTimeout(()=>window.close(),3000)</script>
+        </body></html>
+      `);
+    }
+
+    // 检查 QQ 是否绑定到该管理员
+    const binding = db.prepare('SELECT * FROM admin_qq_bindings WHERE admin_id = ? AND status = ?').get(verifyResult.admin.id, 'active');
+    const qqBound = qqAuth.isQQBound(openid);
+
+    // 如果该管理员已绑定 QQ，验证 openid 是否匹配
+    if (binding) {
+      if (binding.openid !== openid) {
+        logSecurityEvent('qq_2fa_failed', 'high', req, `QQ 二级验证失败：使用未绑定的 QQ 号尝试登录`, { openid: openid.slice(0, 8), admin_id: verifyResult.admin.id });
+        return res.send(`
+          <html><body style="background:#0a0a0f;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif">
+            <div style="text-align:center">
+              <div style="font-size:48px;margin-bottom:16px">&#128737;</div>
+              <h2>验证失败</h2>
+              <p>该 QQ 号未绑定到此管理员账号</p>
+              <p style="color:#888;font-size:14px">3 秒后自动关闭...</p>
+            </div>
+            <script>setTimeout(()=>window.close(),3000)</script>
+          </body></html>
+        `);
+      }
+      // 已绑定且匹配，直接通过
+    } else {
+      // 首次绑定：需要邮箱验证码确认
+      if (qqBound) {
+        logSecurityEvent('qq_2fa_failed', 'high', req, `QQ 已被其他账号绑定，拒绝登录`, { openid: openid.slice(0, 8) });
+        return res.send(`
+          <html><body style="background:#0a0a0f;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif">
+            <div style="text-align:center">
+              <div style="font-size:48px;margin-bottom:16px">&#128737;</div>
+              <h2>验证失败</h2>
+              <p>该 QQ 号已绑定到其他管理员</p>
+              <p style="color:#888;font-size:14px">3 秒后自动关闭...</p>
+            </div>
+            <script>setTimeout(()=>window.close(),3000)</script>
+          </body></html>
+        `);
+      }
+
+      // 生成绑定验证码，发送到管理员邮箱
+      const bindCode = Math.random().toString().slice(2, 8);
+      const bindCodeExpires = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+
+      // 保存到二级验证会话
+      db.prepare(`
+        UPDATE two_fa_sessions 
+        SET qq_openid = ?, qq_nickname = ?, qq_avatar = ?, bind_code = ?, bind_code_expires = ?
+        WHERE session_token = ?
+      `).run(openid, nickname || '', avatar || '', bindCode, bindCodeExpires, twoFAToken);
+
+      // 发送验证码邮件
+      const adminEmail = process.env.ADMIN_EMAIL;
+      if (adminEmail) {
+        emailService.sendEmail(adminEmail, '【极风工作室】QQ绑定验证码', `
+          <div style="font-family:sans-serif;padding:20px;max-width:500px;margin:0 auto;background:#1a1a2e;border-radius:12px">
+            <h2 style="color:#00aaff;text-align:center">QQ 绑定验证</h2>
+            <p style="color:#fff;font-size:16px">您正在将以下 QQ 账号绑定到管理员账号：</p>
+            <div style="text-align:center;margin:20px 0">
+              <img src="${avatar || ''}" style="width:64px;height:64px;border-radius:50%;border:2px solid #00aaff">
+              <p style="color:#12b7f5;font-size:18px;margin-top:8px">${nickname || 'QQ用户'}</p>
+            </div>
+            <p style="color:#fff;font-size:16px">验证码：<span style="font-size:32px;font-weight:bold;color:#00ffaa;letter-spacing:8px">${bindCode}</span></p>
+            <p style="color:#888;font-size:14px">验证码 10 分钟内有效。如果不是您本人操作，请忽略此邮件。</p>
+          </div>
+        `).catch(e => console.error('[Email] 发送绑定验证码失败:', e.message));
+      }
+
+      // 返回验证码输入页面（不直接绑定）- 含QQ号白名单验证
+      return res.send(`
+        <html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+        <body style="background:#0a0a0f;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;padding:20px">
+          <div style="text-align:center;max-width:400px;width:100%">
+            <div style="font-size:48px;margin-bottom:16px">&#128272;</div>
+            <h2>首次绑定需要验证</h2>
+            <p style="color:#888;margin-bottom:20px">请输入您的QQ号并完成邮箱验证</p>
+            <div style="background:#1a1a2e;padding:20px;border-radius:12px;margin-bottom:20px">
+              <p style="color:#12b7f5;font-size:14px;margin-bottom:8px">绑定QQ：${nickname || '未知'}</p>
+              <div style="margin-bottom:12px">
+                <input type="text" id="qqNumber" placeholder="输入您的QQ号" maxlength="12" 
+                  style="width:100%;padding:12px;font-size:16px;text-align:center;border-radius:8px;border:2px solid #00aaff;background:#0a0a0f;color:#fff;box-sizing:border-box;margin-bottom:10px"
+                  oninput="validateQQFormat(this)">
+              </div>
+              <div>
+                <input type="text" id="bindCode" placeholder="输入6位验证码" maxlength="6" 
+                  style="width:100%;padding:14px;font-size:24px;text-align:center;letter-spacing:8px;border-radius:8px;border:2px solid #00aaff;background:#0a0a0f;color:#fff;box-sizing:border-box">
+              </div>
+              <p id="bindError" style="color:#ff6b6b;font-size:12px;margin-top:8px;display:none">错误信息</p>
+              <p id="qqHint" style="color:#888;font-size:11px;margin-top:6px;display:none"></p>
+            </div>
+            <button onclick="confirmBind()" style="width:100%;padding:14px;background:linear-gradient(135deg,#00aaff,#00ffaa);color:#000;border:none;border-radius:8px;font-size:16px;font-weight:bold;cursor:pointer">确认绑定</button>
+            <p style="color:#666;font-size:12px;margin-top:16px">请检查邮箱获取验证码（可能被归入垃圾邮件）</p>
+            <p style="color:#ffaa00;font-size:11px;margin-top:8px">&#9888; 仅授权白名单内的QQ号可绑定</p>
+          </div>
+          <script>
+            const twofaToken = '${twoFAToken}';
+            function validateQQFormat(input){
+              const val = input.value.replace(/[^0-9]/g,'');
+              if(val !== input.value) input.value = val;
+              const hint = document.getElementById('qqHint');
+              if(val.length > 0 && (val.length < 5 || val.length > 12)){
+                hint.textContent = 'QQ号格式不正确';
+                hint.style.color = '#ff6b6b';
+                hint.style.display = 'block';
+              }else{
+                hint.style.display = 'none';
+              }
+            }
+            async function confirmBind(){
+              const qqNum = document.getElementById('qqNumber').value.trim();
+              const code = document.getElementById('bindCode').value.trim();
+              const err = document.getElementById('bindError');
+              err.style.display = 'none';
+              if(!qqNum || qqNum.length < 5){
+                err.textContent = '请输入有效的QQ号';
+                err.style.display = 'block';
+                return;
+              }
+              if(!code || code.length !== 6){
+                err.textContent = '请输入6位验证码';
+                err.style.display = 'block';
+                return;
+              }
+              try{
+                const r = await fetch('/api/admin/qq-bind-confirm',{
+                  method:'POST',
+                  headers:{'Content-Type':'application/json'},
+                  credentials:'include',
+                  body:JSON.stringify({twofa_token:twofaToken,code:code,qq_number:qqNum})
+                });
+                const d = await r.json();
+                if(d.success){
+                  document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh"><div style="text-align:center"><div style="font-size:48px">&#9989;</div><h2>绑定成功</h2><p>正在进入...</p></div></div>';
+                  setTimeout(()=>{
+                    if(window.opener && !window.opener.closed){
+                      window.opener.postMessage({type:'qq_bind_success'},'*');
+                      window.close();
+                    }else{
+                      window.location.href = '/dashboard.html';
+                    }
+                  },1000);
+                }else{
+                  err.textContent = d.error || '验证失败';
+                  err.style.display = 'block';
+                }
+              }catch(e){
+                err.textContent = '网络错误，请重试';
+                err.style.display = 'block';
+              }
+            }
+            document.getElementById('bindCode').addEventListener('keypress',function(e){
+              if(e.key==='Enter') confirmBind();
+            });
+            document.getElementById('qqNumber').addEventListener('keypress',function(e){
+              if(e.key==='Enter') confirmBind();
+            });
+            document.getElementById('qqNumber').focus();
+          </script>
+        </body></html>
+      `);
+    }
+
+    // 验证通过，标记二级验证完成
+    qqAuth.mark2FAVerified(twoFAToken, openid);
+    if (binding) qqAuth.updateQQLastUsed(openid);
+
+    // 生成最终 JWT
+    const jwt = require('jsonwebtoken');
+    const JWT_SECRET = process.env.JWT_SECRET || 'jifeng-studio-secret-key-2026';
+    const finalToken = jwt.sign(
+      { id: verifyResult.admin.id, username: verifyResult.admin.username, role: verifyResult.admin.role, twofa: true },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    logSecurityEvent('qq_2fa_success', 'low', req, 'QQ 二级验证通过', { admin: verifyResult.admin.username });
+
+    res.send(`
+      <html><body style="background:#0a0a0f;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif">
+        <div style="text-align:center">
+          <div style="font-size:48px;margin-bottom:16px">&#9989;</div>
+          <h2>验证通过</h2>
+          <p>正在进入管理控制台...</p>
+          <p style="color:#888;font-size:14px">1 秒后自动跳转</p>
+        </div>
+        <script>
+          // 兼容 PC 端弹窗模式
+          if (window.opener && !window.opener.closed) {
+            window.opener.postMessage({type:'qq_2fa_success',token:'${finalToken}'},'*');
+          }
+          // 兼容移动端直接跳转模式
+          setTimeout(()=>{
+            if (window.opener && !window.opener.closed) {
+              window.close();
+            } else {
+              window.location.href = '/dashboard.html';
+            }
+          }, 1000);
+        </script>
+      </body></html>
+    `);
+    return;
+  }
+
+  // 绑定 QQ 流程（管理员已登录，在设置页绑定）
+  const adminToken = req.cookies?.admin_token;
+  if (adminToken) {
+    const { verifyToken } = require('./auth');
+    const verifyResult = verifyToken(adminToken);
+    if (verifyResult.valid) {
+      // 检查是否已被绑定
+      if (qqAuth.isQQBound(openid)) {
+        const existingAdmin = qqAuth.getAdminByQQOpenID(openid);
+        if (existingAdmin && existingAdmin.id !== verifyResult.admin.id) {
+          return res.send(`
+            <html><body style="background:#0a0a0f;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif">
+              <div style="text-align:center">
+                <div style="font-size:48px;margin-bottom:16px">&#9888;</div>
+                <h2>绑定失败</h2>
+                <p>该 QQ 号已绑定到其他管理员账号</p>
+              </div>
+            </body></html>
+          `);
+        }
+      }
+      qqAuth.bindQQToAdmin(verifyResult.admin.id, openid, nickname, avatar);
+      logSecurityEvent('qq_bind', 'low', req, 'QQ 授权绑定成功', { admin: verifyResult.admin.username });
+      return res.send(`
+        <html><body style="background:#0a0a0f;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif">
+          <div style="text-align:center">
+            <div style="font-size:48px;margin-bottom:16px">&#9989;</div>
+            <h2>绑定成功</h2>
+            <p>QQ: ${nickname}</p>
+            <p style="color:#888;font-size:14px">2 秒后自动关闭...</p>
+          </div>
+          <script>
+            window.opener && window.opener.postMessage({type:'qq_bind_success'},'*');
+            setTimeout(()=>window.close(),2000);
+          </script>
+        </body></html>
+      `);
+    }
+  }
+
+  res.status(400).send('无效的授权流程');
+});
+
+// 检查二级验证状态 + 完成登录
+app.post('/api/login/2fa-verify', rateLimitMiddleware(10, 60 * 1000, '2fa_verify'), (req, res) => {
+  const { twofa_token } = req.body;
+  if (!twofa_token) {
+    return res.status(400).json({ error: '缺少二级验证令牌' });
+  }
+
+  const result = qqAuth.verify2FASession(twofa_token, req.ip);
+  if (result.valid) {
+    const jwt = require('jsonwebtoken');
+    const JWT_SECRET = process.env.JWT_SECRET || 'jifeng-studio-secret-key-2026';
+    const finalToken = jwt.sign(
+      { id: result.admin.id, username: result.admin.username, role: result.admin.role, twofa: true },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.cookie('admin_token', finalToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
@@ -170,11 +525,16 @@ app.post('/api/login', rateLimitMiddleware(5, 60 * 1000, 'login'), (req, res) =>
     });
     res.json({ success: true, admin: result.admin });
   } else {
-    consumeCSRFToken(csrf_token);
-    const newCSRF = generateCSRFToken();
-    csrfTokens.set(newCSRF, { createdAt: Date.now(), ip: req.ip });
-    res.status(401).json({ error: result.message, csrf_token: newCSRF });
+    res.status(400).json({ error: result.reason || '二级验证未通过', verified: false });
   }
+});
+
+// 获取登录状态（判断是否配置 QQ 验证）
+app.get('/api/login/status', (req, res) => {
+  res.json({
+    qq_configured: qqAuth.isQQConfigured(),
+    site_enabled: getConfig('site_enabled') === 'true'
+  });
 });
 
 app.post('/api/logout', (req, res) => {
@@ -416,6 +776,150 @@ app.post('/api/admin/change-password', authMiddleware, (req, res) => {
   } else {
     res.status(400).json({ error: result.message });
   }
+});
+
+// ============ QQ 二级验证 API ============
+
+// 获取当前管理员 QQ 绑定状态
+app.get('/api/admin/qq-binding', authMiddleware, (req, res) => {
+  const binding = db.prepare('SELECT * FROM admin_qq_bindings WHERE admin_id = ? AND status = ?').get(req.admin.id, 'active');
+  res.json({
+    qq_configured: qqAuth.isQQConfigured(),
+    bound: !!binding,
+    binding: binding ? {
+      id: binding.id,
+      nickname: binding.nickname,
+      avatar: binding.avatar,
+      last_used_at: binding.last_used_at,
+      created_at: binding.created_at,
+      openid_preview: binding.openid ? binding.openid.slice(0, 6) + '...' : null
+    } : null
+  });
+});
+
+// 获取 QQ 绑定授权 URL
+app.get('/api/admin/qq-bind-url', authMiddleware, (req, res) => {
+  if (!qqAuth.isQQConfigured()) {
+    return res.status(400).json({ error: 'QQ 互联未配置' });
+  }
+  const url = qqAuth.getQQAuthURL(req.ip, 'bind');
+  res.json({ auth_url: url });
+});
+
+// 解绑 QQ
+app.post('/api/admin/qq-unbind', authMiddleware, (req, res) => {
+  const result = qqAuth.unbindQQ(req.admin.id);
+  if (result.success) {
+    logSecurityEvent('qq_unbind', 'medium', req, `管理员 ${req.admin.username} 解绑 QQ`, null);
+    res.json({ success: true });
+  } else {
+    res.status(400).json({ error: result.error || '解绑失败' });
+  }
+});
+
+// 首次绑定QQ验证码确认（含QQ号白名单验证）
+app.post('/api/admin/qq-bind-confirm', rateLimitMiddleware(5, 60 * 1000, 'qq_bind_confirm'), (req, res) => {
+  const { twofa_token, code, qq_number } = req.body;
+  if (!twofa_token || !code) {
+    return res.status(400).json({ error: '参数缺失' });
+  }
+
+  // 查询二级验证会话
+  const session = db.prepare('SELECT * FROM two_fa_sessions WHERE session_token = ?').get(twofa_token);
+  if (!session) {
+    return res.status(400).json({ error: '会话不存在或已过期' });
+  }
+
+  // 检查验证码
+  if (!session.bind_code || session.bind_code !== code) {
+    return res.status(400).json({ error: '验证码错误' });
+  }
+
+  if (!session.bind_code_expires || new Date(session.bind_code_expires) < new Date()) {
+    return res.status(400).json({ error: '验证码已过期，请重新发起绑定' });
+  }
+
+  // QQ号白名单验证（如果会话中已存储QQ号）
+  const qqNumToVerify = qq_number || session.qq_number;
+  if (qqNumToVerify) {
+    const whitelistCheck = qqAuth.validateQQNumber(qqNumToVerify);
+    if (!whitelistCheck.valid) {
+      logSecurityEvent('qq_whitelist_reject', 'critical', req, 
+        `QQ绑定被拒绝：QQ号 ${qqNumToVerify} 不在白名单中`, 
+        { qq_number: qqNumToVerify, whitelist: whitelistCheck.whitelist });
+      return res.status(403).json({ 
+        error: '该QQ号未授权绑定',
+        reason: 'qq_not_whitelisted'
+      });
+    }
+  }
+
+  // 验证通过，完成绑定
+  const admin = db.prepare('SELECT * FROM admins WHERE id = ?').get(session.admin_id);
+  if (!admin) {
+    return res.status(400).json({ error: '管理员不存在' });
+  }
+
+  // 检查是否已被绑定
+  if (qqAuth.isQQBound(session.qq_openid)) {
+    return res.status(400).json({ error: '该QQ已被其他账号绑定' });
+  }
+
+  // 执行绑定（传入选中的QQ号）
+  const bindResult = qqAuth.bindQQToAdmin(
+    session.admin_id, 
+    session.qq_openid, 
+    session.qq_nickname || '', 
+    session.qq_avatar || '',
+    qqNumToVerify
+  );
+  if (!bindResult.success) {
+    return res.status(500).json({ error: bindResult.error || '绑定失败' });
+  }
+
+  // 标记会话已验证
+  qqAuth.mark2FAVerified(twofa_token, session.qq_openid);
+
+  logSecurityEvent('qq_bind', 'low', req, 'QQ 授权绑定成功（邮箱验证通过）', { admin: admin.username, qq_number: qqNumToVerify });
+
+  res.json({ success: true, admin: { id: admin.id, username: admin.username, role: admin.role } });
+});
+
+// ============ 安全事件上报 API ============
+
+// 服务端Token下发（短路径，不暴露意图）
+app.get('/api/s/i', (req, res) => {
+  const token = generateServerToken(req);
+  res.setHeader('Cache-Control', 'no-store');
+  res.json(token);
+});
+
+// 反调试检测上报（短路径）
+app.post('/api/s/d', (req, res) => {
+  const { m } = req.body;
+  
+  logSecurityEvent('devtools_detected', 'high', req, 
+    `检测到开发者工具: ${m || 'unknown'}`, 
+    { detection_method: m });
+  
+  res.json({ ok: true });
+});
+
+// 安全异常上报
+app.post('/api/security/incident', rateLimitMiddleware(10, 60 * 1000, 'security_incident'), (req, res) => {
+  const { type, description, details } = req.body;
+  
+  if (!type) {
+    return res.status(400).json({ error: '事件类型必填' });
+  }
+  
+  const severity = ['critical', 'high', 'medium', 'low'].includes(req.body.severity) 
+    ? req.body.severity 
+    : 'medium';
+  
+  logSecurityEvent(`client_${type}`, severity, req, description || '客户端安全事件', details || {});
+  
+  res.json({ success: true });
 });
 
 // ============ AI 沙盒 API ============
@@ -1114,6 +1618,75 @@ app.get('/:secretPath/dashboard.html', (req, res, next) => {
   next();
 });
 
+// 安全头和反调试脚本注入中间件
+app.use((req, res, next) => {
+  if (req.path.endsWith('.html') || req.path === '/') {
+    const originalSend = res.send.bind(res);
+    const originalSendFile = res.sendFile.bind(res);
+    
+    res.send = function(body) {
+      if (typeof body === 'string' && body.includes('</body>')) {
+        body = injectSecurityFeatures(body);
+      }
+      return originalSend(body);
+    };
+    
+    const originalEnd = res.end.bind(res);
+    const chunks = [];
+    
+    const originalWrite = res.write;
+    let captured = false;
+    let htmlContent = '';
+    
+    if (req.accepts('html') && (req.path === '/' || req.path.endsWith('.html'))) {
+      captured = true;
+      res.write = function(chunk) {
+        if (chunk) {
+          chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+        }
+        return true;
+      };
+      
+      res.end = function(chunk) {
+        if (chunk) {
+          chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+        }
+        if (captured && chunks.length > 0) {
+          htmlContent = Buffer.concat(chunks).toString('utf8');
+          if (htmlContent.includes('</body>')) {
+            htmlContent = injectSecurityFeatures(htmlContent);
+            res.setHeader('Content-Length', Buffer.byteLength(htmlContent));
+            captured = false;
+            return originalEnd(Buffer.from(htmlContent));
+          }
+        }
+        captured = false;
+        return originalEnd(chunk);
+      };
+    }
+    
+    return next();
+  } else {
+    next();
+  }
+});
+
+function injectSecurityFeatures(html) {
+  const antiDebugScript = `<script src="/anti-debug.js" defer></script>`;
+  const securityMeta = `
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">`;
+  
+  if (!html.includes('anti-debug.js')) {
+    html = html.replace('</head>', `${securityMeta}\n</head>`);
+    html = html.replace('</body>', `\n${antiDebugScript}\n</body>`);
+  }
+  
+  return html;
+}
+
 // 静态文件服务（防止目录遍历）
 app.use(express.static(publicDir, {
   extensions: ['html'],
@@ -1124,6 +1697,10 @@ app.use(express.static(publicDir, {
       res.setHeader('Pragma', 'no-cache');
       res.setHeader('Expires', '0');
     }
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   }
 }));
 
