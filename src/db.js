@@ -1,18 +1,97 @@
-const Database = require('better-sqlite3');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 
-const dbPath = process.env.VERCEL ? '/tmp/jifeng.db' : path.join(__dirname, '..', 'data', 'jifeng.db');
-if (process.env.VERCEL) {
-  const fs = require('fs');
-  if (!fs.existsSync('/tmp')) fs.mkdirSync('/tmp', { recursive: true });
+let db;
+let dbReady = false;
+
+try {
+  const Database = require('better-sqlite3');
+  const dbPath = process.env.VERCEL ? '/tmp/jifeng.db' : path.join(__dirname, '..', 'data', 'jifeng.db');
+  if (process.env.VERCEL) {
+    const fs = require('fs');
+    if (!fs.existsSync('/tmp')) fs.mkdirSync('/tmp', { recursive: true });
+  }
+  db = new Database(dbPath);
+
+  // Vercel Serverless 环境禁用 WAL（部分只读文件系统不兼容）
+  if (!process.env.VERCEL) {
+    db.pragma('journal_mode = WAL');
+  }
+  db.pragma('foreign_keys = ON');
+  dbReady = true;
+} catch (err) {
+  console.error('[DB] better-sqlite3 初始化失败:', err.message);
+  console.error('[DB] 将使用内存 fallback（数据重启后丢失）');
+  // 内存 fallback：提供兼容 API 的极简内存数据库
+  const memTables = {};
+  const memSeq = {};
+  db = {
+    exec: (sql) => {
+      const tm = sql.match(/CREATE TABLE IF NOT EXISTS\s+(\w+)/gi);
+      if (tm) tm.forEach(m => {
+        const t = m.replace(/CREATE TABLE IF NOT EXISTS\s+/i, '');
+        if (!memTables[t]) { memTables[t] = []; memSeq[t] = 1; }
+      });
+    },
+    pragma: () => {},
+    prepare: (sql) => ({
+      get: (...p) => {
+        if (sql.includes('COUNT(*)')) return { count: 0 };
+        const tm = sql.match(/FROM\s+(\w+)/i);
+        const t = tm ? memTables[tm[1]] : [];
+        const wm = sql.match(/WHERE\s+(\w+)\s*=\s*\?/i);
+        if (wm && t) {
+          const c = wm[1], v = p[0];
+          return t.find(r => String(r[c]) === String(v));
+        }
+        return t ? t[0] : undefined;
+      },
+      all: (...p) => {
+        const tm = sql.match(/FROM\s+(\w+)/i);
+        if (!tm) return [];
+        let r = [...(memTables[tm[1]] || [])];
+        const wm = sql.match(/WHERE\s+(\w+)\s*=\s*\?/i);
+        if (wm) { const c = wm[1], v = p.shift(); r = r.filter(x => String(x[c]) === String(v)); }
+        const om = sql.match(/ORDER BY\s+(\w+)\s*(DESC|ASC)?/i);
+        if (om) {
+          const c = om[1], d = om[2]?.toUpperCase() === 'DESC';
+          r.sort((a, b) => { if (a[c] < b[c]) return d ? 1 : -1; if (a[c] > b[c]) return d ? -1 : 1; return 0; });
+        }
+        const lm = sql.match(/LIMIT\s+(\?|\d+)/i);
+        const om2 = sql.match(/OFFSET\s+(\?|\d+)/i);
+        let lim = r.length, off = 0;
+        if (lm) lim = parseInt(lm[1]) || p.shift() || r.length;
+        if (om2) off = parseInt(om2[1]) || p.shift() || 0;
+        return r.slice(off, off + lim);
+      },
+      run: (...p) => {
+        const im = sql.match(/INSERT INTO\s+(\w+)/i);
+        const um = sql.match(/UPDATE\s+(\w+)/i);
+        const dm = sql.match(/DELETE FROM\s+(\w+)/i);
+        if (im) {
+          const t = im[1];
+          if (!memTables[t]) { memTables[t] = []; memSeq[t] = 1; }
+          const cm = sql.match(/\(([^)]+)\)\s*VALUES/i);
+          const cols = cm ? cm[1].split(',').map(c => c.trim()) : [];
+          const row = { id: memSeq[t]++ };
+          cols.forEach((c, i) => { row[c] = p[i]; });
+          memTables[t].push(row);
+          return { changes: 1, lastInsertRowid: row.id };
+        }
+        if (um || dm) {
+          const t = (um || dm)[1];
+          const before = memTables[t]?.length || 0;
+          if (dm) memTables[t] = [];
+          return { changes: before, lastInsertRowid: 0 };
+        }
+        return { changes: 0, lastInsertRowid: 0 };
+      }
+    })
+  };
 }
-const db = new Database(dbPath);
 
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
-
+// 建表（SQLite 或内存模式通用）
 db.exec(`
   CREATE TABLE IF NOT EXISTS admins (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -1,15 +1,11 @@
 {
-  "buildCommand": "npm install",
-  "installCommand": "npm install",
+  "version": 2,
   "functions": {
     "api/index.js": {
-      "runtime": "@vercel/node"
+      "includeFiles": "node_modules/better-sqlite3/prebuilds/**"
     }
   },
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api/index.js"
-    }
+    { "source": "/(.*)", "destination": "/api/index.js" }
   ]
 }
