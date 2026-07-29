@@ -24,6 +24,10 @@
   <div class="orb orb-4"></div>
 </div>
 
+<!-- 顶级增强层 v2：鼠标光晕 + 粒子流 -->
+<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+<div class="particles" id="particles" aria-hidden="true"></div>
+
 <nav id="navbar">
   <div class="nc">
     <a href="#" class="logo">⚡ JIFENG</a>
@@ -58,17 +62,17 @@
       <a href="#about" class="bt bt-s">💡 了解更多</a>
     </div>
 
-    <div class="lb">
+    <div class="lb" data-stagger>
       <div class="li r">
-        <div class="lv">50K+</div>
+        <div class="lv"><span class="count-roll" data-count="50" data-suffix="K+">0</span></div>
         <div class="ll">活跃用户</div>
       </div>
       <div class="li r">
-        <div class="lv">12+</div>
+        <div class="lv"><span class="count-roll" data-count="12" data-suffix="+">0</span></div>
         <div class="ll">精品工具</div>
       </div>
       <div class="li r">
-        <div class="lv">99.9%</div>
+        <div class="lv">99.9<span style="font-size:.6em">%</span></div>
         <div class="ll">稳定运行</div>
       </div>
       <div class="li r">
@@ -498,5 +502,6 @@
   }
 })();
 </script>
+<script src="jf-fx.js" defer></script>
 </body>
 </html>

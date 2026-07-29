@@ -107,6 +107,10 @@ body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
 <body>
 <div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
 
+<!-- 顶级增强层 v2：鼠标光晕 + 粒子流 -->
+<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+<div class="particles" id="particles" aria-hidden="true"></div>
+
 <!-- 登录页 -->
 <div id="loginPage"><div>
 <div class="login-icon">&#128274;</div>
@@ -418,6 +422,7 @@ Bug 反馈
 
 <script src="jifeng-rt.js"></script>
 <script src="jifeng-ui.js"></script>
+<script src="jf-fx.js" defer></script>
 <script>
 /* ===== 登录与会话 ===== */
 const SALT='jifeng_studio_salt_2026_secure';
