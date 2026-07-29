@@ -6,8 +6,11 @@
 
 const crypto = require('crypto');
 
-// 加密密钥（从环境变量获取，或使用默认密钥）
-const ENCRYPTION_KEY = process.env.CRYPTO_KEY || crypto.scryptSync('jifeng_security_2024', 'salt', 32);
+// 加密密钥（必须从环境变量获取，禁止硬编码）
+const ENCRYPTION_KEY = process.env.CRYPTO_KEY ? Buffer.from(process.env.CRYPTO_KEY, 'hex') : null;
+if (!ENCRYPTION_KEY || ENCRYPTION_KEY.length !== 32) {
+  throw new Error('[Crypto] CRYPTO_KEY 环境变量未设置或长度不正确（需要64位hex字符串对应32字节）');
+}
 const IV_LENGTH = 16;
 const ALGORITHM = 'aes-256-gcm';
 

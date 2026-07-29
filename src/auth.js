@@ -2,7 +2,10 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const db = require('./db');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'jifeng-studio-secret-key-2026';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('[Auth] JWT_SECRET 环境变量未设置');
+}
 const TOKEN_EXPIRES_IN = '24h';
 
 function login(username, password, ip) {

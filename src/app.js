@@ -421,7 +421,10 @@ app.get('/auth/qq/callback', rateLimitMiddleware(10, 60 * 1000, 'qq_callback'), 
 
     // 生成最终 JWT
     const jwt = require('jsonwebtoken');
-    const JWT_SECRET = process.env.JWT_SECRET || 'jifeng-studio-secret-key-2026';
+    const JWT_SECRET = process.env.JWT_SECRET;
+    if (!JWT_SECRET) {
+      throw new Error('[Auth] JWT_SECRET 环境变量未设置');
+    }
     const finalToken = jwt.sign(
       { id: verifyResult.admin.id, username: verifyResult.admin.username, role: verifyResult.admin.role, twofa: true },
       JWT_SECRET,
@@ -510,7 +513,10 @@ app.post('/api/login/2fa-verify', rateLimitMiddleware(10, 60 * 1000, '2fa_verify
   const result = qqAuth.verify2FASession(twofa_token, req.ip);
   if (result.valid) {
     const jwt = require('jsonwebtoken');
-    const JWT_SECRET = process.env.JWT_SECRET || 'jifeng-studio-secret-key-2026';
+    const JWT_SECRET = process.env.JWT_SECRET;
+    if (!JWT_SECRET) {
+      throw new Error('[Auth] JWT_SECRET 环境变量未设置');
+    }
     const finalToken = jwt.sign(
       { id: result.admin.id, username: result.admin.username, role: result.admin.role, twofa: true },
       JWT_SECRET,
@@ -2147,7 +2153,7 @@ if (require.main === module) {
 ║                                                ║
 ║  管理后台（隐藏访问，仅自己可用）:             ║
 ║  1. 秘密URL: /${secretPath}/admin.html           ║
-║  2. 令牌访问: /admin.html?_key=${accessToken.slice(0,8)}...
+║  2. 令牌访问: /admin.html?_key=${accessToken?.slice(0,8) || '未设置'}...
 ║                                                ║
 ║  管理员账号: JIFENG                            ║
 ║  管理员密码: ****** (bcrypt加密存储)           ║
