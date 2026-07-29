@@ -1,54 +1,27 @@
 {
-  "version": 2,
   "buildCommand": null,
-  "devCommand": "node src/app.js",
   "installCommand": "npm install",
   "functions": {
     "api/index.js": {
-      "includeFiles": "node_modules/better-sqlite3/prebuilds/**",
-      "maxDuration": 60
+      "maxDuration": 30
     }
   },
   "rewrites": [
-    { "source": "/(.*)", "destination": "/api/index.js" }
+    { "source": "/api/:path*", "destination": "/api/index.js" }
   ],
   "headers": [
     {
-      "source": "/api/(.*)",
+      "source": "/(.*)",
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "X-Frame-Options", "value": "DENY" },
         { "key": "X-XSS-Protection", "value": "1; mode=block" },
         { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains; preload" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'" }
-      ]
-    },
-    {
-      "source": "/((?!api/).*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "X-XSS-Protection", "value": "1; mode=block" },
-        { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains; preload" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https: wss:; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'self' https:; media-src 'self' data: https:;" }
-      ]
-    },
-    {
-      "source": "/src/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" }
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.github.com https://jifeng-c6oc.vercel.app; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'self' https:;" }
       ]
     }
   ],
   "cleanUrls": true,
-  "trailingSlash": false,
-  "crons": [
-    {
-      "path": "/api/cron/sync-releases",
-      "schedule": "0 * * * *"
-    }
-  ]
+  "trailingSlash": false
 }

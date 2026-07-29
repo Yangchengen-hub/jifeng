@@ -235,11 +235,15 @@ function initSecurityTables() {
     CREATE INDEX IF NOT EXISTS idx_2fa_session ON two_fa_sessions(session_token);
   `);
 
-  // 初始化加密存储的作者隐私信息
-  const existingEmail = db.prepare('SELECT key FROM private_config WHERE key = ?').get('author_email_encrypted');
-  if (!existingEmail) {
-    const emailEncrypted = encrypt(SECURITY_CONFIG.ADMIN_EMAIL);
-    db.prepare('INSERT OR IGNORE INTO private_config (key, encrypted_value) VALUES (?, ?)').run('author_email_encrypted', emailEncrypted);
+  // 初始化加密存储的作者隐私信息（仅在密钥和邮箱都配置时执行）
+  if (encrypt && SECURITY_CONFIG.ADMIN_EMAIL) {
+    const existingEmail = db.prepare('SELECT key FROM private_config WHERE key = ?').get('author_email_encrypted');
+    if (!existingEmail) {
+      const emailEncrypted = encrypt(SECURITY_CONFIG.ADMIN_EMAIL);
+      if (emailEncrypted) {
+        db.prepare('INSERT OR IGNORE INTO private_config (key, encrypted_value) VALUES (?, ?)').run('author_email_encrypted', emailEncrypted);
+      }
+    }
   }
 }
 

@@ -114,6 +114,16 @@ app.use(logAccess);
 // 管理后台隐藏访问验证 - 必须放在所有管理页面路由之前
 app.use(adminAccessCheck);
 
+// 加密状态诊断接口（仅管理员可见）
+app.get('/api/crypto/status', authMiddleware, (req, res) => {
+  const cryptoUtils = require('./crypto-utils');
+  res.json({
+    enabled: cryptoUtils.isEnabled(),
+    key_configured: !!process.env.CRYPTO_KEY,
+    env: process.env.NODE_ENV || 'production'
+  });
+});
+
 // 静态文件先放行（在 WAF 之后）
 app.use('/captcha.svg', (req, res) => {
   const captcha = createCaptcha('general');
@@ -2139,7 +2149,12 @@ app.use((err, req, res, next) => {
 
 if (require.main === module) {
   const server = http.createServer(app);
-  wsServer.initWebSocketServer(server);
+  // 仅本地开发模式初始化 WebSocket（Vercel Serverless 无长连接）
+  if (!process.env.VERCEL) {
+    wsServer.initWebSocketServer(server);
+  } else {
+    console.log('[Serverless] Vercel 环境，跳过 WebSocket 初始化');
+  }
 
   server.listen(PORT, () => {
     const secretPath = getConfig('admin_secret_path');
