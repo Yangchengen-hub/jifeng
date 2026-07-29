@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="极风环境检测 JifengEnvDetect - Android环境安全审计工具">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<meta name="theme-color" content="#0a0a0f">
 <title>极风环境检测 | JifengEnvDetect</title>
 <link rel="stylesheet" href="jifeng-ui.css">
 </head>
@@ -16,7 +21,9 @@
       <li><a href="jftoolbox.html">极风工具箱</a></li>
       <li><a href="jifengenvdetect.html" class="ac">极风环境检测</a></li>
       <li><a href="https://github.com/Yangchengen-hub" target="_blank">GitHub</a></li>
+      <li><button id="themeToggle" class="theme-toggle" aria-label="切换主题">☀️</button></li>
     </ul>
+    <button id="navToggle" class="nav-toggle" aria-label="菜单"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
@@ -55,7 +62,7 @@
 <section id="releases">
   <div class="ct">
     <h2 class="st">发布<span class="ac">历史</span></h2>
-    <div id="release-list" style="color:#9898a8">正在加载...</div>
+    <div id="release-list" data-repo="Yangchengen-hub/JifengEnvDetect" style="color:var(--fg-2)">正在加载...</div>
   </div>
 </section>
 
@@ -82,7 +89,6 @@
 <script>
 (function(){
   var REPO='Yangchengen-hub/JifengEnvDetect';
-  var listEl=document.getElementById('release-list');
   var starEl=document.getElementById('jes');
   var verEl=document.getElementById('jev');
 
@@ -90,36 +96,18 @@
 
   fetch('https://api.github.com/repos/'+REPO,{headers:{'Accept':'application/vnd.github+json'}})
     .then(function(r){return r.ok?r.json():null;})
-    .then(function(d){if(d&&starEl)starEl.textContent=fmtN(d.stargazers_count||0);})
+    .then(function(d){
+      if(!d)return;
+      if(starEl)starEl.textContent=fmtN(d.stargazers_count||0);
+    })
     .catch(function(){});
 
-  fetch('https://api.github.com/repos/'+REPO+'/releases',{headers:{'Accept':'application/vnd.github+json'}})
+  fetch('https://api.github.com/repos/'+REPO+'/releases?per_page=1',{headers:{'Accept':'application/vnd.github+json'}})
     .then(function(r){return r.ok?r.json():null;})
     .then(function(d){
-      if(!d||!d.length){listEl.textContent='暂无发布记录';return;}
-      if(verEl)verEl.textContent=d[0].tag_name?d[0].tag_name.replace(/^v/,''):'--';
-      var html='';
-      d.slice(0,5).forEach(function(rel){
-        var date=rel.published_at?new Date(rel.published_at).toLocaleDateString('zh-CN'):'--';
-        var body=(rel.body||'').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-        html+='<div style="background:rgba(20,20,35,.8);border:1px solid rgba(0,245,255,.1);border-radius:10px;padding:1.25rem;margin-bottom:1rem">';
-        html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem">';
-        html+='<strong style="color:#00f5ff;font-size:1rem">'+rel.tag_name+'</strong>';
-        html+='<span style="color:#5a5a6e;font-size:.75rem">'+date+'</span>';
-        html+='</div>';
-        html+='<div style="color:#9898a8;font-size:.85rem;line-height:1.7">'+body+'</div>';
-        if(rel.assets&&rel.assets.length){
-          html+='<div style="margin-top:1rem;display:flex;gap:.5rem;flex-wrap:wrap">';
-          rel.assets.forEach(function(a){
-            html+='<a href="'+a.browser_download_url+'" target="_blank" style="display:inline-block;padding:.4rem .8rem;background:rgba(0,245,255,.08);border:1px solid rgba(0,245,255,.2);border-radius:6px;color:#00f5ff;font-size:.75rem;text-decoration:none">'+a.name+'</a>';
-          });
-          html+='</div>';
-        }
-        html+='</div>';
-      });
-      listEl.innerHTML=html;
+      if(d&&d.length&&verEl)verEl.textContent=d[0].tag_name?d[0].tag_name.replace(/^v/,''):'--';
     })
-    .catch(function(){listEl.textContent='加载失败，请刷新重试';});
+    .catch(function(){});
 })();
 </script>
 
