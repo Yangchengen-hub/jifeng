@@ -3,113 +3,125 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains; preload">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.github.com; frame-ancestors 'none'; base-uri 'self'; upgrade-insecure-requests;">
-<meta http-equiv="X-Frame-Options" content="DENY">
-<meta http-equiv="X-Content-Type-Options" content="nosniff">
-<meta http-equiv="X-XSS-Protection" content="1; mode=block">
-<meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Permissions-Policy" content="accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb()">
 <title>极风工具箱 | JFToolbox</title>
 <link rel="stylesheet" href="jifeng-ui.css">
-<style>
-body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:linear-gradient(rgba(0,245,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,.025) 1px,transparent 1px);
-  background-size:50px 50px;mask-image:radial-gradient(ellipse at center,black 30%,transparent 85%);-webkit-mask-image:radial-gradient(ellipse at center,black 30%,transparent 85%)}
-body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
-  background:repeating-linear-gradient(0deg,rgba(0,0,0,.1),rgba(0,0,0,.1) 1px,transparent 1px,transparent 3px);opacity:.25;mix-blend-mode:overlay}
-</style>
 </head>
 <body>
-<div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
-<nav><div class="nc"><a href="index.html" class="logo">极风工作室</a><ul class="nl"><li><a href="index.html">首页</a></li><li><a href="jftoolbox.html" class="ac">极风工具箱</a></li><li><a href="jifengenvdetect.html">极风环境检测</a></li><li><a href="dashboard.html">控制台</a></li><li><a href="https://github.com/Yangchengen-hub" target="_blank">GitHub</a></li></ul></div></nav>
-<section class="hr"><div class="hc"><div style="font-size:3rem;animation:float 4s ease-in-out infinite">&#128295;</div><h1>极风<span class="ac">工具箱</span></h1><p class="hs">免Root OTG全能刷机/调试工具箱<br>为安卓发烧友打造的专业级工具</p><div class="lb"><div class="li"><div class="lv" id="jfs">--</div><div class="ll">Stars</div></div><div class="li"><div class="lv">25+</div><div class="ll">功能</div></div><div class="li"><div class="lv" id="jfv">--</div><div class="ll">最新版本</div></div><div class="li"><div class="lv"><span class="ld"></span></div><div class="ll">活跃</div></div></div><div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap"><a href="#" id="dlBtn" download class="bt bt-p">&#128230; 下载APK</a><a href="https://github.com/Yangchengen-hub/JFToolbox" target="_blank" class="bt bt-s">&#128187; 查看源码</a></div></div></section>
-<section id="changelog"><div class="ct"><h2 class="st">最新<span class="ac">更新</span></h2><div id="release-info" style="color:var(--t2)">正在加载...</div><div id="release-changes" style="margin-top:1rem"></div></div></section>
-<section id="features"><div class="ct"><h2 class="st">核心<span class="ac">功能</span></h2><div class="pg"><div class="cd r"><h3>&#128267; 免Root OTG刷机</h3><p style="color:var(--t2);font-size:.9rem;margin-top:.75rem">通过OTG连接，无需Root权限即可刷入Recovery、Boot等分区镜像</p></div><div class="cd r"><h3>&#128268; ADB调试</h3><p style="color:var(--t2);font-size:.9rem;margin-top:.75rem">内置ADB Shell，支持命令执行、文件传输、日志抓取</p></div><div class="cd r"><h3>&#128296; 分区管理</h3><p style="color:var(--t2);font-size:.9rem;margin-top:.75rem">查看、备份、擦除、刷入各分区，支持自定义分区表</p></div><div class="cd r"><h3>&#128221; 日志分析</h3><p style="color:var(--t2);font-size:.9rem;margin-top:.75rem">实时抓取系统日志、内核日志、崩溃日志，支持关键词过滤</p></div><div class="cd r"><h3>&#128260; 设备信息</h3><p style="color:var(--t2);font-size:.9rem;margin-top:.75rem">查看详细设备信息、分区表、内核版本、安全补丁等级</p></div><div class="cd r"><h3>&#127942; Root检测</h3><p style="color:var(--t2);font-size:.9rem;margin-top:.75rem">多维度检测Root状态、Magisk安装、SafetyNet状态</p></div></div></div></section>
-<section id="releases"><div class="ct"><h2 class="st">发布<span class="ac">历史</span></h2><div id="release-list" style="color:var(--t2)">正在加载...</div></div></section>
-<ft><div style="max-width:1200px;margin:0 auto">
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;text-align:left;margin-bottom:2rem">
-<div><h4 style="color:var(--a);margin-bottom:1rem">极风工作室</h4><p style="color:var(--t3);font-size:.8rem">专注安卓玩机工具开发<br>为发烧友打造专业工具</p></div>
-<div><h4 style="color:var(--a);margin-bottom:1rem">联系我们</h4><div style="display:flex;gap:.5rem;flex-wrap:wrap">
-<a href="/appeal.html" style="color:var(--t3);font-size:.75rem;text-decoration:none">联系管理员</a>
-</div></div>
-<div><h4 style="color:var(--a);margin-bottom:1rem">开源鸣谢</h4><div style="display:flex;flex-wrap:wrap;gap:.5rem">
-<a href="https://kotlinlang.org/" target="_blank" style="color:var(--t3);font-size:.7rem;text-decoration:none">Kotlin</a>
-<a href="https://pages.github.com/" target="_blank" style="color:var(--t3);font-size:.7rem;text-decoration:none">GitHub Pages</a>
-</div></div></div>
-<p style="color:var(--t3);font-size:.75rem">极风工作室 &copy; 2026 | 北京时间 <span id="ftt"></span></p>
-</div></ft>
-<div id="bb" style="position:fixed;bottom:24px;right:24px;z-index:998;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--a),#ff8533);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(255,105,0,.4);font-size:1.5rem">&#128030;</div>
-<script src="jifeng-rt.js"></script>
+
+<nav>
+  <div class="nc">
+    <a href="index.html" class="logo">极风工作室</a>
+    <ul class="nl">
+      <li><a href="index.html">首页</a></li>
+      <li><a href="jftoolbox.html" class="ac">极风工具箱</a></li>
+      <li><a href="jifengenvdetect.html">极风环境检测</a></li>
+      <li><a href="https://github.com/Yangchengen-hub" target="_blank">GitHub</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="hr">
+  <div class="hc">
+    <div style="font-size:3rem">&#128295;</div>
+    <h1>极风<span class="ac">工具箱</span></h1>
+    <p class="hs">免Root OTG全能刷机/调试工具箱<br>为安卓发烧友打造的专业级工具</p>
+    <div class="lb">
+      <div class="li"><div class="lv" id="jfs">--</div><div class="ll">Stars</div></div>
+      <div class="li"><div class="lv">25+</div><div class="ll">功能</div></div>
+      <div class="li"><div class="lv" id="jfv">--</div><div class="ll">最新版本</div></div>
+      <div class="li"><div class="lv"><span class="ld"></span></div><div class="ll">活跃</div></div>
+    </div>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <a href="https://github.com/Yangchengen-hub/JFToolbox/releases" target="_blank" class="bt bt-p">&#128230; 下载APK</a>
+      <a href="https://github.com/Yangchengen-hub/JFToolbox" target="_blank" class="bt bt-s">&#128187; 查看源码</a>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="ct">
+    <h2 class="st">核心<span class="ac">功能</span></h2>
+    <div class="pg">
+      <div class="cd"><h3>&#128267; 免Root OTG刷机</h3><p style="color:#9898a8;font-size:.9rem;margin-top:.75rem">通过OTG连接，无需Root权限即可刷入Recovery、Boot等分区镜像</p></div>
+      <div class="cd"><h3>&#128268; ADB调试</h3><p style="color:#9898a8;font-size:.9rem;margin-top:.75rem">内置ADB Shell，支持命令执行、文件传输、日志抓取</p></div>
+      <div class="cd"><h3>&#128296; 分区管理</h3><p style="color:#9898a8;font-size:.9rem;margin-top:.75rem">查看、备份、擦除、刷入各分区，支持自定义分区表</p></div>
+      <div class="cd"><h3>&#128221; 日志分析</h3><p style="color:#9898a8;font-size:.9rem;margin-top:.75rem">实时抓取系统日志、内核日志、崩溃日志，支持关键词过滤</p></div>
+      <div class="cd"><h3>&#128260; 设备信息</h3><p style="color:#9898a8;font-size:.9rem;margin-top:.75rem">查看详细设备信息、分区表、内核版本、安全补丁等级</p></div>
+      <div class="cd"><h3>&#127942; Root检测</h3><p style="color:#9898a8;font-size:.9rem;margin-top:.75rem">多维度检测Root状态、Magisk安装、SafetyNet状态</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="releases">
+  <div class="ct">
+    <h2 class="st">发布<span class="ac">历史</span></h2>
+    <div id="release-list" style="color:#9898a8">正在加载...</div>
+  </div>
+</section>
+
+<ft>
+  <div style="max-width:1200px;margin:0 auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+      <div>
+        <h4 style="color:#00f5ff;margin-bottom:.5rem">极风工作室</h4>
+        <p style="color:#5a5a6e;font-size:.8rem">专注安卓玩机工具开发</p>
+      </div>
+      <div style="display:flex;gap:1rem">
+        <a href="index.html" style="color:#9898a8;font-size:.8rem;text-decoration:none">首页</a>
+        <a href="jifengenvdetect.html" style="color:#9898a8;font-size:.8rem;text-decoration:none">极风环境检测</a>
+        <a href="https://github.com/Yangchengen-hub/JFToolbox" target="_blank" style="color:#9898a8;font-size:.8rem;text-decoration:none">GitHub</a>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(0,245,255,.1);padding-top:1rem;margin-top:1rem">
+      <p style="color:#5a5a6e;font-size:.75rem">极风工作室 &copy; 2026 | 北京时间 <span id="ftt"></span></p>
+    </div>
+  </div>
+</ft>
+
 <script src="jifeng-ui.js"></script>
 <script>
-// 直链下载：通过 GitHub API 动态获取最新 release 的 APK 资源地址
 (function(){
   var REPO='Yangchengen-hub/JFToolbox';
-  var btn=document.getElementById('dlBtn');
+  var listEl=document.getElementById('release-list');
+  var starEl=document.getElementById('jfs');
   var verEl=document.getElementById('jfv');
-  var CACHE_KEY='jft_dl_cache_'+REPO;
-  var TTL=10*60*1000;
 
-  function readCache(){
-    try{var raw=sessionStorage.getItem(CACHE_KEY);if(!raw)return null;var j=JSON.parse(raw);if(Date.now()-j.t>TTL)return null;return j;}catch(e){return null;}
-  }
-  function writeCache(data){try{sessionStorage.setItem(CACHE_KEY,JSON.stringify(data));}catch(e){}}
+  function fmtN(n){return n>=1000?(n/1000).toFixed(1)+'k':n;}
 
-  function pickApk(assets){
-    if(!assets||!assets.length)return null;
-    var apk=assets.filter(function(a){return /\.apk$/i.test(a.name);});
-    if(apk.length)return apk[0];
-    assets.sort(function(a,b){return (b.size||0)-(a.size||0);});
-    return assets[0];
-  }
+  fetch('https://api.github.com/repos/'+REPO,{headers:{'Accept':'application/vnd.github+json'}})
+    .then(function(r){return r.ok?r.json():null;})
+    .then(function(d){if(d&&starEl)starEl.textContent=fmtN(d.stargazers_count||0);})
+    .catch(function(){});
 
-  function applyRelease(r){
-    if(!r)return;
-    var asset=pickApk(r.assets);
-    if(asset&&btn){btn.href=asset.browser_download_url;btn.setAttribute('download',asset.name);}
-    if(verEl&&r.tag_name){verEl.textContent=r.tag_name.replace(/^v/,'');}
-    if(r.published_at){
-      var d=new Date(r.published_at);
-      verEl&&verEl.setAttribute('title','发布于 '+d.toLocaleString('zh-CN'));
-    }
-  }
-
-  function load(){
-    var c=readCache();
-    if(c){applyRelease(c.data);return;}
-    if(verEl)verEl.textContent='...';
-    fetch('https://api.github.com/repos/'+REPO+'/releases/latest',{headers:{'Accept':'application/vnd.github+json'}})
-      .then(function(r){return r.ok?r.json():null;})
-      .then(function(d){
-        if(!d)return;
-        applyRelease(d);
-        writeCache({t:Date.now(),data:{tag_name:d.tag_name,published_at:d.published_at,assets:(d.assets||[]).map(function(a){return {name:a.name,size:a.size,browser_download_url:a.browser_download_url};})}});
-      })
-      .catch(function(){if(verEl)verEl.textContent='--';});
-  }
-
-  if(btn){
-    btn.addEventListener('click',function(e){
-      if(btn.getAttribute('href')==='#'){
-        e.preventDefault();
-        showToast&&showToast('info','准备中','正在获取最新版本，请稍候…');
-        fetch('https://api.github.com/repos/'+REPO+'/releases/latest',{headers:{'Accept':'application/vnd.github+json'}})
-          .then(function(r){return r.ok?r.json():null;})
-          .then(function(d){
-            if(!d){showToast&&showToast('err','失败','未能获取下载地址，请稍后重试');return;}
-            applyRelease(d);
-            writeCache({t:Date.now(),data:{tag_name:d.tag_name,published_at:d.published_at,assets:(d.assets||[]).map(function(a){return {name:a.name,size:a.size,browser_download_url:a.browser_download_url};})}});
-            window.location.href=btn.href;
-          })
-          .catch(function(){showToast&&showToast('err','失败','网络异常，请检查后重试');});
-      }
-    });
-  }
-
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load);
-  else load();
+  fetch('https://api.github.com/repos/'+REPO+'/releases',{headers:{'Accept':'application/vnd.github+json'}})
+    .then(function(r){return r.ok?r.json():null;})
+    .then(function(d){
+      if(!d||!d.length){listEl.textContent='暂无发布记录';return;}
+      if(verEl)verEl.textContent=d[0].tag_name?d[0].tag_name.replace(/^v/,''):'--';
+      var html='';
+      d.slice(0,5).forEach(function(rel){
+        var date=rel.published_at?new Date(rel.published_at).toLocaleDateString('zh-CN'):'--';
+        var body=(rel.body||'').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+        html+='<div style="background:rgba(20,20,35,.8);border:1px solid rgba(0,245,255,.1);border-radius:10px;padding:1.25rem;margin-bottom:1rem">';
+        html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem">';
+        html+='<strong style="color:#00f5ff;font-size:1rem">'+rel.tag_name+'</strong>';
+        html+='<span style="color:#5a5a6e;font-size:.75rem">'+date+'</span>';
+        html+='</div>';
+        html+='<div style="color:#9898a8;font-size:.85rem;line-height:1.7">'+body+'</div>';
+        if(rel.assets&&rel.assets.length){
+          html+='<div style="margin-top:1rem;display:flex;gap:.5rem;flex-wrap:wrap">';
+          rel.assets.forEach(function(a){
+            html+='<a href="'+a.browser_download_url+'" target="_blank" style="display:inline-block;padding:.4rem .8rem;background:rgba(0,245,255,.08);border:1px solid rgba(0,245,255,.2);border-radius:6px;color:#00f5ff;font-size:.75rem;text-decoration:none">'+a.name+'</a>';
+          });
+          html+='</div>';
+        }
+        html+='</div>';
+      });
+      listEl.innerHTML=html;
+    })
+    .catch(function(){listEl.textContent='加载失败，请刷新重试';});
 })();
 </script>
+
 </body>
 </html>

@@ -3,706 +3,118 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="极风工作室 - 极致安卓玩机工具开发，打造最强玩机体验">
-<meta name="keywords" content="极风工作室,安卓玩机,Magisk,LSPosed,模块,刷机,ROOT">
+<meta name="description" content="极风工作室 - JFToolbox & JifengEnvDetect">
 <title>极风工作室 · JIFENG STUDIO</title>
-<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains; preload">
-<meta http-equiv="X-Frame-Options" content="DENY">
-<meta http-equiv="X-Content-Type-Options" content="nosniff">
-<meta http-equiv="X-XSS-Protection" content="1; mode=block">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 <link rel="stylesheet" href="jifeng-ui.css">
 </head>
 <body>
 
-<div class="cyber-grid"></div>
-<div class="scanlines"></div>
-<div class="bg-orbs">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-  <div class="orb orb-4"></div>
-</div>
-
-<!-- 顶级增强层 v2：鼠标光晕 + 粒子流 -->
-<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
-<div class="particles" id="particles" aria-hidden="true"></div>
-
-<nav id="navbar">
+<nav>
   <div class="nc">
-    <a href="#" class="logo">⚡ JIFENG</a>
-    <ul class="nl" id="navMenu">
-      <li><a href="#home" class="ac">首页</a></li>
-      <li><a href="#products">产品</a></li>
-      <li><a href="#features">特性</a></li>
-      <li><a href="#notice">公告</a></li>
-      <li><a href="#about">关于</a></li>
+    <a href="index.html" class="logo">极风工作室</a>
+    <ul class="nl">
+      <li><a href="index.html" class="ac">首页</a></li>
+      <li><a href="jftoolbox.html">极风工具箱</a></li>
+      <li><a href="jifengenvdetect.html">极风环境检测</a></li>
+      <li><a href="https://github.com/Yangchengen-hub" target="_blank">GitHub</a></li>
     </ul>
-    <a href="#products" class="bt bt-p" id="downloadNavBtn">立即下载</a>
-    <button id="menuToggle" style="display:none;background:none;border:none;color:var(--a);font-size:1.5rem;cursor:pointer;padding:.5rem">&#9776;</button>
   </div>
 </nav>
 
-<!-- ============ HERO 英雄区 ============ -->
-<section class="hr" id="home">
+<section class="hr">
   <div class="hc">
-    <div style="font-family:var(--f-mono);color:var(--a);font-size:.8rem;letter-spacing:.3em;margin-bottom:1.5rem;opacity:.7">
-      // SYSTEM INITIALIZED · v3.0.0 · ONLINE
+    <h1>极风<span class="ac">工作室</span></h1>
+    <p class="hs">专注安卓玩机工具开发<br>为发烧友打造专业工具</p>
+    <div class="lb">
+      <div class="li"><div class="lv" id="js1">--</div><div class="ll">Stars</div></div>
+      <div class="li"><div class="lv">2</div><div class="ll">开源项目</div></div>
+      <div class="li"><div class="lv" id="jv1">--</div><div class="ll">最新版本</div></div>
+      <div class="li"><div class="lv"><span class="ld"></span></div><div class="ll">活跃</div></div>
     </div>
-    <h1 id="heroTitle" data-text="极致玩机 无限可能">
-      极致玩机<br><span class="ac">无限可能</span>
-    </h1>
-    <p class="hs">
-      专注<span class="hl">安卓玩机工具</span>深度开发，为发烧而生。
-      从系统定制到模块开发，解锁你设备的<span class="hl">全部潜能</span>。
-    </p>
-
-    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem">
-      <a href="#products" class="bt bt-p">🚀 探索产品</a>
-      <a href="#about" class="bt bt-s">💡 了解更多</a>
-    </div>
-
-    <div class="lb" data-stagger>
-      <div class="li r">
-        <div class="lv"><span class="count-roll" data-count="50" data-suffix="K+">0</span></div>
-        <div class="ll">活跃用户</div>
-      </div>
-      <div class="li r">
-        <div class="lv"><span class="count-roll" data-count="12" data-suffix="+">0</span></div>
-        <div class="ll">精品工具</div>
-      </div>
-      <div class="li r">
-        <div class="lv">99.9<span style="font-size:.6em">%</span></div>
-        <div class="ll">稳定运行</div>
-      </div>
-      <div class="li r">
-        <div class="lv"><span class="ld"></span>LIVE</div>
-        <div class="ll">实时防护</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="hero-bottom">
-    <span>SCROLL TO EXPLORE</span>
-    <div class="arrow"></div>
   </div>
 </section>
 
-<!-- ============ 产品展示 ============ -->
 <section id="products">
   <div class="ct">
-    <h2 class="st r">核心<span class="ac">产品</span></h2>
-    <p class="st-sub r">// PRODUCTS · 精心打造的玩机工具矩阵</p>
+    <h2 class="st">核心<span class="ac">产品</span></h2>
+    <p class="st-sub">仅展示仓库中真实存在的开源项目</p>
 
     <div class="pg">
-      <div class="cd product-card r">
-        <div class="corner corner-tl"></div>
-        <div class="corner corner-tr"></div>
-        <div class="corner corner-bl"></div>
-        <div class="corner corner-br"></div>
-        <div class="product-icon">🔧</div>
-        <h3>极风工具箱 Pro</h3>
-        <p>一站式安卓玩机工具箱，集成ROOT管理、模块安装、系统优化、备份恢复等50+实用功能。</p>
+      <div class="cd product-card">
+        <div class="product-icon" style="background:#0077b6">&#128295;</div>
+        <h3>JFToolbox（极风工具箱）</h3>
+        <p>免Root OTG全能刷机/调试工具箱。为安卓发烧友打造的专业级工具，支持ADB调试、分区管理、日志分析等。</p>
         <div class="product-meta">
-          <span>📦 <span class="mv">v3.2.1</span></span>
-          <span>📊 <span class="mv">12.5 MB</span></span>
-          <span>⭐ <span class="mv">4.9★</span></span>
+          <span>仓库: <a href="https://github.com/Yangchengen-hub/JFToolbox" target="_blank" style="color:#00f5ff;text-decoration:none">Yangchengen-hub/JFToolbox</a></span>
         </div>
         <div class="product-actions">
-          <a href="#" class="bt bt-p" onclick="openDownload('toolbox-pro');return false;">下载</a>
-          <button class="bt bt-s" onclick="toggleChangelog(this)">更新日志</button>
-        </div>
-        <div class="changelog">
-          <h4>// CHANGELOG v3.2.1</h4>
-          <ul>
-            <li>新增 Android 14 深度适配</li>
-            <li>优化 Magisk 模块管理引擎</li>
-            <li>修复部分设备兼容性问题</li>
-            <li>UI 界面全新赛博风格重构</li>
-          </ul>
+          <a href="jftoolbox.html" class="bt bt-p">查看详情</a>
+          <a href="https://github.com/Yangchengen-hub/JFToolbox/releases" target="_blank" class="bt bt-s">下载APK</a>
         </div>
       </div>
 
-      <div class="cd product-card r">
-        <div class="corner corner-tl"></div>
-        <div class="corner corner-tr"></div>
-        <div class="corner corner-bl"></div>
-        <div class="corner corner-br"></div>
-        <div class="product-icon" style="background:linear-gradient(135deg,#7b2ff7,#ff00d4)">🎨</div>
-        <h3>极风美化中心</h3>
-        <p>海量主题、字体、图标包、开机动画一键美化，让你的手机与众不同，彰显个性。</p>
+      <div class="cd product-card">
+        <div class="product-icon" style="background:#2a9d8f">&#128269;</div>
+        <h3>JifengEnvDetect（极风环境检测）</h3>
+        <p>Android环境安全审计工具。7大检测探针，全面排查Root状态、SafetyNet、调试状态、签名验证等安全隐患。</p>
         <div class="product-meta">
-          <span>📦 <span class="mv">v2.5.0</span></span>
-          <span>📊 <span class="mv">8.3 MB</span></span>
-          <span>⭐ <span class="mv">4.8★</span></span>
+          <span>仓库: <a href="https://github.com/Yangchengen-hub/JifengEnvDetect" target="_blank" style="color:#00f5ff;text-decoration:none">Yangchengen-hub/JifengEnvDetect</a></span>
         </div>
         <div class="product-actions">
-          <a href="#" class="bt bt-p" onclick="openDownload('theme-center');return false;">下载</a>
-          <button class="bt bt-s" onclick="toggleChangelog(this)">更新日志</button>
-        </div>
-        <div class="changelog">
-          <h4>// CHANGELOG v2.5.0</h4>
-          <ul>
-            <li>新增赛博朋克主题系列</li>
-            <li>支持 MIUI / ColorOS / OriginOS</li>
-            <li>新增动态壁纸引擎</li>
-            <li>优化主题应用速度 40%</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="cd product-card r">
-        <div class="corner corner-tl"></div>
-        <div class="corner corner-tr"></div>
-        <div class="corner corner-bl"></div>
-        <div class="corner corner-br"></div>
-        <div class="product-icon" style="background:linear-gradient(135deg,#39ff14,#00f5ff)">⚡</div>
-        <h3>极风性能大师</h3>
-        <p>智能温控、CPU/GPU 调度调控、游戏帧率优化、电池健康管理，让性能与续航兼得。</p>
-        <div class="product-meta">
-          <span>📦 <span class="mv">v4.1.2</span></span>
-          <span>📊 <span class="mv">6.7 MB</span></span>
-          <span>⭐ <span class="mv">4.9★</span></span>
-        </div>
-        <div class="product-actions">
-          <a href="#" class="bt bt-p" onclick="openDownload('perf-master');return false;">下载</a>
-          <button class="bt bt-s" onclick="toggleChangelog(this)">更新日志</button>
-        </div>
-        <div class="changelog">
-          <h4>// CHANGELOG v4.1.2</h4>
-          <ul>
-            <li>全新 AI 智能调度引擎 v2</li>
-            <li>新增游戏空间一键开启</li>
-            <li>支持高通/联发科双平台</li>
-            <li>功耗再优化，续航提升15%</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="cd product-card r">
-        <div class="corner corner-tl"></div>
-        <div class="corner corner-tr"></div>
-        <div class="corner corner-bl"></div>
-        <div class="corner corner-br"></div>
-        <div class="product-icon" style="background:linear-gradient(135deg,#ffea00,#ff6b00)">🔒</div>
-        <h3>极风隐私卫士</h3>
-        <p>应用权限管理、隐私伪装、数据加密、防追踪保护，全方位守护你的隐私安全。</p>
-        <div class="product-meta">
-          <span>📦 <span class="mv">v2.0.3</span></span>
-          <span>📊 <span class="mv">5.2 MB</span></span>
-          <span>⭐ <span class="mv">4.7★</span></span>
-        </div>
-        <div class="product-actions">
-          <a href="#" class="bt bt-p" onclick="openDownload('privacy-guard');return false;">下载</a>
-          <button class="bt bt-s" onclick="toggleChangelog(this)">更新日志</button>
-        </div>
-        <div class="changelog">
-          <h4>// CHANGELOG v2.0.3</h4>
-          <ul>
-            <li>新增隐私风险智能评估</li>
-            <li>支持应用数据全盘加密</li>
-            <li>新增伪装位置模拟器</li>
-            <li>优化权限拦截准确率</li>
-          </ul>
+          <a href="jifengenvdetect.html" class="bt bt-p">查看详情</a>
+          <a href="https://github.com/Yangchengen-hub/JifengEnvDetect/releases" target="_blank" class="bt bt-s">下载APK</a>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ 核心特性 ============ -->
-<section id="features">
-  <div class="ct">
-    <h2 class="st r">核心<span class="ac">特性</span></h2>
-    <p class="st-sub r">// FEATURES · 发烧级玩机体验</p>
-
-    <div class="features-grid">
-      <div class="feature-item r">
-        <div class="fi-icon">🛡️</div>
-        <h4>安全稳定</h4>
-        <p>严格测试验证，确保每个功能都稳定可靠</p>
-      </div>
-      <div class="feature-item r">
-        <div class="fi-icon">🚀</div>
-        <h4>极速流畅</h4>
-        <p>轻量高效架构，不占用多余系统资源</p>
-      </div>
-      <div class="feature-item r">
-        <div class="fi-icon">🎯</div>
-        <h4>精准适配</h4>
-        <p>支持主流品牌机型，深度定制优化</p>
-      </div>
-      <div class="feature-item r">
-        <div class="fi-icon">🔄</div>
-        <h4>持续更新</h4>
-        <p>高频迭代更新，紧跟系统版本演进</p>
-      </div>
-      <div class="feature-item r">
-        <div class="fi-icon">💬</div>
-        <h4>社区驱动</h4>
-        <p>活跃用户社区，需求快速响应落地</p>
-      </div>
-      <div class="feature-item r">
-        <div class="fi-icon">🎨</div>
-        <h4>个性定制</h4>
-        <p>丰富的自定义选项，打造专属体验</p>
-      </div>
-    </div>
-
-    <div style="margin-top:3rem" class="r">
-      <div class="cd" style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center">
-        <div>
-          <h3 style="font-family:var(--f-display);font-size:1.5rem;margin-bottom:1rem;letter-spacing:.03em">
-            AI 智能<span style="background:var(--a-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">风险评估</span>
-          </h3>
-          <p style="color:var(--t2);margin-bottom:1rem;font-size:.9rem;line-height:1.8">
-            搭载极风自研 AI 沙盒引擎，实时分析每个操作的安全风险，智能判断是否拦截。
-            多维度特征融合，精准识别恶意行为。
-          </p>
-          <div style="display:flex;flex-direction:column;gap:.75rem;margin-top:1.5rem">
-            <div>
-              <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:.3rem">
-                <span>WAF 防火墙</span><span style="color:var(--a);font-family:var(--f-mono)">99.7%</span>
-              </div>
-              <div class="data-bar"><div class="data-bar-fill" style="width:99.7%"></div></div>
-            </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:.3rem">
-                <span>机器人检测</span><span style="color:var(--a);font-family:var(--f-mono)">98.5%</span>
-              </div>
-              <div class="data-bar"><div class="data-bar-fill" style="width:98.5%"></div></div>
-            </div>
-            <div>
-              <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:.3rem">
-                <span>AI 风险识别</span><span style="color:var(--a);font-family:var(--f-mono)">96.3%</span>
-              </div>
-              <div class="data-bar"><div class="data-bar-fill" style="width:96.3%"></div></div>
-            </div>
-          </div>
-        </div>
-        <div style="text-align:center">
-          <div style="font-size:6rem;margin-bottom:1rem;animation:float 4s ease-in-out infinite">🤖</div>
-          <div style="font-family:var(--f-mono);font-size:.8rem;color:var(--t3);">
-            <div>AI-SANDBOX v2.0</div>
-            <div style="margin-top:.3rem;color:var(--ok)">● ONLINE</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ 公告区 ============ -->
-<section id="notice">
-  <div class="ct">
-    <h2 class="st r" id="noticeTitle">最新<span class="ac">公告</span></h2>
-    <p class="st-sub r">// NOTICE · 重要通知与动态</p>
-
-    <div class="notice-list" id="noticeList">
-      <div class="notice-item r">
-        <span class="notice-icon">🎉</span>
-        <span class="notice-text">极风工具箱 Pro v3.2.1 正式发布，支持 Android 14 深度适配，全新赛博风格 UI</span>
-        <span class="notice-date">2025-01-15</span>
-      </div>
-      <div class="notice-item r">
-        <span class="notice-icon">⚡</span>
-        <span class="notice-text">性能大师 v4.1.2 更新，AI 调度引擎 v2 上线，游戏帧率更稳更丝滑</span>
-        <span class="notice-date">2025-01-10</span>
-      </div>
-      <div class="notice-item r">
-        <span class="notice-icon">🔧</span>
-        <span class="notice-text">官网安全防护系统全面升级，新增 AI 沙盒实时风险分析功能</span>
-        <span class="notice-date">2025-01-05</span>
-      </div>
-      <div class="notice-item r">
-        <span class="notice-icon">💡</span>
-        <span class="notice-text">极风社区开放注册，欢迎各位玩机爱好者加入交流讨论</span>
-        <span class="notice-date">2024-12-28</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ 关于我们 ============ -->
 <section id="about">
   <div class="ct">
-    <h2 class="st r">关于<span class="ac">我们</span></h2>
-    <p class="st-sub r">// ABOUT · 为发烧而生</p>
-
-    <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;align-items:center" class="r">
-      <div class="cd" style="padding:2.5rem">
-        <h3 style="font-family:var(--f-display);font-size:1.6rem;margin-bottom:1.25rem;letter-spacing:.03em">
-          极风<span style="background:var(--a-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">工作室</span>
-        </h3>
-        <p style="color:var(--t2);line-height:2;font-size:.95rem">
-          我们是一群热爱安卓玩机的开发者，致力于打造最专业、最强大的玩机工具。
-          从 2019 年成立至今，我们始终坚持<span style="color:var(--a);font-weight:600">"为发烧而生"</span>的理念，
-          不断突破技术边界，为用户带来极致的玩机体验。
-        </p>
-        <p style="color:var(--t2);line-height:2;font-size:.95rem;margin-top:1rem">
-          我们相信每一台设备都有无限可能，而我们的使命就是帮你解锁这些可能。
-        </p>
-        <div style="margin-top:1.5rem;display:flex;gap:.75rem;flex-wrap:wrap">
-          <span class="sec-tag sec-tag-low">Magisk</span>
-          <span class="sec-tag sec-tag-low">LSPosed</span>
-          <span class="sec-tag sec-tag-low">Xposed</span>
-          <span class="sec-tag sec-tag-medium">KernelSU</span>
-          <span class="sec-tag sec-tag-high">Android 14</span>
-        </div>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:1.25rem">
-        <div class="cd" style="padding:1.5rem">
-          <div style="font-size:2rem;margin-bottom:.5rem">📧</div>
-          <div style="font-weight:600;margin-bottom:.25rem">联系邮箱</div>
-          <div style="color:var(--t2);font-size:.85rem;font-family:var(--f-mono)">support@jifeng.studio</div>
-        </div>
-        <div class="cd" style="padding:1.5rem">
-          <div style="font-size:2rem;margin-bottom:.5rem">💬</div>
-          <div style="font-weight:600;margin-bottom:.25rem">用户社区</div>
-          <div style="color:var(--t2);font-size:.85rem">加入 QQ 群与万千机友交流</div>
-        </div>
-        <div class="cd" style="padding:1.5rem">
-          <div style="font-size:2rem;margin-bottom:.5rem">⭐</div>
-          <div style="font-weight:600;margin-bottom:.25rem">开源项目</div>
-          <div style="color:var(--t2);font-size:.85rem">部分工具已在 GitHub 开源</div>
-        </div>
+    <h2 class="st">关于<span class="ac">我们</span></h2>
+    <p class="st-sub">为发烧而生</p>
+    <div class="cd" style="max-width:700px;margin:0 auto;text-align:center;padding:2rem">
+      <p style="color:#9898a8;line-height:2;font-size:.95rem">
+        极风工作室是一个专注于安卓玩机工具开发的开源团队。<br>
+        我们的项目均在 GitHub 上开源，欢迎 Star 和贡献代码。
+      </p>
+      <div style="margin-top:1.5rem">
+        <a href="https://github.com/Yangchengen-hub" target="_blank" class="bt bt-s">访问 GitHub 主页</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ Footer ============ -->
 <ft>
-  <div class="ft-grid">
-    <div class="ft-col">
-      <h4>⚡ 极风工作室</h4>
-      <p>为发烧而生，打造极致安卓玩机体验。<br>JIFENG STUDIO · Since 2019</p>
-    </div>
-    <div class="ft-col">
-      <h4>产品</h4>
-      <div class="ft-links">
-        <a href="#products">极风工具箱 Pro</a>
-        <a href="#products">极风美化中心</a>
-        <a href="#products">极风性能大师</a>
-        <a href="#products">极风隐私卫士</a>
+  <div style="max-width:1200px;margin:0 auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+      <div>
+        <h4 style="color:#00f5ff;margin-bottom:.5rem">极风工作室</h4>
+        <p style="color:#5a5a6e;font-size:.8rem">专注安卓玩机工具开发</p>
+      </div>
+      <div style="display:flex;gap:1rem">
+        <a href="jftoolbox.html" style="color:#9898a8;font-size:.8rem;text-decoration:none">极风工具箱</a>
+        <a href="jifengenvdetect.html" style="color:#9898a8;font-size:.8rem;text-decoration:none">极风环境检测</a>
+        <a href="https://github.com/Yangchengen-hub" target="_blank" style="color:#9898a8;font-size:.8rem;text-decoration:none">GitHub</a>
       </div>
     </div>
-    <div class="ft-col">
-      <h4>资源</h4>
-      <div class="ft-links">
-        <a href="#notice">公告中心</a>
-        <a href="#about">关于我们</a>
-        <a href="#">使用教程</a>
-        <a href="#">常见问题</a>
-      </div>
+    <div style="border-top:1px solid rgba(0,245,255,.1);padding-top:1rem;margin-top:1rem">
+      <p style="color:#5a5a6e;font-size:.75rem">极风工作室 &copy; 2026 | 北京时间 <span id="ftt"></span></p>
     </div>
-    <div class="ft-col">
-      <h4>技术栈</h4>
-      <div class="ft-tags">
-        <span>Android</span>
-        <span>Kotlin</span>
-        <span>Magisk</span>
-        <span>LSPosed</span>
-        <span>Root</span>
-        <span>AOSP</span>
-      </div>
-    </div>
-  </div>
-  <div class="ft-bottom">
-    <p>© 2025 <span>JIFENG STUDIO</span> · 极风工作室 · All Rights Reserved</p>
-    <p style="margin-top:.5rem;opacity:.6">
-      <span>Powered by ⚡ JIFENG Cyber Security System v3.0</span>
-    </p>
   </div>
 </ft>
 
-<!-- ============ 免责弹窗 ============ -->
-<div id="dm">
-  <div>
-    <div class="dm-icon">⚠️</div>
-    <h2>重要免责声明</h2>
-    <div class="dm-text">
-      本网站提供的所有工具仅供<strong>学习研究</strong>使用。<br><br>
-      下载、安装或使用我们的产品即表示您已了解并同意：<br>
-      1. 工具需在合法范围内使用<br>
-      2. 因不当操作造成的损失由用户自行承担<br>
-      3. 我们不对任何设备损坏或数据丢失负责<br>
-      4. 请遵守当地法律法规<br><br>
-      <strong>如您不同意以上条款，请立即关闭本页面。</strong>
-    </div>
-    <button class="db e" onclick="acceptDisclaimer()">我已阅读并同意</button>
-    <button class="dl" onclick="declineDisclaimer()">不同意，离开</button>
-  </div>
-</div>
-
-<!-- ============ 浮动AI按钮 ============ -->
-<div id="bb" onclick="toggleAI()">🤖</div>
-
-<!-- Toast 容器 -->
-<div id="toast-wrap"></div>
-
+<script src="jifeng-ui.js"></script>
 <script>
 (function(){
-  function escapeHtml(s){
-    if (s == null) return '';
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-  }
-
-  function applyContent(map){
-    if (!map) return;
-    var hero = map.hero_title;
-    if (hero && hero.content) {
-      var el = document.getElementById('heroTitle');
-      if (el) {
-        var text = escapeHtml(hero.content);
-        el.innerHTML = text.replace(/\n/g, '<br>');
-        if (hero.title) el.setAttribute('data-text', hero.title);
-      }
-    }
-    var announce = map.announcement;
-    if (announce && announce.content) {
-      var list = document.getElementById('noticeList');
-      if (list) {
-        var lines = String(announce.content).split('\n').filter(function(l){ return l.trim().length > 0; });
-        if (lines.length) {
-          var html = '';
-          lines.slice(0, 6).forEach(function(line){
-            var parts = line.split('|').map(function(p){ return p.trim(); });
-            var icon = (parts[0] && /^[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(parts[0])) ? parts.shift() : '📢';
-            var text = parts.join(' · ') || line;
-            html += '<div class="notice-item"><span class="notice-icon">' + escapeHtml(icon) + '</span><span class="notice-text">' + escapeHtml(text) + '</span></div>';
-          });
-          list.innerHTML = html;
-        }
-      }
-      if (announce.title) {
-        var nt = document.getElementById('noticeTitle');
-        if (nt) {
-          var html = announce.title.replace('{{ac}}', '<span class="ac">公告</span>');
-          if (html.indexOf('<span class="ac">') === -1) html = html.replace('公告', '<span class="ac">公告</span>');
-          nt.innerHTML = html;
-        }
-      }
-    }
-  }
-
-  function loadContent(){
-    fetch('/api/site-content?t=' + Date.now())
-      .then(function(r){ return r.json(); })
-      .then(function(d){ applyContent(d && d.content); })
-      .catch(function(){});
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadContent);
-  } else {
-    loadContent();
-  }
+  var s1=document.getElementById('js1'),v1=document.getElementById('jv1');
+  function fmtN(n){return n>=1000?(n/1000).toFixed(1)+'k':n;}
+  fetch('https://api.github.com/repos/Yangchengen-hub/JFToolbox',{headers:{'Accept':'application/vnd.github+json'}})
+    .then(function(r){return r.ok?r.json():null;})
+    .then(function(d){if(d){if(s1)s1.textContent=fmtN(d.stargazers_count||0);if(v1)v1.textContent=(d.latest_release&&d.latest_release.tag_name)?d.latest_release.tag_name.replace(/^v/,''):'--';}})
+    .catch(function(){});
 })();
 </script>
-<script src="jf-fx.js" defer></script>
 
-<!-- ============ AI 客服聊天挂件 ============ -->
-<style>
-.ai-chat-panel{position:fixed;bottom:100px;right:28px;z-index:9985;width:380px;max-width:calc(100vw - 56px);height:540px;max-height:calc(100vh - 140px);background:var(--glass-bg-strong,#1a1a2e);backdrop-filter:var(--glass-blur-strong,blur(30px));-webkit-backdrop-filter:var(--glass-blur-strong,blur(30px));border:1px solid rgba(0,245,255,.25);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(0,245,255,.1);display:none;flex-direction:column;overflow:hidden;opacity:0;transform:translateY(20px) scale(.95);transition:opacity .3s cubic-bezier(.34,1.56,.64,1),transform .3s cubic-bezier(.34,1.56,.64,1)}
-.ai-chat-panel.show{display:flex;opacity:1;transform:translateY(0) scale(1)}
-.ai-chat-head{padding:.9rem 1.1rem;background:linear-gradient(135deg,rgba(0,245,255,.12),rgba(123,47,247,.1));border-bottom:1px solid rgba(0,245,255,.15);display:flex;align-items:center;gap:.65rem}
-.ai-chat-avatar{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#00f5ff,#7b2ff7);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;box-shadow:0 0 18px rgba(0,245,255,.4)}
-.ai-chat-head .ai-chat-title{flex:1;font-family:'Orbitron','Noto Sans SC',sans-serif;font-size:.92rem;font-weight:700;color:#00f5ff;letter-spacing:.03em}
-.ai-chat-head .ai-chat-sub{font-size:.68rem;color:#9898a8;margin-top:1px;font-family:'JetBrains Mono',monospace}
-.ai-chat-head .ai-chat-sub::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#39ff14;margin-right:5px;vertical-align:middle;box-shadow:0 0 6px #39ff14;animation:aiPulse 2s infinite}
-@keyframes aiPulse{0%,100%{opacity:1}50%{opacity:.4}}
-.ai-chat-close{width:28px;height:28px;border-radius:50%;background:rgba(255,42,109,.12);border:1px solid rgba(255,42,109,.3);color:#ff2a6d;cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;transition:all .25s}
-.ai-chat-close:hover{background:rgba(255,42,109,.3);transform:rotate(90deg)}
-.ai-chat-body{flex:1;overflow-y:auto;padding:1rem 1.1rem;display:flex;flex-direction:column;gap:.65rem;scroll-behavior:smooth}
-.ai-chat-body::-webkit-scrollbar{width:5px}
-.ai-chat-body::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#00f5ff,#7b2ff7);border-radius:3px}
-.ai-msg{max-width:85%;padding:.65rem .9rem;border-radius:14px;font-size:.85rem;line-height:1.55;animation:aiMsgIn .3s cubic-bezier(.34,1.56,.64,1) both;word-wrap:break-word;white-space:pre-wrap}
-@keyframes aiMsgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.ai-msg.user{align-self:flex-end;background:linear-gradient(135deg,#00f5ff,#00b4d8);color:#0a0a0f;border-bottom-right-radius:4px;box-shadow:0 2px 12px rgba(0,245,255,.25)}
-.ai-msg.bot{align-self:flex-start;background:rgba(0,245,255,.08);border:1px solid rgba(0,245,255,.18);color:#e8e8f0;border-bottom-left-radius:4px}
-.ai-msg.bot b,.ai-msg.bot strong{color:#00f5ff}
-.ai-msg.bot code{background:rgba(0,0,0,.4);padding:.1em .4em;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#39ff14}
-.ai-msg.sys{align-self:center;background:rgba(255,234,0,.06);border:1px solid rgba(255,234,0,.2);color:#ffea00;font-size:.72rem;text-align:center}
-.ai-typing{display:inline-flex;gap:.3rem;padding:.65rem .9rem;background:rgba(0,245,255,.08);border:1px solid rgba(0,245,255,.18);border-radius:14px;border-bottom-left-radius:4px;align-self:flex-start}
-.ai-typing span{width:6px;height:6px;border-radius:50%;background:#00f5ff;animation:aiTyping 1.4s infinite}
-.ai-typing span:nth-child(2){animation-delay:.2s}
-.ai-typing span:nth-child(3){animation-delay:.4s}
-@keyframes aiTyping{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
-.ai-chat-foot{padding:.75rem 1rem;border-top:1px solid rgba(0,245,255,.12);display:flex;gap:.5rem;background:rgba(0,0,0,.25)}
-.ai-chat-input{flex:1;padding:.6rem .85rem;border-radius:12px;border:1px solid rgba(0,245,255,.2);background:rgba(0,0,0,.35);color:#e8e8f0;font-size:.85rem;font-family:inherit;transition:all .25s;resize:none;max-height:80px;min-height:38px}
-.ai-chat-input:focus{outline:none;border-color:#00f5ff;box-shadow:0 0 0 3px rgba(0,245,255,.12)}
-.ai-chat-send{width:38px;height:38px;border-radius:12px;border:none;background:linear-gradient(135deg,#00f5ff,#7b2ff7);color:#fff;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all .25s;flex-shrink:0}
-.ai-chat-send:hover{transform:scale(1.08);box-shadow:0 4px 16px rgba(0,245,255,.4)}
-.ai-chat-send:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.ai-chat-quick{display:flex;gap:.4rem;flex-wrap:wrap;padding:0 .6rem .5rem}
-.ai-chat-quick button{padding:.28rem .65rem;border-radius:14px;background:rgba(0,245,255,.06);border:1px solid rgba(0,245,255,.2);color:#9898a8;font-size:.72rem;cursor:pointer;transition:all .2s;font-family:inherit}
-.ai-chat-quick button:hover{background:rgba(0,245,255,.15);color:#00f5ff;border-color:#00f5ff}
-@media(max-width:480px){.ai-chat-panel{right:12px;left:12px;width:auto;bottom:90px;height:70vh}}
-</style>
-
-<div class="ai-chat-panel" id="aiChatPanel" role="dialog" aria-label="极风智答 AI 客服">
-  <div class="ai-chat-head">
-    <div class="ai-chat-avatar">🤖</div>
-    <div style="flex:1">
-      <div class="ai-chat-title">极风智答</div>
-      <div class="ai-chat-sub">AI 客服 · 玩机助手</div>
-    </div>
-    <button class="ai-chat-close" id="aiChatClose" aria-label="关闭">✕</button>
-  </div>
-  <div class="ai-chat-body" id="aiChatBody">
-    <div class="ai-msg bot">👋 你好！我是「极风智答」，极风工作室的 AI 客服。可以问我：
-• 如何下载安装极风工具箱 / 环境检测
-• 玩机文化：root、Magisk、KernelSU、Xposed
-• 环境检测的用途与原理
-• 工作室相关疑问</div>
-    <div class="ai-chat-quick" id="aiChatQuick">
-      <button data-q="怎么下载安装极风工具箱？">下载安装</button>
-      <button data-q="极风环境检测有什么用？">环境检测</button>
-      <button data-q="玩机有什么风险？">玩机风险</button>
-      <button data-q="工作室有哪些作品？">工作室介绍</button>
-    </div>
-  </div>
-  <div class="ai-chat-foot">
-    <textarea class="ai-chat-input" id="aiChatInput" placeholder="输入你的问题…" rows="1" maxlength="800"></textarea>
-    <button class="ai-chat-send" id="aiChatSend" aria-label="发送">➤</button>
-  </div>
-</div>
-
-<script>
-(function(){
-  var panel=document.getElementById('aiChatPanel');
-  var body=document.getElementById('aiChatBody');
-  var input=document.getElementById('aiChatInput');
-  var sendBtn=document.getElementById('aiChatSend');
-  var closeBtn=document.getElementById('aiChatClose');
-  var quickBox=document.getElementById('aiChatQuick');
-  var sessionId=localStorage.getItem('jf_ai_sid')||('');
-  var history=[];
-  var isOpen=false;
-  var sending=false;
-
-  // 覆盖原 toggleAI
-  window.toggleAI=function(){
-    if(!isOpen){
-      panel.classList.add('show');
-      isOpen=true;
-      setTimeout(function(){input.focus();body.scrollTop=body.scrollHeight;},250);
-    }else{
-      panel.classList.remove('show');
-      isOpen=false;
-    }
-  };
-
-  if(closeBtn)closeBtn.addEventListener('click',function(){
-    panel.classList.remove('show');
-    isOpen=false;
-  });
-
-  // 快捷问题
-  if(quickBox)quickBox.addEventListener('click',function(e){
-    var b=e.target.closest('button[data-q]');
-    if(!b)return;
-    input.value=b.getAttribute('data-q');
-    doSend();
-  });
-
-  // 自适应高度
-  input.addEventListener('input',function(){
-    input.style.height='auto';
-    input.style.height=Math.min(input.scrollHeight,80)+'px';
-  });
-  input.addEventListener('keydown',function(e){
-    if(e.key==='Enter'&&!e.shiftKey){
-      e.preventDefault();
-      doSend();
-    }
-  });
-  sendBtn.addEventListener('click',doSend);
-
-  function escapeHtml(s){
-    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-  function renderMd(s){
-    s=escapeHtml(s);
-    s=s.replace(/```([\s\S]*?)```/g,function(_,c){return '<code>'+c.trim()+'</code>';});
-    s=s.replace(/`([^`]+)`/g,'<code>$1</code>');
-    s=s.replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');
-    s=s.replace(/\*([^*]+)\*/g,'<i>$1</i>');
-    s=s.replace(/^[-•]\s+/gm,'• ');
-    return s;
-  }
-  function addMsg(role,text){
-    var d=document.createElement('div');
-    d.className='ai-msg '+(role==='user'?'user':'bot');
-    if(role==='user'){d.textContent=text;}
-    else{d.innerHTML=renderMd(text);}
-    body.appendChild(d);
-    body.scrollTop=body.scrollHeight;
-    return d;
-  }
-  function addTyping(){
-    var d=document.createElement('div');
-    d.className='ai-typing';
-    d.id='aiTyping';
-    d.innerHTML='<span></span><span></span><span></span>';
-    body.appendChild(d);
-    body.scrollTop=body.scrollHeight;
-  }
-  function removeTyping(){var t=document.getElementById('aiTyping');if(t)t.remove();}
-
-  function doSend(){
-    if(sending)return;
-    var msg=(input.value||'').trim();
-    if(!msg)return;
-    addMsg('user',msg);
-    history.push({role:'user',content:msg});
-    input.value='';
-    input.style.height='auto';
-    sending=true;
-    sendBtn.disabled=true;
-    addTyping();
-
-    fetch('/api/chat',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({message:msg,session_id:sessionId||undefined,history:history.slice(-6)})
-    })
-    .then(function(r){return r.ok?r.json():{success:false,error:'HTTP '+r.status};})
-    .then(function(d){
-      removeTyping();
-      if(d && d.success && d.reply){
-        addMsg('bot',d.reply);
-        history.push({role:'assistant',content:d.reply});
-        if(d.session_id){sessionId=d.session_id;localStorage.setItem('jf_ai_sid',sessionId);}
-        if(d.fallback){
-          var s=document.createElement('div');
-          s.className='ai-msg sys';
-          s.textContent='⚠ 离线模式 · 管理员未配置 AI';
-          body.appendChild(s);
-          body.scrollTop=body.scrollHeight;
-        }
-      }else{
-        addMsg('bot','抱歉，我暂时无法回复，请稍后再试。');
-      }
-    })
-    .catch(function(e){
-      removeTyping();
-      addMsg('bot','网络异常，请检查连接后重试。');
-    })
-    .finally(function(){
-      sending=false;
-      sendBtn.disabled=false;
-      input.focus();
-    });
-  }
-
-  // ESC 关闭
-  document.addEventListener('keydown',function(e){
-    if(e.key==='Escape'&&isOpen){panel.classList.remove('show');isOpen=false;}
-  });
-})();
-</script>
 </body>
 </html>
