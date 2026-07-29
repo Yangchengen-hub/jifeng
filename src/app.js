@@ -1183,6 +1183,190 @@ app.get('/api/admin/ws-stats', authMiddleware, (req, res) => {
   res.json({ stats });
 });
 
+// ============ AI 服务 API ============
+// 提供客服、内容审核、Release 摘要能力，无 Key 时自动降级到本地规则引擎
+
+const aiService = require('./ai-service');
+
+// 初始化 AI 同步状态表（幂等）
+try {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS ai_release_sync (
+      repo TEXT NOT NULL,
+      tag_name TEXT NOT NULL,
+      published_at TEXT,
+      synced_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      announcement_id INTEGER,
+      PRIMARY KEY (repo, tag_name)
+    );
+    CREATE TABLE IF NOT EXISTS ai_chat_sessions (
+      session_id TEXT PRIMARY KEY,
+      ip TEXT,
+      ua TEXT,
+      messages TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE INDEX IF NOT EXISTS idx_ai_chat_sessions_ip ON ai_chat_sessions(ip);
+  `);
+} catch (e) {
+  console.error('[DB] AI 表初始化失败:', e.message);
+}
+
+const TRACKED_REPOS = [
+  { repo: 'Yangchengen-hub/JFToolbox', label: '极风工具箱', type: 'release' },
+  { repo: 'Yangchengen-hub/JifengEnvDetect', label: '极风环境检测', type: 'release' },
+];
+
+async function fetchGitHubLatest(repo) {
+  const url = `https://api.github.com/repos/${repo}/releases/latest`;
+  const res = await fetch(url, {
+    headers: {
+      Accept: 'application/vnd.github+json',
+      'User-Agent': 'jifeng-studio-sync',
+      ...(process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {}),
+    },
+  });
+  if (!res.ok) {
+    const t = await res.text().catch(() => '');
+    throw new Error(`GitHub ${res.status}: ${t.slice(0, 200)}`);
+  }
+  return res.json();
+}
+
+async function syncOneRepo(repoInfo) {
+  const release = await fetchGitHubLatest(repoInfo.repo);
+  if (!release || !release.tag_name) {
+    return { repo: repoInfo.repo, status: 'no_release' };
+  }
+
+  // 检查是否已同步
+  const existing = db.prepare('SELECT * FROM ai_release_sync WHERE repo=? AND tag_name=?').get(repoInfo.repo, release.tag_name);
+  if (existing) {
+    return { repo: repoInfo.repo, tag: release.tag_name, status: 'already_synced', announcement_id: existing.announcement_id };
+  }
+
+  // AI 摘要
+  const summary = await aiService.summarizeRelease(repoInfo.repo, release);
+
+  // 创建公告（默认可见）
+  const title = `[${repoInfo.label}] ${summary.title}`;
+  const content = `${summary.body}\n\n---\n来源：${summary.source}`;
+  const announcement = wsServer.createAnnouncement(title, content, 'release', 5, 'ai-sync');
+
+  // 记录同步
+  db.prepare('INSERT INTO ai_release_sync (repo, tag_name, published_at, announcement_id) VALUES (?,?,?,?)')
+    .run(repoInfo.repo, release.tag_name, release.published_at || null, announcement.id || null);
+
+  logSecurityEvent('ai_release_synced', 'low', null, `AI 同步 ${repoInfo.repo} ${release.tag_name}`, { repo: repoInfo.repo, tag: release.tag_name, announcement_id: announcement.id });
+
+  return {
+    repo: repoInfo.repo,
+    tag: release.tag_name,
+    status: 'synced',
+    announcement_id: announcement.id,
+    summary,
+  };
+}
+
+// Vercel Cron: 每小时检查仓库更新（无鉴权，使用 VERCEL_CRON_SECRET 校验）
+app.get('/api/cron/sync-releases', async (req, res) => {
+  // Vercel cron 会带 x-vercel-cron 头；同时支持 ?secret= 手动触发
+  const isVercelCron = req.headers['x-vercel-cron'] === '1';
+  const secretOk = req.query.secret && req.query.secret === (process.env.VERCEL_CRON_SECRET || process.env.CRON_SECRET);
+  if (!isVercelCron && !secretOk) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+
+  const results = [];
+  for (const repoInfo of TRACKED_REPOS) {
+    try {
+      results.push(await syncOneRepo(repoInfo));
+    } catch (e) {
+      results.push({ repo: repoInfo.repo, status: 'error', message: e.message });
+    }
+  }
+  res.json({ success: true, results, timestamp: new Date().toISOString() });
+});
+
+// 管理员手动触发同步
+app.post('/api/admin/sync-releases', authMiddleware, async (req, res) => {
+  const results = [];
+  for (const repoInfo of TRACKED_REPOS) {
+    try {
+      results.push(await syncOneRepo(repoInfo));
+    } catch (e) {
+      results.push({ repo: repoInfo.repo, status: 'error', message: e.message });
+    }
+  }
+  logSecurityEvent('admin_sync_releases', 'low', req, '管理员手动触发仓库同步', { results });
+  res.json({ success: true, results });
+});
+
+// 同步状态查询
+app.get('/api/admin/sync-status', authMiddleware, (req, res) => {
+  const rows = db.prepare('SELECT * FROM ai_release_sync ORDER BY synced_at DESC').all();
+  const tracked = TRACKED_REPOS.map((r) => ({ repo: r.repo, label: r.label }));
+  res.json({ success: true, tracked, sync_history: rows });
+});
+
+// AI 配置查询（不返回 key 明文）
+app.get('/api/admin/ai-config', authMiddleware, (req, res) => {
+  const cfg = aiService.getConfig();
+  res.json({
+    success: true,
+    config: {
+      enabled: cfg.enabled,
+      api_base: cfg.apiBase,
+      model: cfg.model,
+      has_key: !!cfg.apiKey,
+      key_preview: cfg.apiKey ? cfg.apiKey.slice(0, 4) + '****' + cfg.apiKey.slice(-4) : '',
+    },
+  });
+});
+
+// 公开 AI 客服端点（限流 + 会话）
+app.post('/api/chat', rateLimitMiddleware(15, 60 * 1000, 'ai_chat'), async (req, res) => {
+  const { message, session_id, history } = req.body || {};
+  if (!message || !message.trim()) {
+    return res.status(400).json({ error: '消息不能为空' });
+  }
+  if (String(message).length > 800) {
+    return res.status(400).json({ error: '消息过长（≤800 字符）' });
+  }
+
+  const sid = session_id || aiService.newSessionId();
+  const hist = Array.isArray(history) ? history.slice(-6) : [];
+
+  // 简单会话持久化
+  try {
+    db.prepare(`
+      INSERT INTO ai_chat_sessions (session_id, ip, ua, messages, updated_at)
+      VALUES (?,?,?,?,datetime('now'))
+      ON CONFLICT(session_id) DO UPDATE SET
+        messages=excluded.messages, updated_at=datetime('now')
+    `).run(sid, req.ip, (req.headers['user-agent'] || '').slice(0, 200), JSON.stringify(hist.concat([{ role: 'user', content: message }])).slice(0, 8000));
+  } catch (_) {}
+
+  const r = await aiService.customerService(message, hist, { ip: req.ip });
+  res.json({
+    success: r.ok,
+    session_id: sid,
+    reply: r.content,
+    model: r.model || (r.fallback ? 'local-fallback' : 'unknown'),
+    fallback: !!r.fallback,
+  });
+});
+
+// 增强：管理员 AI 内容审核
+app.post('/api/admin/ai-moderate', authMiddleware, async (req, res) => {
+  const { content, nickname } = req.body || {};
+  if (!content) return res.status(400).json({ error: 'content 为必填' });
+  const r = await aiService.moderate({ content, nickname: nickname || '', ip: req.ip });
+  logSecurityEvent('ai_moderate', r.verdict === 'reject' ? 'high' : 'low', req, `AI 审核: ${r.verdict}`, r);
+  res.json({ success: true, ...r });
+});
+
 // ============ 设备指纹 API ============
 
 app.post('/api/device/fingerprint', (req, res) => {

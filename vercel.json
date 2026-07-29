@@ -44,5 +44,11 @@
     }
   ],
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "crons": [
+    {
+      "path": "/api/cron/sync-releases",
+      "schedule": "0 * * * *"
+    }
+  ]
 }

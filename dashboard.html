@@ -185,6 +185,7 @@ body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
 <div class="nav-item" data-panel="devices"><span>&#128241;</span> <span>设备封禁</span> <span id="dev-badge" class="badge" style="display:none">0</span></div>
 <div class="nav-item" data-panel="appeals"><span>&#128221;</span> <span>申诉管理</span> <span id="appeal-badge" class="badge" style="display:none">0</span></div>
 <div class="nav-item" data-panel="bugs"><span>&#128030;</span> <span>Bug</span> <span id="bug-badge" class="badge" style="display:none">0</span></div>
+<div class="nav-item" data-panel="ai"><span>&#129302;</span> <span>AI 智能</span></div>
 <div class="nav-item" data-panel="settings"><span>&#9881;</span> <span>设置</span></div>
 </div>
 
@@ -416,6 +417,95 @@ Bug 反馈
 <button onclick="clearAllData()" class="bt bt-err">&#128465; 清除所有数据</button>
 </div>
 <p style="color:var(--t3);font-size:.78rem;margin-top:1rem;font-family:var(--f-mono)">此操作不可撤销，请谨慎使用！</p>
+</div>
+</div>
+
+<!-- AI 智能面板 -->
+<div id="panel-ai" class="panel">
+<!-- AI 服务配置 -->
+<div class="cd" style="margin-bottom:1.25rem;border:1px solid rgba(0,245,255,.3);background:linear-gradient(135deg,rgba(0,245,255,.08),rgba(123,47,247,.05))">
+<div class="corner corner-tl"></div><div class="corner corner-tr"></div>
+<div class="corner corner-bl"></div><div class="corner corner-br"></div>
+<h4 style="color:var(--a);margin-bottom:1.25rem;font-family:var(--f-display);letter-spacing:.08em;display:flex;align-items:center;gap:.5rem">
+<span style="width:4px;height:18px;background:var(--a-grad);border-radius:2px"></span>
+&#129302; AI 服务配置
+</h4>
+<div id="aiConfigBox" style="color:var(--t3);font-size:.85rem;margin-bottom:1rem">加载中...</div>
+<div style="display:flex;gap:.75rem;flex-wrap:wrap">
+<button onclick="loadAIConfig()" class="bt bt-s" style="padding:.5rem 1rem;font-size:.78rem">&#128260; 刷新状态</button>
+<a href="https://api.deepseek.com" target="_blank" rel="noopener" class="bt bt-s" style="padding:.5rem 1rem;font-size:.78rem;text-decoration:none">&#128279; 申请 API Key</a>
+</div>
+<details style="margin-top:1rem;color:var(--t3);font-size:.78rem;font-family:var(--f-mono)">
+<summary style="cursor:pointer;color:var(--a);padding:.3rem 0">配置说明 / 环境变量</summary>
+<div style="padding:.75rem 0 0 1rem;line-height:1.9">
+<div><span class="tree-key" style="color:var(--neon-pink)">AI_API_KEY</span> — AI 服务密钥（必填启用真实 AI）</div>
+<div><span class="tree-key" style="color:var(--neon-pink)">AI_API_BASE</span> — OpenAI 兼容接口基址（默认 DeepSeek）</div>
+<div><span class="tree-key" style="color:var(--neon-pink)">AI_MODEL</span> — 模型名（默认 deepseek-chat）</div>
+<div><span class="tree-key" style="color:var(--neon-pink)">GITHUB_TOKEN</span> — GitHub Token（可选，提升同步配额）</div>
+<div style="margin-top:.4rem;color:var(--ok)">&#9989; 无 Key 时自动降级为本地规则引擎，服务不中断</div>
+</div>
+</details>
+</div>
+
+<!-- 仓库自动同步 -->
+<div class="cd" style="margin-bottom:1.25rem;border:1px solid rgba(57,255,20,.25);background:linear-gradient(135deg,rgba(57,255,20,.05),rgba(0,245,255,.04))">
+<div class="corner corner-tl" style="border-color:var(--ok)"></div><div class="corner corner-tr" style="border-color:var(--ok)"></div>
+<div class="corner corner-bl" style="border-color:var(--ok)"></div><div class="corner corner-br" style="border-color:var(--ok)"></div>
+<h4 style="color:var(--ok);margin-bottom:1.25rem;font-family:var(--f-display);letter-spacing:.08em;display:flex;align-items:center;gap:.5rem">
+<span style="width:4px;height:18px;background:linear-gradient(180deg,#39ff14,#00f5ff);border-radius:2px"></span>
+&#128260; 仓库自动同步
+</h4>
+<div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem">
+<button onclick="triggerSyncReleases()" id="syncBtn" class="bt bt-p" style="padding:.5rem 1.1rem;font-size:.82rem">&#9889; 立即同步</button>
+<span id="syncLastTime" style="color:var(--t3);font-size:.75rem;font-family:var(--f-mono)">--</span>
+</div>
+<div style="margin-bottom:.5rem;color:var(--t3);font-size:.75rem;font-family:var(--f-mono);letter-spacing:.05em">// TRACKED REPOSITORIES</div>
+<div id="aiTrackedRepos" style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem"></div>
+
+<div style="margin-bottom:.5rem;color:var(--t3);font-size:.75rem;font-family:var(--f-mono);letter-spacing:.05em">// SYNC HISTORY · 最近 20 条</div>
+<div class="cyber-table-wrap">
+<table class="cyber-table" id="aiSyncTable">
+<thead><tr><th>仓库</th><th>版本</th><th>发布时间</th><th>同步时间</th><th>公告ID</th><th>状态</th></tr></thead>
+<tbody id="aiSyncTbody">
+<tr><td colspan="6" style="text-align:center;color:var(--t3);padding:1.5rem">暂无同步记录</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- AI 内容审核 -->
+<div class="cd" style="margin-bottom:1.25rem;border:1px solid rgba(255,234,0,.25);background:linear-gradient(135deg,rgba(255,234,0,.05),rgba(255,107,0,.04))">
+<div class="corner corner-tl" style="border-color:var(--warn)"></div><div class="corner corner-tr" style="border-color:var(--warn)"></div>
+<div class="corner corner-bl" style="border-color:var(--warn)"></div><div class="corner corner-br" style="border-color:var(--warn)"></div>
+<h4 style="color:var(--warn);margin-bottom:1.25rem;font-family:var(--f-display);letter-spacing:.08em;display:flex;align-items:center;gap:.5rem">
+<span style="width:4px;height:18px;background:linear-gradient(180deg,#ffea00,#ff6b00);border-radius:2px"></span>
+&#128269; AI 内容审核（测试）
+</h4>
+<p style="color:var(--t2);font-size:.82rem;margin-bottom:.75rem">输入文本内容，AI 将判断是否包含违规/敏感信息，并给出拦截建议。</p>
+<textarea id="aiModerateInput" placeholder="输入待审核内容，例如用户评论、申诉文本..." rows="3" style="width:100%;padding:.75rem;border-radius:10px;border:1px solid var(--bdr);background:var(--bg2);color:var(--t);font-family:var(--f-mono);font-size:.82rem;resize:vertical;box-sizing:border-box;margin-bottom:.75rem"></textarea>
+<div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.75rem">
+<input type="text" id="aiModerateNick" placeholder="昵称（可选）" style="padding:.5rem .8rem;border-radius:8px;border:1px solid var(--bdr);background:var(--bg2);color:var(--t);font-family:var(--f-mono);font-size:.78rem;width:180px">
+<button onclick="testAIModerate()" class="bt bt-p" style="padding:.5rem 1rem;font-size:.78rem">&#9889; 审核</button>
+<span id="aiModerateStatus" style="color:var(--t3);font-size:.75rem"></span>
+</div>
+<div id="aiModerateResult" style="display:none;padding:1rem;background:rgba(0,0,0,.25);border-radius:10px;border:1px solid var(--bdr);font-size:.82rem"></div>
+</div>
+
+<!-- AI 客服测试 -->
+<div class="cd" style="border:1px solid rgba(123,47,247,.25);background:linear-gradient(135deg,rgba(123,47,247,.06),rgba(255,0,212,.04))">
+<div class="corner corner-tl" style="border-color:var(--neon-purple)"></div><div class="corner corner-tr" style="border-color:var(--neon-purple)"></div>
+<div class="corner corner-bl" style="border-color:var(--neon-purple)"></div><div class="corner corner-br" style="border-color:var(--neon-purple)"></div>
+<h4 style="color:var(--neon-purple);margin-bottom:1.25rem;font-family:var(--f-display);letter-spacing:.08em;display:flex;align-items:center;gap:.5rem">
+<span style="width:4px;height:18px;background:linear-gradient(180deg,#7b2ff7,#ff00d4);border-radius:2px"></span>
+&#128172; AI 客服测试（与官网一致）
+</h4>
+<div id="aiChatTest" style="max-height:320px;overflow-y:auto;padding:.75rem;background:rgba(0,0,0,.25);border-radius:10px;border:1px solid var(--bdr);margin-bottom:.75rem;font-size:.82rem;line-height:1.7">
+<div style="color:var(--t3);text-align:center;padding:1rem">// 输入问题开始测试</div>
+</div>
+<div style="display:flex;gap:.5rem">
+<input type="text" id="aiChatTestInput" placeholder="输入测试问题..." style="flex:1;padding:.55rem .8rem;border-radius:8px;border:1px solid var(--bdr);background:var(--bg2);color:var(--t);font-size:.82rem;font-family:inherit" onkeydown="if(event.key==='Enter')testAIChat()">
+<button onclick="testAIChat()" class="bt bt-p" style="padding:.5rem 1rem;font-size:.78rem">&#10148; 发送</button>
+</div>
 </div>
 </div>
 </div>
@@ -734,9 +824,220 @@ document.querySelectorAll('.dash-sidebar .nav-item').forEach(item=>{
     if(item.dataset.panel==='devices')loadDevices();
     if(item.dataset.panel==='appeals')loadAppeals();
     if(item.dataset.panel==='bugs')loadBugs();
+    if(item.dataset.panel==='ai')loadAIPanel();
     if(item.dataset.panel==='settings')loadQQBinding();
   });
 });
+
+/* ===== AI 智能面板 ===== */
+async function loadAIConfig(){
+  const box=document.getElementById('aiConfigBox');
+  if(!box)return;
+  box.innerHTML='<span style="color:var(--t3)">&#8987; 加载中...</span>';
+  try{
+    const r=await fetch('/api/admin/ai-config',{credentials:'include'});
+    if(r.status===401){box.innerHTML='<span style="color:var(--warn)">&#9888; 请先登录</span>';return;}
+    const d=await r.json();
+    const c=d.config||{};
+    const enabled=c.enabled;
+    const statusColor=enabled?'var(--ok)':'var(--warn)';
+    const statusIcon=enabled?'&#9989;':'&#9888;';
+    const statusText=enabled?'AI 已启用（真实模型）':'未配置 Key · 本地规则引擎';
+    box.innerHTML=`
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem">
+        <div style="padding:.75rem;background:rgba(0,0,0,.2);border-radius:10px;border:1px solid var(--bdr)">
+          <div style="color:var(--t3);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">状态</div>
+          <div style="color:${statusColor};font-weight:600;font-size:.9rem">${statusIcon} ${statusText}</div>
+        </div>
+        <div style="padding:.75rem;background:rgba(0,0,0,.2);border-radius:10px;border:1px solid var(--bdr)">
+          <div style="color:var(--t3);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">模型</div>
+          <div style="color:var(--a);font-family:var(--f-mono);font-size:.82rem;word-break:break-all">${c.model||'-'}</div>
+        </div>
+        <div style="padding:.75rem;background:rgba(0,0,0,.2);border-radius:10px;border:1px solid var(--bdr)">
+          <div style="color:var(--t3);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">接口基址</div>
+          <div style="color:var(--a);font-family:var(--f-mono);font-size:.75rem;word-break:break-all">${c.api_base||'-'}</div>
+        </div>
+        <div style="padding:.75rem;background:rgba(0,0,0,.2);border-radius:10px;border:1px solid var(--bdr)">
+          <div style="color:var(--t3);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.3rem">API Key</div>
+          <div style="color:${c.has_key?'var(--ok)':'var(--warn)'};font-family:var(--f-mono);font-size:.82rem">${c.has_key?(c.key_preview||'****'):'未配置'}</div>
+        </div>
+      </div>
+    `;
+  }catch(e){
+    box.innerHTML='<span style="color:var(--err)">&#10060; 加载失败: '+e.message+'</span>';
+  }
+}
+
+async function loadSyncStatus(){
+  const tbody=document.getElementById('aiSyncTbody');
+  const reposBox=document.getElementById('aiTrackedRepos');
+  const lastTime=document.getElementById('syncLastTime');
+  if(tbody)tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--t3);padding:1rem">&#8987; 加载中...</td></tr>';
+  try{
+    const r=await fetch('/api/admin/sync-status',{credentials:'include'});
+    if(r.status===401){if(tbody)tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--warn)">请先登录</td></tr>';return;}
+    const d=await r.json();
+    // 跟踪的仓库列表
+    if(reposBox){
+      const tracked=d.tracked||[];
+      reposBox.innerHTML=tracked.map(t=>`
+        <div style="display:flex;align-items:center;gap:.6rem;padding:.55rem .75rem;background:rgba(0,0,0,.2);border-radius:8px;border:1px solid var(--bdr)">
+          <span style="color:var(--ok)">&#128193;</span>
+          <span style="color:var(--t);font-family:var(--f-mono);font-size:.78rem">${t.label}</span>
+          <span style="color:var(--t3);font-size:.72rem;font-family:var(--f-mono);margin-left:auto">${t.repo}</span>
+        </div>
+      `).join('')||'<div style="color:var(--t3);font-size:.78rem">无</div>';
+    }
+    // 同步历史
+    const history=d.sync_history||[];
+    if(tbody){
+      if(history.length===0){
+        tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--t3);padding:1.5rem">暂无同步记录</td></tr>';
+      }else{
+        tbody.innerHTML=history.slice(0,20).map(h=>{
+          const label=(d.tracked||[]).find(t=>t.repo===h.repo)?.label||h.repo;
+          const statusBadge=h.announcement_id?'<span class="tag tag-ok">已发布</span>':'<span class="tag tag-info">已记录</span>';
+          return `<tr>
+            <td style="color:var(--t)">${label}</td>
+            <td style="font-family:var(--f-mono);color:var(--a)">${h.tag_name||'-'}</td>
+            <td style="font-size:.72rem;color:var(--t2)">${h.published_at?new Date(h.published_at).toLocaleString('zh-CN'):'-'}</td>
+            <td style="font-size:.72rem;color:var(--t2)">${h.synced_at?new Date(h.synced_at+'Z').toLocaleString('zh-CN'):'-'}</td>
+            <td style="font-family:var(--f-mono);color:var(--neon-pink)">${h.announcement_id||'-'}</td>
+            <td>${statusBadge}</td>
+          </tr>`;
+        }).join('');
+      }
+    }
+    // 最近同步时间
+    if(lastTime){
+      if(history.length>0){
+        lastTime.textContent='最近同步: '+new Date(history[0].synced_at+'Z').toLocaleString('zh-CN');
+      }else{
+        lastTime.textContent='尚无同步记录';
+      }
+    }
+  }catch(e){
+    if(tbody)tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--err)">加载失败: '+e.message+'</td></tr>';
+  }
+}
+
+async function triggerSyncReleases(){
+  const btn=document.getElementById('syncBtn');
+  const statusEl=document.getElementById('syncLastTime');
+  if(btn){btn.disabled=true;btn.innerHTML='&#8987; 同步中...';}
+  if(statusEl)statusEl.textContent='正在同步，请稍候...';
+  try{
+    const r=await fetch('/api/admin/sync-releases',{method:'POST',credentials:'include'});
+    const d=await r.json();
+    if(!r.ok){
+      if(statusEl)statusEl.innerHTML='<span style="color:var(--err)">&#10060; '+(d.error||'同步失败')+'</span>';
+      return;
+    }
+    const results=d.results||[];
+    const okCount=results.filter(x=>x.status==='synced').length;
+    const skipCount=results.filter(x=>x.status==='already_synced').length;
+    const errCount=results.filter(x=>x.status==='error').length;
+    let msg=`&#9989; 同步完成 · 新增 ${okCount} · 已同步 ${skipCount}`;
+    if(errCount>0)msg+=` · <span style="color:var(--err)">失败 ${errCount}</span>`;
+    if(statusEl)statusEl.innerHTML=msg;
+    await loadSyncStatus();
+  }catch(e){
+    if(statusEl)statusEl.innerHTML='<span style="color:var(--err)">&#10060; '+e.message+'</span>';
+  }finally{
+    if(btn){btn.disabled=false;btn.innerHTML='&#9889; 立即同步';}
+  }
+}
+
+async function testAIModerate(){
+  const input=document.getElementById('aiModerateInput');
+  const nickInput=document.getElementById('aiModerateNick');
+  const resultBox=document.getElementById('aiModerateResult');
+  const statusEl=document.getElementById('aiModerateStatus');
+  if(!input||!input.value.trim()){
+    if(statusEl)statusEl.innerHTML='<span style="color:var(--warn)">请输入待审核内容</span>';
+    return;
+  }
+  if(resultBox)resultBox.style.display='none';
+  if(statusEl)statusEl.innerHTML='&#8987; 审核中...';
+  try{
+    const r=await fetch('/api/admin/ai-moderate',{
+      method:'POST',
+      credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({content:input.value,nickname:nickInput?nickInput.value:''})
+    });
+    const d=await r.json();
+    if(!r.ok){
+      if(statusEl)statusEl.innerHTML='<span style="color:var(--err)">&#10060; '+(d.error||'审核失败')+'</span>';
+      return;
+    }
+    if(statusEl)statusEl.innerHTML='&#9989; 审核完成';
+    const verdict=d.verdict;
+    const vColor=verdict==='reject'?'var(--err)':verdict==='review'?'var(--warn)':'var(--ok)';
+    const vLabel=verdict==='reject'?'拦截':verdict==='review'?'人工复审':'放行';
+    const vTag=verdict==='reject'?'tag-rejected':verdict==='review'?'tag-pending':'tag-approved';
+    if(resultBox){
+      resultBox.style.display='block';
+      resultBox.innerHTML=`
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
+          <span class="tag ${vTag}">${vLabel}</span>
+          <span style="color:var(--t3);font-size:.75rem;font-family:var(--f-mono)">verdict: ${verdict}</span>
+          <span style="color:var(--t3);font-size:.75rem;font-family:var(--f-mono)">score: ${d.score||'-'}</span>
+          ${d.fallback?'<span class="tag tag-info">本地规则</span>':'<span class="tag tag-ok">AI</span>'}
+        </div>
+        ${d.reason?'<div style="color:var(--t2);margin-bottom:.5rem"><b style="color:var(--a)">理由：</b>'+d.reason+'</div>':''}
+        ${d.suggestion?'<div style="color:var(--t2)"><b style="color:var(--a)">建议：</b>'+d.suggestion+'</div>':''}
+        ${d.categories&&d.categories.length?'<div style="margin-top:.5rem;color:var(--t3);font-size:.75rem">命中分类: '+d.categories.join(', ')+'</div>':''}
+      `;
+    }
+  }catch(e){
+    if(statusEl)statusEl.innerHTML='<span style="color:var(--err)">&#10060; '+e.message+'</span>';
+  }
+}
+
+async function testAIChat(){
+  const input=document.getElementById('aiChatTestInput');
+  const chatBox=document.getElementById('aiChatTest');
+  if(!input||!input.value.trim())return;
+  const msg=input.value.trim();
+  input.value='';
+  if(chatBox){
+    if(chatBox.querySelector('div[style*="text-align:center"]'))chatBox.innerHTML='';
+    chatBox.innerHTML+='<div style="margin:.4rem 0;padding:.5rem .7rem;background:rgba(0,245,255,.08);border-radius:8px;border-left:2px solid var(--a)"><b style="color:var(--a)">我：</b>'+escapeHtml(msg)+'</div>';
+    chatBox.innerHTML+='<div id="aiThinking" style="margin:.4rem 0;padding:.5rem .7rem;background:rgba(123,47,247,.08);border-radius:8px;border-left:2px solid var(--neon-purple);color:var(--t3)"><b style="color:var(--neon-purple)">AI：</b>&#8987; 思考中...</div>';
+    chatBox.scrollTop=chatBox.scrollHeight;
+  }
+  try{
+    const r=await fetch('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:msg})
+    });
+    const d=await r.json();
+    const thinking=document.getElementById('aiThinking');
+    if(thinking)thinking.remove();
+    if(chatBox){
+      const reply=d.reply||d.error||'(无响应)';
+      const fb=d.fallback?'<span class="tag tag-info" style="margin-left:.4rem">本地规则</span>':'<span class="tag tag-ok" style="margin-left:.4rem">'+(d.model||'AI')+'</span>';
+      chatBox.innerHTML+='<div style="margin:.4rem 0;padding:.5rem .7rem;background:rgba(123,47,247,.08);border-radius:8px;border-left:2px solid var(--neon-purple)"><b style="color:var(--neon-purple)">AI：</b>'+fb+'<div style="margin-top:.3rem;white-space:pre-wrap">'+escapeHtml(reply)+'</div></div>';
+      chatBox.scrollTop=chatBox.scrollHeight;
+    }
+  }catch(e){
+    const thinking=document.getElementById('aiThinking');
+    if(thinking)thinking.remove();
+    if(chatBox){
+      chatBox.innerHTML+='<div style="margin:.4rem 0;padding:.5rem .7rem;background:rgba(255,42,109,.08);border-radius:8px;border-left:2px solid var(--err);color:var(--err)">&#10060; '+e.message+'</div>';
+    }
+  }
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function loadAIPanel(){
+  await Promise.all([loadAIConfig(),loadSyncStatus()]);
+}
 
 /* ===== QQ 二级验证管理 ===== */
 async function loadQQBinding(){
