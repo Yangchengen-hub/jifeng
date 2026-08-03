@@ -141,8 +141,48 @@ function randomToken(bytes = 32) {
   return [...arr].map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+// 安全解析 JSON 请求体：显式限制 512KB，防止超大请求攻击
+async function safeParseBody(request) {
+  const MAX_BODY = 512 * 1024;
+  const clHeader = request.headers && request.headers.get ? request.headers.get('content-length') : null;
+  if (clHeader) {
+    const cl = parseInt(clHeader, 10);
+    if (!isNaN(cl) && cl > MAX_BODY) throw new Error('请求体过大（上限512KB）');
+  }
+  let text;
+  try {
+    if (typeof request.text === 'function') {
+      // 手动分段读取，避免无节制分配
+      const tmp = await request.text();
+      if (tmp && tmp.length > MAX_BODY * 4) throw new Error('请求体过大（上限512KB）');
+      text = tmp;
+    } else {
+      text = '';
+    }
+  } catch (e) {
+    throw e;
+  }
+  if (!text) return {};
+  return JSON.parse(text);
+}
+
+const ADMIN_PASSWORD_CACHE = new Map();
 async function verifyAdminPassword(password, env) {
-  const expectedHash = env.ADMIN_PASSWORD_HASH;
+  let expectedHash = null;
+  if (env.ADMIN_PASSWORD_HASH) {
+    expectedHash = String(env.ADMIN_PASSWORD_HASH);
+  } else if (env.ADMIN_PASSWORD) {
+    const plain = String(env.ADMIN_PASSWORD);
+    const cacheKey = plain;
+    if (!ADMIN_PASSWORD_CACHE.has(cacheKey)) {
+      ADMIN_PASSWORD_CACHE.set(cacheKey, await sha256(plain + ':JIFENG-salt-2026'));
+      if (ADMIN_PASSWORD_CACHE.size > 4) {
+        const firstKey = ADMIN_PASSWORD_CACHE.keys().next().value;
+        ADMIN_PASSWORD_CACHE.delete(firstKey);
+      }
+    }
+    expectedHash = ADMIN_PASSWORD_CACHE.get(cacheKey);
+  }
   if (!expectedHash) return false;
   const actualHash = await sha256(String(password) + ':JIFENG-salt-2026');
   return actualHash === String(expectedHash);
@@ -487,7 +527,7 @@ async function handleApi(request, env) {
       return jsonResponse({ error: '登录尝试过于频繁，请5分钟后再试' }, 429);
     }
     try {
-      const body = await request.json();
+      const body = await safeParseBody(request);
       const username = String(body.username || '');
       const password = String(body.password || '');
       const expectedUser = String(env.ADMIN_USERNAME || 'JIFENG');
@@ -553,7 +593,7 @@ async function handleApi(request, env) {
     }
     if (method === 'POST' && !idPart) {
       try {
-        const body = await request.json();
+        const body = await safeParseBody(request);
         const item = { id: randomToken(8), ...body, created_at: new Date().toISOString() };
         list.push(item);
         await kvSetJSON(env, kvKey, list);
@@ -569,7 +609,7 @@ async function handleApi(request, env) {
       }
       if (method === 'PUT' && idx >= 0) {
         try {
-          const body = await request.json();
+          const body = await safeParseBody(request);
           list[idx] = { ...list[idx], ...body, updated_at: new Date().toISOString() };
           await kvSetJSON(env, kvKey, list);
           return jsonResponse({ success: true, data: list[idx] });
@@ -615,7 +655,7 @@ async function handleApi(request, env) {
   // 加密测试
   if (path === '/api/admin/encrypt-test' && method === 'POST') {
     try {
-      const body = await request.json();
+      const body = await safeParseBody(request);
       const text = String(body.text || '');
       const hash = await sha256(text);
       return jsonResponse({
