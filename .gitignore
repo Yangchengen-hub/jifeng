@@ -74,11 +74,12 @@ deploy_worker*.py
 deploy_v*.py
 deploy_final*.py
 upload_kv*.py
+gen-*.py
+gen-code.py
 build-worker.js
 bulk-upload-gen.js
 direct-kv-upload.js
 gen-batched-upload.js
-gen-code*.js
 gen-fast-upload.js
 gen-final-uploads.js
 gen-individual.js
@@ -86,6 +87,8 @@ gen-upload-data.js
 prepare-batches.js
 upload-to-kv.js
 deployed_worker*.js
+worker-bundle.js
+worker.js
 _worker_*.js
 _worker_meta.json
 kv-data.json
@@ -95,6 +98,7 @@ generated-codes.json
 summary.json
 *.js.map
 worker-full.js
+_full.js
 
 # ============ 运行时/临时目录 ============
 _tmp/
