@@ -68,3 +68,40 @@ scripts/obfuscate.js
 # ============ Vercel / Render 本地配置 ============
 .vercel/
 .render/
+
+# ============ 部署脚本与生成数据（绝不提交到git，含密钥信息风险） ============
+deploy_worker*.py
+deploy_v*.py
+deploy_final*.py
+upload_kv*.py
+build-worker.js
+bulk-upload-gen.js
+direct-kv-upload.js
+gen-batched-upload.js
+gen-code*.js
+gen-fast-upload.js
+gen-final-uploads.js
+gen-individual.js
+gen-upload-data.js
+prepare-batches.js
+upload-to-kv.js
+deployed_worker*.js
+_worker_*.js
+_worker_meta.json
+kv-data.json
+batch-*.js
+batch-*.json
+generated-codes.json
+summary.json
+*.js.map
+worker-full.js
+
+# ============ 运行时/临时目录 ============
+_tmp/
+.vercel-kv/
+persist/
+_persist/
+_jifeng_test_persist/
+tmp-batches/
+gitee-pages/
+public/
