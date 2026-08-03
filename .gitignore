@@ -70,12 +70,16 @@ scripts/obfuscate.js
 .render/
 
 # ============ 部署脚本与生成数据（绝不提交到git，含密钥信息风险） ============
+deploy_*.py
+upload_*.py
 deploy_worker*.py
 deploy_v*.py
 deploy_final*.py
 upload_kv*.py
 gen-*.py
+gen-*.js
 gen-code.py
+gen-codes.js
 build-worker.js
 bulk-upload-gen.js
 direct-kv-upload.js

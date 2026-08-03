@@ -677,30 +677,48 @@ async function handleApi(request, env) {
   return jsonResponse({ error: 'Not Found', path }, 404);
 }
 
-// ============ 主入口 (Module Syntax) ============
+// ============ 主入口 (Service Worker Syntax) ============
+// 注意：必须使用 addEventListener('fetch') 形式而非 export default，
+// 否则部署会报 "Unexpected token 'export'" 错误（service worker 格式不支持 ES module）
 
-export default {
-  async fetch(request, env, ctx) {
-    try {
-      const url = new URL(request.url);
-      const path = url.pathname;
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request));
+});
 
-      // API 路由
-      if (path.startsWith('/api/')) {
-        try {
-          return await handleApi(request, env);
-        } catch (apiErr) {
-          return jsonResponse({
-            error: '服务器内部错误',
-            detail: String(apiErr && apiErr.message ? apiErr.message : apiErr)
-          }, 500);
-        }
+async function handleRequest(request) {
+  // 从全局读取环境变量（Cloudflare Worker 自动注入到 globalThis）
+  const env = {
+    get JIFENG_KV() {
+      return (typeof globalThis.JIFENG_KV !== 'undefined' && globalThis.JIFENG_KV && typeof globalThis.JIFENG_KV.get === 'function')
+        ? globalThis.JIFENG_KV
+        : null;
+    },
+    get ADMIN_USERNAME() { return globalThis.ADMIN_USERNAME || 'JIFENG'; },
+    get ADMIN_PASSWORD() { return globalThis.ADMIN_PASSWORD || ''; },
+    get ADMIN_PASSWORD_HASH() { return globalThis.ADMIN_PASSWORD_HASH || ''; },
+    get JWT_SECRET() { return globalThis.JWT_SECRET || ''; },
+    get GITHUB_TOKEN() { return globalThis.GITHUB_TOKEN || ''; }
+  };
+
+  try {
+    const url = new URL(request.url);
+    const path = url.pathname;
+
+    // API 路由
+    if (path.startsWith('/api/')) {
+      try {
+        return await handleApi(request, env);
+      } catch (apiErr) {
+        return jsonResponse({
+          error: '服务器内部错误',
+          detail: String(apiErr && apiErr.message ? apiErr.message : apiErr)
+        }, 500);
       }
-
-      // 静态文件路由
-      return await serveStaticFile(request, env);
-    } catch (fatal) {
-      return errPage('致命错误: ' + String(fatal && fatal.message ? fatal.message : fatal), 500);
     }
+
+    // 静态文件路由
+    return await serveStaticFile(request, env);
+  } catch (fatal) {
+    return errPage('致命错误: ' + String(fatal && fatal.message ? fatal.message : fatal), 500);
   }
-};
+}
