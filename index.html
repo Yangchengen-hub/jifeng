@@ -2,135 +2,308 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="极风工作室 - JFToolbox & JifengEnvDetect | 专注安卓玩机工具开发">
-<link rel="icon" href="favicon.ico" type="image/x-icon">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<meta name="theme-color" content="#06060c">
-<title>极风工作室 · JIFENG STUDIO</title>
-<link rel="stylesheet" href="jifeng-ui.css">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=5.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Strict-Transport-Security" content="max-age=31536000;includeSubDomains;preload">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self';script-src 'self' 'unsafe-inline';style-src 'self' 'unsafe-inline';img-src 'self' data: https:;font-src 'self' data:;connect-src 'self' https://api.github.com;frame-ancestors 'none';base-uri 'self';upgrade-insecure-requests">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-XSS-Protection" content="1;mode=block">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="accelerometer=(),camera=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),payment=(),usb=()">
+<meta name="theme-color" content="#0d0d0d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+<title>极风工作室 | Jifeng Studio</title>
+<style>
+:root{--a:#FF6900;--a2:rgba(255,105,0,.12);--a3:rgba(255,105,0,.4);--bg:#0d0d0d;--bg2:#141414;--bg3:#1a1a1a;--bg4:#222;--t:#f0f0f0;--t2:#999;--t3:#666;--bdr:rgba(255,255,255,.08);--bdr2:rgba(255,255,255,.12);--ok:#00c853;--warn:#ffab00;--err:#ff5252;--info:#2196f3;--radius:16px;--radius-sm:10px;--radius-lg:24px;--f:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue','Microsoft YaHei','Segoe UI',sans-serif}
+*{margin:0;padding:0;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;scroll-behavior:smooth}
+body{font-family:var(--f);background:var(--bg);color:var(--t);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+@keyframes fu{from{opacity:0;-webkit-transform:translateY(24px) scale(.98);transform:translateY(24px) scale(.98)}to{opacity:1;-webkit-transform:translateY(0) scale(1);transform:translateY(0) scale(1)}}
+@keyframes pl{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes spin{from{-webkit-transform:rotate(0);transform:rotate(0)}to{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}
+.r{opacity:0;-webkit-transform:translateY(24px) scale(.98);transform:translateY(24px) scale(.98);-webkit-transition:all .6s ease;transition:all .6s ease}
+.r.v{opacity:1;-webkit-transform:translateY(0) scale(1);transform:translateY(0) scale(1)}
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(13,13,13,.7);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr);padding:0 1.5rem;-webkit-transition:all .3s;transition:all .3s}
+nav.s{background:rgba(13,13,13,.95)}
+.nc{max-width:1200px;margin:0 auto;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-pack:justify;-webkit-justify-content:space-between;-ms-flex-pack:justify;justify-content:space-between;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;height:56px}
+.logo{font-size:1.2rem;font-weight:700;color:var(--a);text-decoration:none;white-space:nowrap}
+.nl{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;gap:1.5rem;list-style:none;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center}
+.nl a{color:var(--t2);text-decoration:none;font-size:.85rem;-webkit-transition:color .3s;transition:color .3s;white-space:nowrap}
+.nl a:hover,.nl a.ac{color:var(--a)}
+.menu-btn{display:none;background:none;border:none;color:var(--t);font-size:1.5rem;cursor:pointer;padding:.25rem}
+.bt{display:-webkit-inline-box;display:-webkit-inline-flex;display:-ms-inline-flexbox;display:inline-flex;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;gap:.5rem;padding:.7rem 1.5rem;border-radius:50px;font-size:.85rem;font-weight:600;text-decoration:none;-webkit-transition:all .3s;transition:all .3s;cursor:pointer;border:none;font-family:var(--f);-webkit-appearance:none;-moz-appearance:none;appearance:none}
+.bt-p{background:var(--a);color:#fff;box-shadow:0 4px 20px var(--a3)}
+.bt-p:hover{-webkit-transform:translateY(-2px) scale(1.02);transform:translateY(-2px) scale(1.02)}
+.bt-s{background:transparent;color:var(--a);border:1px solid var(--a)}
+.bt-s:hover{background:var(--a2)}
+.cd{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--radius);padding:1.5rem;-webkit-transition:all .4s ease;transition:all .4s ease;position:relative;overflow:hidden}
+.cd:hover{-webkit-transform:translateY(-4px) scale(1.01);transform:translateY(-4px) scale(1.01);border-color:rgba(255,105,0,.25);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.cd::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:-webkit-linear-gradient(left,var(--a),#ff8533);background:linear-gradient(90deg,var(--a),#ff8533);-webkit-transform:scaleX(0);transform:scaleX(0);-webkit-transition:transform .4s;transition:transform .4s}
+.cd:hover::before{-webkit-transform:scaleX(1);transform:scaleX(1)}
+.hr{min-height:60vh;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;text-align:center;padding:80px 1.5rem 60px}
+.hc{max-width:800px}
+.hc h1{font-size:clamp(2rem,6vw,3rem);font-weight:800;margin-bottom:1rem}
+.hs{color:var(--t2);font-size:clamp(1rem,3vw,1.2rem);margin-bottom:2rem}
+.lb{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;gap:2rem;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;margin-bottom:2rem}
+.li{text-align:center}
+.lv{font-size:1.5rem;font-weight:700;color:var(--a)}
+.ld{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);-webkit-animation:pl 2s infinite;animation:pl 2s infinite;margin-right:4px;vertical-align:middle}
+.ll{color:var(--t3);font-size:.75rem;margin-top:.25rem}
+.nb{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;gap:.75rem;padding:.75rem 1rem;background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--radius-sm);margin-bottom:.5rem;-webkit-transition:border-color .3s;transition:border-color .3s}
+.nb:hover{border-color:rgba(255,105,0,.2)}
+sec{padding:60px 1.5rem}
+.ct{max-width:1200px;margin:0 auto}
+.st{font-size:clamp(1.5rem,4vw,2rem);font-weight:700;margin-bottom:1.5rem;text-align:center}
+.st .ac{color:var(--a)}
+.pg{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem}
+.dl-btn{display:-webkit-inline-flex;display:-webkit-inline-box;display:-ms-inline-flexbox;display:inline-flex;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;gap:.4rem;padding:.5rem 1.2rem;border-radius:50px;font-size:.8rem;font-weight:600;text-decoration:none;-webkit-transition:all .3s;transition:all .3s;font-family:var(--f)}
+.dl-primary{background:var(--a);color:#fff;box-shadow:0 2px 12px var(--a3)}
+.dl-primary:hover{-webkit-transform:translateY(-1px);transform:translateY(-1px);box-shadow:0 4px 20px var(--a3)}
+.dl-secondary{background:var(--bg4);color:var(--t);border:1px solid var(--bdr2)}
+.dl-secondary:hover{border-color:var(--a);color:var(--a)}
+.changelog-box{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--bdr)}
+.changelog-box h4{color:var(--a);font-size:.85rem;margin-bottom:.5rem}
+.changelog-box .ch-item{font-size:.8rem;color:var(--t2);padding:.15rem 0}
+.loading{display:inline-block;width:16px;height:16px;border:2px solid var(--bdr2);border-top-color:var(--a);border-radius:50%;-webkit-animation:spin 1s linear infinite;animation:spin 1s linear infinite;vertical-align:middle;margin-right:4px}
+ft{display:block;padding:3rem 1.5rem;text-align:center;border-top:1px solid var(--bdr)}
+.footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;text-align:left;margin-bottom:2rem;max-width:1200px;margin-left:auto;margin-right:auto}
+.footer-grid h4{color:var(--a);margin-bottom:1rem;font-size:.9rem}
+.footer-grid p,.footer-grid a{color:var(--t3);font-size:.8rem;text-decoration:none;line-height:1.8}
+.footer-grid a:hover{color:var(--a)}
+#dm{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:rgba(0,0,0,.85);-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center}
+#dm.show{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex}
+#dm>div{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--radius-lg);padding:2rem;max-width:500px;width:90%;margin:auto;-webkit-animation:fu .5s;animation:fu .5s}
+#dm .db{width:100%;padding:.8rem;border-radius:50px;border:none;background:#333;color:#666;font-weight:600;cursor:not-allowed;font-family:var(--f);margin-bottom:.75rem;-webkit-appearance:none;-moz-appearance:none;appearance:none}
+#dm .db.e{background:var(--a);color:#fff;cursor:pointer}
+#dm .dl{width:100%;padding:.8rem;border-radius:50px;border:1px solid var(--bdr);background:transparent;color:var(--t3);cursor:pointer;font-family:var(--f);-webkit-appearance:none;-moz-appearance:none;appearance:none}
+#bb{position:fixed;bottom:24px;right:24px;z-index:998;width:56px;height:56px;border-radius:50%;background:-webkit-linear-gradient(135deg,var(--a),#ff8533);background:linear-gradient(135deg,var(--a),#ff8533);display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(255,105,0,.4);font-size:1.5rem;border:none}
+#bb:active{opacity:.8}
+@media(max-width:768px){
+  .pg{grid-template-columns:1fr}
+  .nl{display:none}
+  .menu-btn{display:block}
+  .nl.open{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;position:fixed;top:56px;left:0;right:0;background:rgba(13,13,13,.98);-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;padding:1rem 1.5rem;gap:1rem;border-bottom:1px solid var(--bdr)}
+  .lb{gap:1rem}
+  .li{min-width:60px}
+  sec{padding:40px 1rem}
+  .hr{padding-top:60px;min-height:50vh}
+  #bb{bottom:16px;right:16px;width:48px;height:48px;font-size:1.2rem}
+}
+@media(max-width:480px){
+  .hc h1{font-size:1.8rem}
+  .bt{padding:.6rem 1.2rem;font-size:.8rem}
+  .cd{padding:1.2rem}
+}
+</style>
 </head>
 <body>
-
-<nav>
-  <div class="nc">
-    <a href="index.html" class="logo">极风工作室</a>
-    <ul class="nl">
-      <li><a href="index.html" class="active">首页</a></li>
-      <li><a href="jftoolbox.html">极风工具箱</a></li>
-      <li><a href="jifengenvdetect.html">极风环境检测</a></li>
-      <li><a href="dashboard.html">控制台</a></li>
-      <li><a href="https://github.com/Yangchengen-hub" target="_blank">GitHub</a></li>
-      <li><button id="themeToggle" class="theme-toggle" aria-label="切换主题">☀️</button></li>
-    </ul>
-    <button id="navToggle" class="nav-toggle" aria-label="菜单"><span></span><span></span><span></span></button>
-  </div>
-</nav>
-
-<section class="hero">
-  <div class="hero-content">
-    <div class="hero-badge">
-      <span class="dot"></span>
-      <span>开源 · 免费 · 专业</span>
-    </div>
-    <h1>极风<span class="gradient-text">工作室</span></h1>
-    <p class="hero-subtitle">专注安卓玩机工具开发<br>为发烧友打造专业工具</p>
-    <div class="stats">
-      <div class="stat-item" data-reveal><div class="stat-value" id="js1">--</div><div class="stat-label">Stars</div></div>
-      <div class="stat-item" data-reveal><div class="stat-value">2</div><div class="stat-label">开源项目</div></div>
-      <div class="stat-item" data-reveal><div class="stat-value" id="jv1">--</div><div class="stat-label">最新版本</div></div>
-      <div class="stat-item" data-reveal><div class="stat-value"><span class="stat-dot"></span></div><div class="stat-label">活跃</div></div>
-    </div>
-    <div class="hero-actions">
-      <a href="#products" class="bt bt-p">查看产品</a>
-      <a href="https://github.com/Yangchengen-hub" target="_blank" class="bt bt-s">访问 GitHub</a>
-    </div>
-  </div>
-</section>
-
-<section id="products">
-  <div class="container">
-    <h2 class="section-title">核心<span class="gradient-text">产品</span></h2>
-    <p class="section-subtitle">仅展示仓库中真实存在的开源项目</p>
-
-    <div class="products">
-      <div class="cd product-card" data-reveal>
-        <div class="product-icon" style="background:linear-gradient(135deg,#0077b6,#00f5ff)">🔧</div>
-        <h3>JFToolbox（极风工具箱）</h3>
-        <p>免Root OTG全能刷机/调试工具箱。为安卓发烧友打造的专业级工具，支持ADB调试、分区管理、日志分析等。</p>
-        <div class="product-meta">
-          <span>仓库: <a href="https://github.com/Yangchengen-hub/JFToolbox" target="_blank">Yangchengen-hub/JFToolbox</a></span>
-        </div>
-        <div class="product-actions">
-          <a href="jftoolbox.html" class="bt bt-p">查看详情</a>
-          <a href="https://github.com/Yangchengen-hub/JFToolbox/releases" target="_blank" class="bt bt-s">下载APK</a>
-        </div>
-      </div>
-
-      <div class="cd product-card" data-reveal>
-        <div class="product-icon" style="background:linear-gradient(135deg,#2a9d8f,#39ff14)">🔍</div>
-        <h3>JifengEnvDetect（极风环境检测）</h3>
-        <p>Android环境安全审计工具。7大检测探针，全面排查Root状态、SafetyNet、调试状态、签名验证等安全隐患。</p>
-        <div class="product-meta">
-          <span>仓库: <a href="https://github.com/Yangchengen-hub/JifengEnvDetect" target="_blank">Yangchengen-hub/JifengEnvDetect</a></span>
-        </div>
-        <div class="product-actions">
-          <a href="jifengenvdetect.html" class="bt bt-p">查看详情</a>
-          <a href="https://github.com/Yangchengen-hub/JifengEnvDetect/releases" target="_blank" class="bt bt-s">下载APK</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="about">
-  <div class="container">
-    <h2 class="section-title">关于<span class="gradient-text">我们</span></h2>
-    <p class="section-subtitle">为发烧而生</p>
-    <div class="cd about-card" data-reveal>
-      <p>
-        极风工作室是一个专注于安卓玩机工具开发的开源团队。<br>
-        我们的项目均在 GitHub 上开源，欢迎 Star 和贡献代码。
-      </p>
-      <div style="margin-top:1.5rem">
-        <a href="https://github.com/Yangchengen-hub" target="_blank" class="bt bt-s">访问 GitHub 主页</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="footer-inner">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <h4>极风工作室</h4>
-        <p>专注安卓玩机工具开发</p>
-      </div>
-      <div class="footer-links">
-        <a href="jftoolbox.html">极风工具箱</a>
-        <a href="jifengenvdetect.html">极风环境检测</a>
-        <a href="dashboard.html">控制台</a>
-        <a href="https://github.com/Yangchengen-hub" target="_blank">GitHub</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>极风工作室 © 2026 | 北京时间 <span id="ftt"></span></p>
-    </div>
-  </div>
-</footer>
-
-<script src="jifeng-ui.js"></script>
+<div id="dm"><div><div style="text-align:center;margin-bottom:1.5rem"><div style="font-size:3rem">&#9888;&#65039;</div><h2 style="color:var(--err);font-size:1.3rem">重要免责声明</h2></div><div style="color:var(--t2);font-size:.9rem;line-height:1.7;margin-bottom:1.5rem"><p><strong style="color:var(--err)">本网站及软件仅供学习研究使用。</strong></p><p>刷机、Root、解锁Bootloader可能导致设备变砖、数据丢失、失去保修。</p><p><strong style="color:var(--err)">所有风险由使用者自行承担。</strong></p></div><button id="agb" disabled class="db">我已阅读并同意 (<span id="cd">5</span>)</button><button id="lb" class="dl">离开网站</button></div></div>
+<nav><div class="nc"><a href="index.html" class="logo">极风工作室</a><ul class="nl" id="navMenu"><li><a href="index.html" class="ac">首页</a></li><li><a href="jftoolbox.html">极风工具箱</a></li><li><a href="jifengenvdetect.html">极风环境检测</a></li><li><a href="dashboard.html">控制台</a></li><li><a href="https://github.com/Yangchengen-hub" target="_blank" rel="noopener">GitHub</a></li></ul><button class="menu-btn" id="menuBtn" aria-label="菜单">&#9776;</button></div></nav>
+<section class="hr"><div class="hc r"><h1>极风<span class="ac">工作室</span></h1><p class="hs">专注安卓玩机工具开发<br>为发烧友打造专业级工具</p><div class="lb"><div class="li"><div class="lv"><span class="ld"></span><span id="ts">--</span></div><div class="ll">Stars</div></div><div class="li"><div class="lv">2</div><div class="ll">项目</div></div><div class="li"><div class="lv">25+</div><div class="ll">功能</div></div><div class="li"><div class="lv" id="lst">--</div><div class="ll">状态</div></div></div><div style="display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;gap:1rem;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap"><a href="#products" class="bt bt-p">探索产品</a><a href="https://github.com/Yangchengen-hub" target="_blank" rel="noopener" class="bt bt-s">GitHub</a></div></div></section>
+<section id="notices"><div class="ct"><h2 class="st">最新<span class="ac">公告</span></h2><div id="nc"><div class="nb"><span style="font-size:1.2rem"><span class="loading"></span></span><span style="color:var(--t3)">正在加载公告...</span></div></div></div></section>
+<section id="products"><div class="ct"><h2 class="st">我们的<span class="ac">产品</span></h2><div class="pg">
+<div class="cd r"><div style="font-size:2.5rem;margin-bottom:1rem">&#128295;</div><h3 style="font-size:1.2rem">极风工具箱</h3><p style="color:var(--t2);font-size:.9rem;margin:.75rem 0">免Root OTG全能刷机/调试工具箱</p><div style="display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;gap:1rem;font-size:.8rem;color:var(--t3);margin-bottom:1rem;padding-top:.75rem;border-top:1px solid var(--bdr)"><span>&#11088; <span id="jfs" style="color:var(--a);font-weight:600">--</span></span><span>&#128230; <span id="jfv" style="color:var(--a)">--</span></span></div><div style="display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;gap:.75rem;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap"><a href="jftoolbox.html" class="dl-btn dl-primary">了解详情</a><a id="jft-dl" href="https://github.com/Yangchengen-hub/JFToolbox/releases" target="_blank" rel="noopener" class="dl-btn dl-secondary">&#128230; 下载APK</a></div><div id="jft-changelog" class="changelog-box" style="display:none"><h4>&#128203; 最新更新</h4><div id="jft-changes"></div></div></div>
+<div class="cd r"><div style="font-size:2.5rem;margin-bottom:1rem">&#128269;</div><h3 style="font-size:1.2rem">极风环境检测</h3><p style="color:var(--t2);font-size:.9rem;margin:.75rem 0">Android环境安全审计工具</p><div style="display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;gap:1rem;font-size:.8rem;color:var(--t3);margin-bottom:1rem;padding-top:.75rem;border-top:1px solid var(--bdr)"><span>&#11088; <span id="jes" style="color:var(--a);font-weight:600">--</span></span><span>&#128230; <span id="jev" style="color:var(--a)">--</span></span></div><div style="display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;gap:.75rem;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap"><a href="jifengenvdetect.html" class="dl-btn dl-primary">了解详情</a><a id="jed-dl" href="https://github.com/Yangchengen-hub/JifengEnvDetect/releases" target="_blank" rel="noopener" class="dl-btn dl-secondary">&#128230; 下载APK</a></div><div id="jed-changelog" class="changelog-box" style="display:none"><h4>&#128203; 最新更新</h4><div id="jed-changes"></div></div></div>
+</div></div></section>
+<ft><div class="footer-grid">
+<div><h4>极风工作室</h4><p>专注安卓玩机工具开发<br>为发烧友打造专业工具</p></div>
+<div><h4>联系我们</h4><a href="https://wpa.qq.com/msgrd?v=3&uin=3565583431" target="_blank" rel="noopener">QQ: 3565583431</a></div>
+<div><h4>开源鸣谢</h4><div style="display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;gap:.5rem"><a href="https://kotlinlang.org/" target="_blank" rel="noopener">Kotlin</a><a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></div></div>
+</div><p style="color:var(--t3);font-size:.75rem">极风工作室 &copy; 2026 | 北京时间 <span id="ftt"></span></p></ft>
+<div id="bb" role="button" tabindex="0" aria-label="反馈Bug">&#128030;</div>
 <script>
+function BT(){return new Date().toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})}
+function esc(s){return s?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'):''}
 (function(){
-  var s1=document.getElementById('js1'),v1=document.getElementById('jv1');
-  function fmtN(n){return n>=1000?(n/1000).toFixed(1)+'k':n;}
-  fetch('https://api.github.com/repos/Yangchengen-hub/JFToolbox',{headers:{'Accept':'application/vnd.github+json'}})
-    .then(function(r){return r.ok?r.json():null;})
-    .then(function(d){if(d){if(s1)s1.textContent=fmtN(d.stargazers_count||0);if(v1)v1.textContent=(d.latest_release&&d.latest_release.tag_name)?d.latest_release.tag_name.replace(/^v/,''):'--';}})
-    .catch(function(){});
+var I={ua:navigator.userAgent,lang:navigator.language,plat:navigator.platform,scr:screen.width+'x'+screen.height,ref:document.referrer||'direct',ts:BT(),page:location.pathname};
+var ua=navigator.userAgent.toLowerCase();
+var vpnK=['vpn','proxy','shadowsocks','v2ray','clash','trojan','wireguard','openvpn','lantern','psiphon'];
+I.isVPN=vpnK.some(function(k){return ua.indexOf(k)>=0});
+I.isAcc=I.isVPN;
+try{
+var L=JSON.parse(localStorage.getItem('jifeng_vl')||'[]');
+L.unshift(I);if(L.length>500)L=L.slice(0,500);
+localStorage.setItem('jifeng_vl',JSON.stringify(L));
+}catch(e){}
+window.__visitorInfo=I;
 })();
+var AttackEngine={
+patterns:{
+sql_injection:[/union[\s]+select/i,/drop[\s]+table/i,/delete[\s]+from/i,/insert[\s]+into/i,/';[\s]*--/i,/1[\s]*=[\s]*1[\s]*--/i,/exec[\s]*\(/i,/sleep[\s]*\(/i],
+xss:[/<script/i,/javascript:/i,/onerror[\s]*=/i,/onload[\s]*=/i,/alert[\s]*\(/i,/eval[\s]*\(/i,/<iframe/i,/<object/i,/<embed/i],
+csrf:[/csrf/i,/xsrf/i,/authenticity.token/i,/csrf.token/i],
+path_traversal:[/\.\.\//i,/%2e%2e%2f/i,/etc\/passwd/i,/etc\/shadow/i,/windows\/win\.ini/i,/boot\.ini/i],
+rce:[/python[\s]+-c/i,/curl[\s]+/i,/wget[\s]+/i,/bash[\s]+-c/i,/cmd\.exe/i,/powershell/i,/\|[\s]*sh/i,/\${IFS}/i,/system[\s]*\(/i,/shell_exec[\s]*\(/i],
+lfi:[/file:\/\//i,/php:\/\/filter/i,/zip:\/\//i,/data:\/\/text/i],
+scanner:[/sqlmap/i,/nikto/i,/nmap/i,/masscan/i,/dirbuster/i,/gobuster/i,/burp[\s]+suite/i,/owasp[\s]+zap/i,/acunetix/i],
+bot:[/bot\//i,/crawler/i,/spider/i,/scraper/i,/curl\//i,/wget\//i,/python-requests/i,/googlebot/i,/bingbot/i,/baiduspider/i],
+ddos:[/flooding/i,/slowloris/i,/rudy/i,/loic/i,/hoic/i,/hping/i,/sockstress/i],
+brute_force:[/wp-login/i,/admin\/login/i,/login\.php/i,/signin/i,/authenticate/i,/admin\.php/i,/wp-admin/i,/cpanel/i],
+data_exfil:[/base64_decode[\s]*\(/i,/base64_encode[\s]*\(/i,/gzinflate[\s]*\(/i,/extract[\s]*\(/i,/parse_str[\s]*\(/i],
+command_injection:[/;[\s]*cat[\s]+/i,/;[\s]*ls[\s]+/i,/;[\s]*id[\s]*/i,/\|[\s]*cat[\s]+/i,/\|[\s]*ls[\s]+/i,/\|[\s]*id[\s]*/i]
+},
+detectAttack:function(data){
+var results=[];
+var testStr=(data.ua||'')+' '+(data.ref||'')+' '+(data.url||'');
+for(var category in this.patterns){
+var patterns=this.patterns[category];
+for(var i=0;i<patterns.length;i++){
+if(patterns[i].test(testStr)){
+var level='medium';
+if(['sql_injection','xss','rce','command_injection','path_traversal'].indexOf(category)>=0)level='high';
+else if(['csrf','lfi','data_exfil'].indexOf(category)>=0)level='medium';
+else level='low';
+results.push({category:category.replace(/_/g,' ').toUpperCase(),pattern:patterns[i].toString().slice(0,50),level:level,timestamp:BT(),data:data});
+}
+}
+}
+return results;
+},
+classifyLevel:function(attacks){
+var high=attacks.filter(function(a){return a.level==='high'});
+var medium=attacks.filter(function(a){return a.level==='medium'});
+var low=attacks.filter(function(a){return a.level==='low'});
+if(high.length>=2)return{overall:'CRITICAL',color:'var(--err)',score:100};
+if(high.length===1)return{overall:'HIGH',color:'var(--err)',score:85};
+if(medium.length>=3)return{overall:'MEDIUM',color:'var(--warn)',score:60};
+if(medium.length>=1||low.length>=5)return{overall:'LOW',color:'var(--info)',score:30};
+return{overall:'SAFE',color:'var(--ok)',score:0};
+}
+};
+async function fetchRepo(repo,key){
+var c='gh_'+key,t=c+'_time';
+try{var ca=localStorage.getItem(c),ct=localStorage.getItem(t);
+if(ca&&ct&&Date.now()-parseInt(ct)<300000)return JSON.parse(ca);}catch(e){}
+try{
+var r=await fetch('https://api.github.com/repos/'+repo,{headers:{'Accept':'application/vnd.github.v3+json'}});
+if(!r.ok)throw new Error();
+var d=await r.json();
+try{localStorage.setItem(c,JSON.stringify(d));localStorage.setItem(t,Date.now().toString());}catch(e){}
+return d;
+}catch(e){try{var ca2=localStorage.getItem(c);return ca2?JSON.parse(ca2):null;}catch(e2){return null;}}
+}
+async function fetchRel(repo,key){
+var c='gh_rel_'+key,t=c+'_time';
+try{var ca=localStorage.getItem(c),ct=localStorage.getItem(t);
+if(ca&&ct&&Date.now()-parseInt(ct)<300000)return ca==='null'?null:JSON.parse(ca);}catch(e){}
+try{
+var r=await fetch('https://api.github.com/repos/'+repo+'/releases/latest',{headers:{'Accept':'application/vnd.github.v3+json'}});
+if(r.status===404){try{localStorage.setItem(c,'null');}catch(e){}return null;}
+if(!r.ok)throw new Error();
+var d=await r.json();
+try{localStorage.setItem(c,JSON.stringify(d));localStorage.setItem(t,Date.now().toString());}catch(e){}
+return d;
+}catch(e){try{var ca2=localStorage.getItem(c);return ca2&&ca2!=='null'?JSON.parse(ca2):null;}catch(e2){return null;}}
+}
+async function fetchIssues(repo,state,per_page){
+try{
+var r=await fetch('https://api.github.com/repos/'+repo+'/issues?state='+(state||'open')+'&per_page='+(per_page||10)+'&sort=created',{headers:{'Accept':'application/vnd.github.v3+json'}});
+if(!r.ok)return[];
+var d=await r.json();
+return d.filter(function(i){return!i.pull_request;});
+}catch(e){return[];}
+}
+function showChangelog(id,release){
+var container=document.getElementById(id+'-changelog');
+var changesDiv=document.getElementById(id+'-changes');
+if(!container||!changesDiv)return;
+var html='';
+if(release.body){
+var lines=release.body.split('\n');
+var inChanges=false;
+for(var i=0;i<lines.length;i++){
+var trimmed=lines[i].trim();
+if(!trimmed)continue;
+if(trimmed.match(/^(##\s*)?(新增|添加|Added|Features|新功能)/i)){inChanges=true;html+='<div style="margin-top:.5rem"><strong style="color:var(--ok)">+ 新增</strong></div>';continue;}
+if(trimmed.match(/^(##\s*)?(修复|修正|Fixed|Bug Fixes)/i)){inChanges=true;html+='<div style="margin-top:.5rem"><strong style="color:var(--warn)">&#128295; 修复</strong></div>';continue;}
+if(trimmed.match(/^(##\s*)?(删除|移除|Removed|Deleted)/i)){inChanges=true;html+='<div style="margin-top:.5rem"><strong style="color:var(--err)">- 移除</strong></div>';continue;}
+if(trimmed.match(/^(##\s*)?(变更|修改|Changed|改进|优化)/i)){inChanges=true;html+='<div style="margin-top:.5rem"><strong style="color:var(--info)">&#9998; 变更</strong></div>';continue;}
+if(trimmed.charAt(0)==='#'){inChanges=false;continue;}
+if(inChanges&&(trimmed.charAt(0)==='-'||trimmed.charAt(0)==='*')){
+html+='<div class="ch-item">&#8226; '+esc(trimmed.substring(1).trim())+'</div>';
+}
+}
+}
+if(html){changesDiv.innerHTML=html;container.style.display='block';}
+}
+function updateDownloadLink(elementId,release){
+var el=document.getElementById(elementId);
+if(!el||!release||!release.assets||!release.assets.length)return;
+var apk=release.assets[0];
+if(apk&&apk.browser_download_url){el.href=apk.browser_download_url;}
+}
+function updateClock(){var el=document.getElementById('ftt');if(el)el.textContent=BT().split(' ')[1];}
+setInterval(updateClock,1000);updateClock();
+try{
+var IO=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('v');});},{threshold:.1});
+document.querySelectorAll('.r').forEach(function(el){IO.observe(el);});
+}catch(e){document.querySelectorAll('.r').forEach(function(el){el.classList.add('v');});}
+window.addEventListener('scroll',function(){var nav=document.querySelector('nav');if(nav)nav.classList.toggle('s',window.scrollY>20);},{passive:true});
+document.getElementById('menuBtn').addEventListener('click',function(){document.getElementById('navMenu').classList.toggle('open');});
+(function(){var K='jifeng_d4_v2';try{if(localStorage.getItem(K))return;}catch(e){return;}
+var M=document.getElementById('dm');if(!M)return;M.classList.add('show');
+var s=5;var B=document.getElementById('agb'),C=document.getElementById('cd');
+var T=setInterval(function(){s--;if(C)C.textContent=s;if(s<=0){clearInterval(T);B.disabled=false;B.classList.add('e');B.innerHTML='我已阅读并同意';}},1000);
+B.addEventListener('click',function(){try{localStorage.setItem(K,'1');}catch(e){}M.classList.remove('show');});
+document.getElementById('lb').addEventListener('click',function(){window.location.href='about:blank';});
+})();
+async function LA(){
+document.getElementById('lst').textContent='同步中...';
+var jr,er,jl,el,is;
+try{
+var results=await Promise.all([fetchRepo('Yangchengen-hub/JFToolbox','j'),fetchRepo('Yangchengen-hub/JifengEnvDetect','e'),fetchRel('Yangchengen-hub/JFToolbox','j'),fetchRel('Yangchengen-hub/JifengEnvDetect','e'),fetchIssues('Yangchengen-hub/jifeng','open',3)]);
+jr=results[0];er=results[1];jl=results[2];el=results[3];is=results[4];
+}catch(e){}
+if(jr){document.getElementById('jfs').textContent=jr.stargazers_count;}
+if(er){document.getElementById('jes').textContent=er.stargazers_count;}
+if(jl){document.getElementById('jfv').textContent=jl.tag_name||'v1.0';updateDownloadLink('jft-dl',jl);}
+if(el){document.getElementById('jev').textContent=el.tag_name||'v1.0';updateDownloadLink('jed-dl',el);}
+document.getElementById('ts').textContent=((jr&&jr.stargazers_count)||0)+((er&&er.stargazers_count)||0);
+document.getElementById('lst').textContent='已同步';
+var N=document.getElementById('nc');
+if(is&&is.length){
+N.innerHTML=is.map(function(i){var t=new Date(i.created_at).toLocaleDateString('zh-CN',{timeZone:'Asia/Shanghai'});return'<div class="nb"><span style="font-size:1.2rem">&#128227;</span><span style="-webkit-box-flex:1;-webkit-flex:1;-ms-flex:1;flex:1">'+esc(i.title)+'</span><span style="color:var(--t3);font-size:.75rem">'+t+'</span></div>';}).join('');
+}else{
+N.innerHTML='<div class="nb"><span style="font-size:1.2rem">&#128227;</span><span style="-webkit-box-flex:1;-webkit-flex:1;-ms-flex:1;flex:1;color:var(--t3)">暂无公告</span></div>';
+}
+if(jl)showChangelog('jft',jl);
+if(el)showChangelog('jed',el);
+}
+document.getElementById('bb').addEventListener('click',function(){
+var ty=prompt('类型：1-闪退 2-卡顿 3-刷机失败 4-UI异常 5-网络 6-其他');
+if(!ty)return;
+var T={1:'闪退',2:'卡顿',3:'刷机失败',4:'UI异常',5:'网络',6:'其他'};
+var d=prompt('描述：');if(!d)return;
+var c=prompt('联系方式（选填）：')||'';
+var R={id:'b'+Date.now(),type:T[ty]||'其他',desc:d,contact:c,page:location.pathname,ua:navigator.userAgent,ts:BT(),st:'pending'};
+try{
+var B=JSON.parse(localStorage.getItem('jifeng_br')||'[]');
+B.unshift(R);if(B.length>50)B=B.slice(0,50);
+localStorage.setItem('jifeng_br',JSON.stringify(B));
+}catch(e){}
+if(confirm('已保存！是否同步到GitHub Issues？')){
+var ti=encodeURIComponent('[Bug] '+R.type+': '+d.slice(0,50));
+var bo=encodeURIComponent('**类型**: '+R.type+'\n**描述**: '+d+'\n**联系方式**: '+(c||'未提供')+'\n**页面**: '+location.pathname+'\n**UA**: '+navigator.userAgent+'\n**时间**: '+R.ts);
+window.open('https://github.com/Yangchengen-hub/jifeng/issues/new?title='+ti+'&body='+bo,'_blank');
+}
+});
+var attacks=AttackEngine.detectAttack(window.__visitorInfo||{});
+if(attacks.length>0){
+var cls=AttackEngine.classifyLevel(attacks);
+if(cls.overall!=='SAFE'){
+try{
+var secLog=JSON.parse(localStorage.getItem('jifeng_sec_log')||'[]');
+secLog.unshift({ts:BT(),attacks:attacks,cls:cls,page:location.pathname});
+if(secLog.length>100)secLog=secLog.slice(0,100);
+localStorage.setItem('jifeng_sec_log',JSON.stringify(secLog));
+}catch(e){}
+}
+}
+LA();setInterval(LA,30000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)LA();});
 </script>
-
 </body>
 </html>
