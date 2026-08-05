@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="极风工作室 - JFToolbox & JifengEnvDetect">
+<meta name="description" content="极风工作室 - JFToolbox & JifengEnvDetect | 专注安卓玩机工具开发">
 <link rel="icon" href="favicon.ico" type="image/x-icon">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<meta name="theme-color" content="#0a0a0f">
+<meta name="theme-color" content="#06060c">
 <title>极风工作室 · JIFENG STUDIO</title>
 <link rel="stylesheet" href="jifeng-ui.css">
 </head>
@@ -17,9 +17,10 @@
   <div class="nc">
     <a href="index.html" class="logo">极风工作室</a>
     <ul class="nl">
-      <li><a href="index.html" class="ac">首页</a></li>
+      <li><a href="index.html" class="active">首页</a></li>
       <li><a href="jftoolbox.html">极风工具箱</a></li>
       <li><a href="jifengenvdetect.html">极风环境检测</a></li>
+      <li><a href="dashboard.html">控制台</a></li>
       <li><a href="https://github.com/Yangchengen-hub" target="_blank">GitHub</a></li>
       <li><button id="themeToggle" class="theme-toggle" aria-label="切换主题">☀️</button></li>
     </ul>
@@ -27,31 +28,39 @@
   </div>
 </nav>
 
-<section class="hr">
-  <div class="hc">
-    <h1>极风<span class="ac">工作室</span></h1>
-    <p class="hs">专注安卓玩机工具开发<br>为发烧友打造专业工具</p>
-    <div class="lb">
-      <div class="li"><div class="lv" id="js1">--</div><div class="ll">Stars</div></div>
-      <div class="li"><div class="lv">2</div><div class="ll">开源项目</div></div>
-      <div class="li"><div class="lv" id="jv1">--</div><div class="ll">最新版本</div></div>
-      <div class="li"><div class="lv"><span class="ld"></span></div><div class="ll">活跃</div></div>
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      <span>开源 · 免费 · 专业</span>
+    </div>
+    <h1>极风<span class="gradient-text">工作室</span></h1>
+    <p class="hero-subtitle">专注安卓玩机工具开发<br>为发烧友打造专业工具</p>
+    <div class="stats">
+      <div class="stat-item" data-reveal><div class="stat-value" id="js1">--</div><div class="stat-label">Stars</div></div>
+      <div class="stat-item" data-reveal><div class="stat-value">2</div><div class="stat-label">开源项目</div></div>
+      <div class="stat-item" data-reveal><div class="stat-value" id="jv1">--</div><div class="stat-label">最新版本</div></div>
+      <div class="stat-item" data-reveal><div class="stat-value"><span class="stat-dot"></span></div><div class="stat-label">活跃</div></div>
+    </div>
+    <div class="hero-actions">
+      <a href="#products" class="bt bt-p">查看产品</a>
+      <a href="https://github.com/Yangchengen-hub" target="_blank" class="bt bt-s">访问 GitHub</a>
     </div>
   </div>
 </section>
 
 <section id="products">
-  <div class="ct">
-    <h2 class="st">核心<span class="ac">产品</span></h2>
-    <p class="st-sub">仅展示仓库中真实存在的开源项目</p>
+  <div class="container">
+    <h2 class="section-title">核心<span class="gradient-text">产品</span></h2>
+    <p class="section-subtitle">仅展示仓库中真实存在的开源项目</p>
 
-    <div class="pg">
-      <div class="cd product-card">
-        <div class="product-icon" style="background:#0077b6">&#128295;</div>
+    <div class="products">
+      <div class="cd product-card" data-reveal>
+        <div class="product-icon" style="background:linear-gradient(135deg,#0077b6,#00f5ff)">🔧</div>
         <h3>JFToolbox（极风工具箱）</h3>
         <p>免Root OTG全能刷机/调试工具箱。为安卓发烧友打造的专业级工具，支持ADB调试、分区管理、日志分析等。</p>
         <div class="product-meta">
-          <span>仓库: <a href="https://github.com/Yangchengen-hub/JFToolbox" target="_blank" style="color:#00f5ff;text-decoration:none">Yangchengen-hub/JFToolbox</a></span>
+          <span>仓库: <a href="https://github.com/Yangchengen-hub/JFToolbox" target="_blank">Yangchengen-hub/JFToolbox</a></span>
         </div>
         <div class="product-actions">
           <a href="jftoolbox.html" class="bt bt-p">查看详情</a>
@@ -59,12 +68,12 @@
         </div>
       </div>
 
-      <div class="cd product-card">
-        <div class="product-icon" style="background:#2a9d8f">&#128269;</div>
+      <div class="cd product-card" data-reveal>
+        <div class="product-icon" style="background:linear-gradient(135deg,#2a9d8f,#39ff14)">🔍</div>
         <h3>JifengEnvDetect（极风环境检测）</h3>
         <p>Android环境安全审计工具。7大检测探针，全面排查Root状态、SafetyNet、调试状态、签名验证等安全隐患。</p>
         <div class="product-meta">
-          <span>仓库: <a href="https://github.com/Yangchengen-hub/JifengEnvDetect" target="_blank" style="color:#00f5ff;text-decoration:none">Yangchengen-hub/JifengEnvDetect</a></span>
+          <span>仓库: <a href="https://github.com/Yangchengen-hub/JifengEnvDetect" target="_blank">Yangchengen-hub/JifengEnvDetect</a></span>
         </div>
         <div class="product-actions">
           <a href="jifengenvdetect.html" class="bt bt-p">查看详情</a>
@@ -76,11 +85,11 @@
 </section>
 
 <section id="about">
-  <div class="ct">
-    <h2 class="st">关于<span class="ac">我们</span></h2>
-    <p class="st-sub">为发烧而生</p>
-    <div class="cd" style="max-width:700px;margin:0 auto;text-align:center;padding:2rem">
-      <p style="color:#9898a8;line-height:2;font-size:.95rem">
+  <div class="container">
+    <h2 class="section-title">关于<span class="gradient-text">我们</span></h2>
+    <p class="section-subtitle">为发烧而生</p>
+    <div class="cd about-card" data-reveal>
+      <p>
         极风工作室是一个专注于安卓玩机工具开发的开源团队。<br>
         我们的项目均在 GitHub 上开源，欢迎 Star 和贡献代码。
       </p>
@@ -91,24 +100,25 @@
   </div>
 </section>
 
-<ft>
-  <div style="max-width:1200px;margin:0 auto">
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
-      <div>
-        <h4 style="color:#00f5ff;margin-bottom:.5rem">极风工作室</h4>
-        <p style="color:#5a5a6e;font-size:.8rem">专注安卓玩机工具开发</p>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h4>极风工作室</h4>
+        <p>专注安卓玩机工具开发</p>
       </div>
-      <div style="display:flex;gap:1rem">
-        <a href="jftoolbox.html" style="color:#9898a8;font-size:.8rem;text-decoration:none">极风工具箱</a>
-        <a href="jifengenvdetect.html" style="color:#9898a8;font-size:.8rem;text-decoration:none">极风环境检测</a>
-        <a href="https://github.com/Yangchengen-hub" target="_blank" style="color:#9898a8;font-size:.8rem;text-decoration:none">GitHub</a>
+      <div class="footer-links">
+        <a href="jftoolbox.html">极风工具箱</a>
+        <a href="jifengenvdetect.html">极风环境检测</a>
+        <a href="dashboard.html">控制台</a>
+        <a href="https://github.com/Yangchengen-hub" target="_blank">GitHub</a>
       </div>
     </div>
-    <div style="border-top:1px solid rgba(0,245,255,.1);padding-top:1rem;margin-top:1rem">
-      <p style="color:#5a5a6e;font-size:.75rem">极风工作室 &copy; 2026 | 北京时间 <span id="ftt"></span></p>
+    <div class="footer-bottom">
+      <p>极风工作室 © 2026 | 北京时间 <span id="ftt"></span></p>
     </div>
   </div>
-</ft>
+</footer>
 
 <script src="jifeng-ui.js"></script>
 <script>
