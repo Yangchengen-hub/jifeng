@@ -30,7 +30,7 @@
       var toggle = document.getElementById('themeToggle');
       if (toggle) toggle.textContent = theme === 'dark' ? '\u2600\uFE0F' : '\uD83C\uDF19';
       var meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', theme === 'dark' ? '#06060a' : '#f0f2f8');
+      if (meta) meta.setAttribute('content', theme === 'dark' ? '#06060c' : '#f0f2f8');
       document.dispatchEvent(new CustomEvent('themechange', { detail: { theme: theme } }));
     },
     get: function() {
@@ -41,6 +41,7 @@
   // === 动态背景 ===
   var Background = {
     init: function() {
+      if (document.body.querySelector('.bg-layer')) return;
       var layer = document.createElement('div');
       layer.className = 'bg-layer';
       layer.innerHTML =
@@ -48,9 +49,7 @@
         '<div class="bg-orb"></div>' +
         '<div class="bg-orb"></div>' +
         '<div class="bg-orb"></div>';
-      if (!document.body.querySelector('.bg-layer')) {
-        document.body.insertBefore(layer, document.body.firstChild);
-      }
+      document.body.insertBefore(layer, document.body.firstChild);
     }
   };
 
@@ -100,7 +99,7 @@
       if (/Windows NT 10/.test(ua)) return 'win10';
       if (/Windows NT/.test(ua)) return 'win';
       if (/Mac OS X/.test(ua)) return 'macos';
-      if (/Android \d/.test(ua)) return 'android';
+      if (/Android \\d/.test(ua)) return 'android';
       if (/iPhone|iPad|iPod/.test(ua)) return 'ios';
       if (/Linux/.test(ua)) return 'linux';
       return 'other';
@@ -111,13 +110,11 @@
     }
   };
 
-  // === 安全检测 ===
+  // === 安全检测（轻量版，不再误伤合法用户）===
   var Security = {
     init: function() {
+      // 只屏蔽右键菜单和常用快捷键，不检测自动化工具
       this.blockShortcuts();
-      this.detectDevTools();
-      this.detectAutomation();
-      this.injectCanvasFingerprint();
     },
     blockShortcuts: function() {
       document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
@@ -126,79 +123,9 @@
         if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
           e.preventDefault();
         }
-        if (e.ctrlKey && e.key === 'U' && e.key === 'u') { e.preventDefault(); }
-        if (e.ctrlKey && e.key === 'S' && e.key === 's') { e.preventDefault(); }
+        if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) { e.preventDefault(); }
+        if (e.ctrlKey && (e.key === 'S' || e.key === 's')) { e.preventDefault(); }
       });
-    },
-    detectDevTools: function() {
-      var threshold = 160;
-      setInterval(function() {
-        var widthDiff = window.outerWidth - window.innerWidth;
-        var heightDiff = window.outerHeight - window.innerHeight;
-        if (widthDiff > threshold || heightDiff > threshold) {
-          document.body.style.userSelect = 'none';
-        }
-      }, 1000);
-
-      var devtools = /./;
-      devtools.toString = function() { return 'jifeng-devtools'; };
-      setInterval(function() {
-        if (devtools.toString() !== 'jifeng-devtools') {
-          document.body.style.opacity = '0.4';
-        }
-      }, 1500);
-    },
-    detectAutomation: function() {
-      var suspicious = [
-        '_phantom', '__nightmare', '__selenium_', '__webdriver',
-        'domAutomation', '_Selenium_IDE_Recorder', 'callPhantom',
-        'callSelenium', 'spawn', 'emit', 'Buffer', 'prefs',
-        'domAutomationController', '_Selenium_IDE_Recorder'
-      ];
-      for (var i = 0; i < suspicious.length; i++) {
-        try {
-          if (suspicious[i] in window || navigator.webdriver) {
-            document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#888;font-family:sans-serif;text-align:center;padding:2rem">访问被拒绝<br><small style="color:#555">检测到自动化工具</small></div>';
-            return;
-          }
-        } catch (e) {}
-      }
-
-      try {
-        var canvas = document.createElement('canvas');
-        canvas.style.display = 'none';
-        document.body.appendChild(canvas);
-        var ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#f0f0f0';
-        ctx.fillRect(0, 0, 20, 20);
-        ctx.fillStyle = '#00f5ff';
-        ctx.fillRect(2, 2, 16, 16);
-        ctx.fillStyle = '#7b5cff';
-        ctx.fillText('AI', 4, 15);
-        var dataUrl = canvas.toDataURL();
-        canvas.remove();
-
-        var stored = sessionStorage.getItem('jf-fingerprint');
-        if (stored && stored !== dataUrl) {
-          document.body.style.opacity = '0.3';
-        }
-        sessionStorage.setItem('jf-fingerprint', dataUrl);
-      } catch (e) {}
-    },
-    injectCanvasFingerprint: function() {
-      try {
-        var c = document.createElement('canvas');
-        c.width = 200; c.height = 50;
-        var ctx = c.getContext('2d');
-        ctx.textBaseline = 'top';
-        ctx.font = '14px Arial';
-        ctx.fillStyle = '#f60'; ctx.fillRect(0, 0, 50, 50);
-        ctx.fillStyle = '#069'; ctx.fillRect(25, 25, 125, 30);
-        ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
-        ctx.fillText('JIFENG-SECURE', 2, 2);
-        var fp = c.toDataURL();
-        sessionStorage.setItem('jf-canvas-fp', fp);
-      } catch (e) {}
     }
   };
 
@@ -211,31 +138,31 @@
     init: function() {
       this.buildWidget();
       this.bindEvents();
-      this.addBotMessage('你好，我是极风工作室AI助手。我可以为你介绍我们的工作室文化、JFToolbox和JifengEnvDetect的使用方法。请用中文向我提问。');
+      this.addBotMessage('\u4f60\u597d\uff0c\u6211\u662f\u6781\u98ce\u5de5\u4f5c\u5ba4AI\u52a9\u624b\u3002\u6211\u53ef\u4ee5\u4e3a\u4f60\u4ecb\u7ecd\u6211\u4eec\u7684\u5de5\u4f5c\u5ba4\u6587\u5316\u3001JFToolbox\u548cJifengEnvDetect\u7684\u4f7f\u7528\u65b9\u6cd5\u3002\u8bf7\u7528\u4e2d\u6587\u5411\u6211\u63d0\u95ee\u3002');
     },
     buildWidget: function() {
       var widget = document.createElement('div');
       widget.className = 'ai-widget';
       widget.innerHTML =
-        '<button class="ai-toggle" aria-label="打开AI对话">' +
+        '<button class="ai-toggle" aria-label="\u6253\u5f00AI\u5bf9\u8bdd">' +
           '<span class="ai-icon" aria-hidden="true">' +
             '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>' +
           '</span>' +
         '</button>' +
-        '<div class="ai-panel glass-strong" role="dialog" aria-label="极风AI助手">' +
+        '<div class="ai-panel glass-strong" role="dialog" aria-label="\u6781\u98ceAI\u52a9\u624b">' +
           '<div class="ai-header">' +
             '<div class="ai-title">' +
               '<div class="ai-avatar">' +
                 '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>' +
               '</div>' +
-              '极风AI助手' +
+              '\u6781\u98ceAI\u52a9\u624b' +
             '</div>' +
-            '<button class="ai-close" aria-label="关闭">✕</button>' +
+            '<button class="ai-close" aria-label="\u5173\u95ed">\u2715</button>' +
           '</div>' +
           '<div class="ai-messages" aria-live="polite"></div>' +
           '<form class="ai-input" onsubmit="return false">' +
-            '<input type="text" placeholder="请输入中文问题..." maxlength="100" autocomplete="off" spellcheck="false">' +
-            '<button type="submit" aria-label="发送">' +
+            '<input type="text" placeholder="\u8bf7\u8f93\u5165\u4e2d\u6587\u95ee\u9898..." maxlength="200" autocomplete="off" spellcheck="false">' +
+            '<button type="submit" aria-label="\u53d1\u9001">' +
               '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>' +
             '</button>' +
           '</form>' +
@@ -288,28 +215,23 @@
     scrollToBottom: function() {
       this.messages.scrollTop = this.messages.scrollHeight;
     },
-    validateChinese: function(text) {
+    validateInput: function(text) {
+      // 放宽验证：只要包含至少一个中文字符即可
       if (!text || text.trim().length === 0) return false;
       var chineseRegex = /[\u4e00-\u9fff]/;
-      var hasChinese = chineseRegex.test(text);
-      var cleanText = text.replace(/[\u4e00-\u9fff]/g, '').trim();
-      var allowedExtra = /^[a-zA-Z0-9\s，。！？、：；""''（）《》\-—…·]*$/;
-      if (!hasChinese) return false;
-      if (cleanText.length > 5) return false;
-      if (!allowedExtra.test(cleanText)) return false;
-      return true;
+      return chineseRegex.test(text);
     },
     sendMessage: function() {
       var text = this.input.value.trim();
       if (!text) return;
 
-      if (!this.validateChinese(text)) {
+      if (!this.validateInput(text)) {
         this.addUserMessage(text);
         var typingEl = this.showTyping();
         var self = this;
         setTimeout(function() {
           self.removeTyping(typingEl);
-          self.addBotMessage('请用中文提问哦～我只能回答关于极风工作室文化和产品使用的问题。');
+          self.addBotMessage('\u8bf7\u7528\u4e2d\u6587\u63d0\u95ee\u54e6~\u6211\u53ea\u80fd\u56de\u7b54\u5173\u4e8e\u6781\u98ce\u5de5\u4f5c\u5ba4\u6587\u5316\u548c\u4ea7\u54c1\u4f7f\u7528\u7684\u95ee\u9898\u3002');
         }, 600);
         this.input.value = '';
         return;
@@ -330,12 +252,11 @@
     getResponse: function(text) {
       var t = text.toLowerCase();
 
-      var studioKeywords = ['工作室', '团队', '文化', '理念', '介绍', '你们', '团队', '极风'];
+      var studioKeywords = ['\u5de5\u4f5c\u5ba4', '\u56e2\u961f', '\u6587\u5316', '\u7406\u5ff5', '\u4ecb\u7ecd', '\u4f60\u4eec', '\u6781\u98ce'];
       var productKeywords = {
-        'jftoolbox': ['工具箱', 'JFToolbox', '刷机', 'OTG', 'ADB', '分区'],
-        'jifengenvdetect': ['环境检测', 'JifengEnvDetect', 'Root', '安全', '检测', 'SafetyNet']
+        'jftoolbox': ['\u5de5\u5177\u7bb1', 'jftoolbox', '\u5237\u673a', 'otg', 'adb', '\u5206\u533a'],
+        'jifengenvdetect': ['\u73af\u5883\u68c0\u6d4b', 'jifengenvdetect', 'root', '\u5b89\u5168', '\u68c0\u6d4b', 'safetynet']
       };
-      var generalKeywords = ['使用', '怎么', '如何', '下载', '安装', '特色', '功能', '优点', '特点'];
 
       var isStudio = studioKeywords.some(function(k) { return t.indexOf(k.toLowerCase()) !== -1; });
       var isJFToolbox = productKeywords.jftoolbox.some(function(k) { return t.indexOf(k.toLowerCase()) !== -1; });
@@ -343,32 +264,32 @@
 
       if (isJFToolbox) {
         var answers = [
-          'JFToolbox是极风工具箱，一款免Root的OTG全能刷机/调试工具箱。主要功能包括：OTG刷机（支持Recovery、Boot等分区）、ADB调试（命令执行、文件传输、日志抓取）、分区管理（查看、备份、擦除、刷入各分区）、日志分析（实时抓取系统/内核/崩溃日志）、设备信息查看、Root检测等。下载地址在官网产品页。',
-          'JFToolbox的核心特色是免Root OTG刷机，无需Root权限即可通过OTG连接刷入镜像。它支持完整的ADB Shell命令、分区管理和日志分析，是安卓发烧友的专业工具。去官网产品页可以找到下载链接。',
-          '使用JFToolbox很简单：1.手机开启USB调试并连接OTG；2.安装JFToolbox APK；3.打开工具选择需要的功能（刷机/ADB/分区等）；4.按照引导操作即可。所有功能都支持免Root运行。'
+          'JFToolbox\u662f\u6781\u98ce\u5de5\u5177\u7bb1\uff0c\u4e00\u6b3e\u514dRoot\u7684OTG\u5168\u80fd\u5237\u673a/\u8c03\u8bd5\u5de5\u5177\u7bb1\u3002\u4e3b\u8981\u529f\u80fd\u5305\u62ec\uff1aOTG\u5237\u673a\uff08\u652f\u6301Recovery\u3001Boot\u7b49\u5206\u533a\uff09\u3001ADB\u8c03\u8bd5\uff08\u547d\u4ee4\u6267\u884c\u3001\u6587\u4ef6\u4f20\u8f93\u3001\u65e5\u5fd7\u6293\u53d6\uff09\u3001\u5206\u533a\u7ba1\u7406\uff08\u67e5\u770b\u3001\u5907\u4efd\u3001\u64e6\u9664\u3001\u5237\u5165\u5404\u5206\u533a\uff09\u3001\u65e5\u5fd7\u5206\u6790\uff08\u5b9e\u65f6\u6293\u53d6\u7cfb\u7edf/\u5185\u6838/\u5d29\u6e83\u65e5\u5fd7\uff09\u3001\u8bbe\u5907\u4fe1\u606f\u67e5\u770b\u3001Root\u68c0\u6d4b\u7b49\u3002\u4e0b\u8f7d\u5730\u5740\u5728\u5b98\u7f51\u4ea7\u54c1\u9875\u3002',
+          'JFToolbox\u7684\u6838\u5fc3\u7279\u8272\u662f\u514dRoot OTG\u5237\u673a\uff0c\u65e0\u9700Root\u6743\u9650\u5373\u53ef\u901a\u8fc7OTG\u8fde\u63a5\u5237\u5165\u955c\u50cf\u3002\u5b83\u652f\u6301\u5b8c\u6574\u7684ADB Shell\u547d\u4ee4\u3001\u5206\u533a\u7ba1\u7406\u548c\u65e5\u5fd7\u5206\u6790\uff0c\u662f\u5b89\u5353\u53d1\u70e7\u53cb\u7684\u4e13\u4e1a\u5de5\u5177\u3002\u53bb\u5b98\u7f51\u4ea7\u54c1\u9875\u53ef\u4ee5\u627e\u5230\u4e0b\u8f7d\u94fe\u63a5\u3002',
+          '\u4f7f\u7528JFToolbox\u5f88\u7b80\u5355\uff1a1.\u624b\u673a\u5f00\u542fUSB\u8c03\u8bd5\u5e76\u8fde\u63a5OTG\uff1b2.\u5b89\u88c5JFToolbox APK\uff1b3.\u6253\u5f00\u5de5\u5177\u9009\u62e9\u9700\u8981\u7684\u529f\u80fd\uff08\u5237\u673a/ADB/\u5206\u533a\u7b49\uff09\uff1b4.\u6309\u7167\u5f15\u5bfc\u64cd\u4f5c\u5373\u53ef\u3002\u6240\u6709\u529f\u80fd\u90fd\u652f\u6301\u514dRoot\u8fd0\u884c\u3002'
         ];
         return answers[Math.floor(Math.random() * answers.length)];
       }
 
       if (isJED) {
         var jedAnswers = [
-          'JifengEnvDetect是极风环境检测工具，Android环境安全审计工具。提供7大检测探针：Root状态检测（su、Magisk、KingRoot）、SafetyNet状态检测、调试状态检测（USB调试、ADB、开发者选项）、签名验证、安全补丁检查、模拟器检测等。',
-          'JifengEnvDetect的特色是全方位安全审计，覆盖Root状态、SafetyNet、调试状态、签名验证、安全补丁、模拟器6大检测维度。打开APP后点击"开始检测"即可一键完成所有安全检测。',
-          '使用JifengEnvDetect：1.安装APK后打开；2.授予必要权限；3.点击"开始检测"；4.查看检测报告，了解设备安全状态。所有检测均在本地完成，保护隐私。'
+          'JifengEnvDetect\u662f\u6781\u98ce\u73af\u5883\u68c0\u6d4b\u5de5\u5177\uff0cAndroid\u73af\u5883\u5b89\u5168\u5ba1\u8ba1\u5de5\u5177\u3002\u63d0\u4f9b7\u5927\u68c0\u6d4b\u63a2\u9488\uff1aRoot\u72b6\u6001\u68c0\u6d4b\uff08su\u3001Magisk\u3001KingRoot\uff09\u3001SafetyNet\u72b6\u6001\u68c0\u6d4b\u3001\u8c03\u8bd5\u72b6\u6001\u68c0\u6d4b\uff08USB\u8c03\u8bd5\u3001ADB\u3001\u5f00\u53d1\u8005\u9009\u9879\uff09\u3001\u7b7e\u540d\u9a8c\u8bc1\u3001\u5b89\u5168\u8865\u4e01\u68c0\u67e5\u3001\u6a21\u62df\u5668\u68c0\u6d4b\u7b49\u3002',
+          'JifengEnvDetect\u7684\u7279\u8272\u662f\u5168\u65b9\u4f4d\u5b89\u5168\u5ba1\u8ba1\uff0c\u8986\u76d6Root\u72b6\u6001\u3001SafetyNet\u3001\u8c03\u8bd5\u72b6\u6001\u3001\u7b7e\u540d\u9a8c\u8bc1\u3001\u5b89\u5168\u8865\u4e01\u3001\u6a21\u62df\u56686\u5927\u68c0\u6d4b\u7ef4\u5ea6\u3002\u6253\u5f00APP\u540e\u70b9\u51fb"\u5f00\u59cb\u68c0\u6d4b"\u5373\u53ef\u4e00\u952e\u5b8c\u6210\u6240\u6709\u5b89\u5168\u68c0\u6d4b\u3002',
+          '\u4f7f\u7528JifengEnvDetect\uff1a1.\u5b89\u88c5APK\u540e\u6253\u5f00\uff1b2.\u6388\u4e88\u5fc5\u8981\u6743\u9650\uff1b3.\u70b9\u51fb"\u5f00\u59cb\u68c0\u6d4b"\uff1b4.\u67e5\u770b\u68c0\u6d4b\u62a5\u544a\uff0c\u4e86\u89e3\u8bbe\u5907\u5b89\u5168\u72b6\u6001\u3002\u6240\u6709\u68c0\u6d4b\u5747\u5728\u672c\u5730\u5b8c\u6210\uff0c\u4fdd\u62a4\u9690\u79c1\u3002'
         ];
         return jedAnswers[Math.floor(Math.random() * jedAnswers.length)];
       }
 
       if (isStudio) {
         var studioAnswers = [
-          '极风工作室是一个专注于安卓玩机工具开发的开源团队。我们的理念是"为发烧而生"，致力于为安卓发烧友打造专业、易用的工具。目前我们的开源项目包括JFToolbox（极风工具箱）和JifengEnvDetect（极风环境检测）。',
-          '极风工作室由热爱安卓技术的开发者组成，坚持开源精神，所有项目均在GitHub上开源。我们相信好的工具应该让技术更纯粹，让发烧友能更自由地探索设备的潜力。',
-          '我们的团队文化：专注技术、开源共享、用户至上。每一行代码都为用户而写，每一个功能都经过反复打磨。我们欢迎所有对安卓技术感兴趣的朋友关注和贡献代码。'
+          '\u6781\u98ce\u5de5\u4f5c\u5ba4\u662f\u4e00\u4e2a\u4e13\u6ce8\u4e8e\u5b89\u5353\u73a9\u673a\u5de5\u5177\u5f00\u53d1\u7684\u5f00\u6e90\u56e2\u961f\u3002\u6211\u4eec\u7684\u7406\u5ff5\u662f"\u4e3a\u53d1\u70e7\u800c\u751f"\uff0c\u81f4\u529b\u4e8e\u4e3a\u5b89\u5353\u53d1\u70e7\u53cb\u6253\u9020\u4e13\u4e1a\u3001\u6613\u7528\u7684\u5de5\u5177\u3002\u76ee\u524d\u6211\u4eec\u7684\u5f00\u6e90\u9879\u76ee\u5305\u62ecJFToolbox\uff08\u6781\u98ce\u5de5\u5177\u7bb1\uff09\u548cJifengEnvDetect\uff08\u6781\u98ce\u73af\u5883\u68c0\u6d4b\uff09\u3002',
+          '\u6781\u98ce\u5de5\u4f5c\u5ba4\u7531\u70ed\u7231\u5b89\u5353\u6280\u672f\u7684\u5f00\u53d1\u8005\u7ec4\u6210\uff0c\u575a\u6301\u5f00\u6e90\u7cbe\u795e\uff0c\u6240\u6709\u9879\u76ee\u5747\u5728GitHub\u4e0a\u5f00\u6e90\u3002\u6211\u4eec\u76f8\u4fe1\u597d\u7684\u5de5\u5177\u5e94\u8be5\u8ba9\u6280\u672f\u66f4\u7eaf\u7cb9\uff0c\u8ba9\u53d1\u70e7\u53cb\u80fd\u66f4\u81ea\u7531\u5730\u63a2\u7d22\u8bbe\u5907\u7684\u6f5c\u529b\u3002',
+          '\u6211\u4eec\u7684\u56e2\u961f\u6587\u5316\uff1a\u4e13\u6ce8\u6280\u672f\u3001\u5f00\u6e90\u5171\u4eab\u3001\u7528\u6237\u81f3\u4e0a\u3002\u6bcf\u4e00\u884c\u4ee3\u7801\u90fd\u4e3a\u7528\u6237\u800c\u5199\uff0c\u6bcf\u4e00\u4e2a\u529f\u80fd\u90fd\u7ecf\u8fc7\u53cd\u590d\u6253\u78e8\u3002\u6211\u4eec\u6b22\u8fce\u6240\u6709\u5bf9\u5b89\u5353\u6280\u672f\u611f\u5174\u8da3\u7684\u670b\u53cb\u5173\u6ce8\u548c\u8d21\u732e\u4ee3\u7801\u3002'
         ];
         return studioAnswers[Math.floor(Math.random() * studioAnswers.length)];
       }
 
-      return '抱歉，我只能回答关于极风工作室文化背景、JFToolbox（极风工具箱）和JifengEnvDetect（极风环境检测）的使用方法及特色。请换个问题试试吧～';
+      return '\u62b1\u6b49\uff0c\u6211\u53ea\u80fd\u56de\u7b54\u5173\u4e8e\u6781\u98ce\u5de5\u4f5c\u5ba4\u6587\u5316\u80cc\u666f\u3001JFToolbox\uff08\u6781\u98ce\u5de5\u5177\u7bb1\uff09\u548cJifengEnvDetect\uff08\u6781\u98ce\u73af\u5883\u68c0\u6d4b\uff09\u7684\u4f7f\u7528\u65b9\u6cd5\u53ca\u7279\u8272\u3002\u8bf7\u6362\u4e2a\u95ee\u9898\u8bd5\u8bd5\u5426~';
     }
   };
 
@@ -384,24 +305,25 @@
       overlay.id = 'disclaimer-modal';
       overlay.innerHTML =
         '<div class="modal-content glass-strong">' +
-          '<div class="modal-icon">⚖️</div>' +
-          '<h2>免责声明</h2>' +
+          '<div class="modal-icon">\u2696\ufe0f</div>' +
+          '<h2>\u514d\u8d23\u58f0\u660e</h2>' +
           '<p>' +
-            '欢迎访问极风工作室官网。在使用本网站前，请您仔细阅读以下声明：<br><br>' +
-            '1. 本网站提供的所有工具和信息仅供学习研究使用，严禁用于任何违法用途。<br>' +
-            '2. 用户下载和使用本站工具所产生的一切后果，由用户自行承担。<br>' +
-            '3. 极风工作室及相关贡献者不对任何直接或间接损失承担责任。<br>' +
-            '4. 通过使用本站服务，即视为您已阅读并同意本声明。' +
+            '\u6b22\u8fce\u8bbf\u95ee\u6781\u98ce\u5de5\u4f5c\u5ba4\u5b98\u7f51\u3002\u5728\u4f7f\u7528\u672c\u7f51\u7ad9\u524d\uff0c\u8bf7\u60a8\u4ed4\u7ec6\u9605\u8bfb\u4ee5\u4e0b\u58f0\u660e\uff1a<br><br>' +
+            '1. \u672c\u7f51\u7ad9\u63d0\u4f9b\u7684\u6240\u6709\u5de5\u5177\u548c\u4fe1\u606f\u4ec5\u4f9b\u5b66\u4e60\u7814\u7a76\u4f7f\u7528\uff0c\u4e25\u7981\u7528\u4e8e\u4efb\u4f55\u8fdd\u6cd5\u7528\u9014\u3002<br>' +
+            '2. \u7528\u6237\u4e0b\u8f7d\u548c\u4f7f\u7528\u672c\u7ad9\u5de5\u5177\u6240\u4ea7\u751f\u7684\u4e00\u5207\u540e\u679c\uff0c\u7531\u7528\u6237\u81ea\u884c\u627f\u62c5\u3002<br>' +
+            '3. \u6781\u98ce\u5de5\u4f5c\u5ba4\u53ca\u76f8\u5173\u8d21\u732e\u8005\u4e0d\u5bf9\u4efb\u4f55\u76f4\u63a5\u6216\u95f4\u63a5\u635f\u5931\u627f\u62c5\u8d23\u4efb\u3002<br>' +
+            '4. \u901a\u8fc7\u4f7f\u7528\u672c\u7ad9\u670d\u52a1\uff0c\u5373\u89c6\u4e3a\u60a8\u5df2\u9605\u8bfb\u5e76\u540c\u610f\u672c\u58f0\u660e\u3002' +
           '</p>' +
           '<div class="modal-actions">' +
-            '<button class="bt bt-primary" id="disclaimer-accept">我已阅读并同意</button>' +
+            '<button class="bt bt-p" id="disclaimer-accept">\u6211\u5df2\u9605\u8bfb\u5e76\u540c\u610f</button>' +
           '</div>' +
         '</div>';
       document.body.appendChild(overlay);
       var self = this;
       document.getElementById('disclaimer-accept').addEventListener('click', function() {
         sessionStorage.setItem('jf-disclaimer-accepted', '1');
-        overlay.remove();
+        overlay.style.animation = 'fadeIn 0.2s var(--ease) reverse';
+        setTimeout(function() { overlay.remove(); }, 200);
       });
     }
   };
@@ -419,10 +341,12 @@
       if (!toggle || !menu) return;
       toggle.addEventListener('click', function() {
         menu.classList.toggle('open');
+        toggle.classList.toggle('active');
       });
       menu.querySelectorAll('a').forEach(function(link) {
         link.addEventListener('click', function() {
           menu.classList.remove('open');
+          toggle.classList.remove('active');
         });
       });
     },
@@ -470,7 +394,7 @@
           callback(new Error('GitHub API: ' + xhr.status));
         }
       };
-      xhr.onerror = function() { callback(new Error('网络错误')); };
+      xhr.onerror = function() { callback(new Error('\u7f51\u7edc\u9519\u8bef')); };
       xhr.timeout = 10000;
       xhr.send();
     },
@@ -485,7 +409,7 @@
           catch (e) { callback(e); }
         } else { callback(new Error('HTTP ' + xhr.status)); }
       };
-      xhr.onerror = function() { callback(new Error('网络错误')); };
+      xhr.onerror = function() { callback(new Error('\u7f51\u7edc\u9519\u8bef')); };
       xhr.send();
     },
     fmtStars: function(n) { return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n); }
@@ -530,6 +454,23 @@
     setTimeout(function() { if (el.parentNode) el.remove(); }, 3000);
   };
 
+  // === 滚动渐入 ===
+  var Reveal = {
+    init: function() {
+      var els = document.querySelectorAll('[data-reveal]');
+      if (!els.length) return;
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+      els.forEach(function(el) { observer.observe(el); });
+    }
+  };
+
   // === 数据绑定 ===
   var Data = {
     init: function() {
@@ -563,8 +504,9 @@
     Nav.init();
     Clock.init();
     Data.init();
+    Reveal.init();
 
-    if (document.querySelector('.ai-widget-anchor') || document.body.querySelector('.hero')) {
+    if (document.querySelector('.ai-widget-anchor') || document.body.querySelector('.hero, .hr')) {
       AIChat.init();
     }
 
@@ -574,8 +516,8 @@
         var repo = releases.getAttribute('data-repo');
         if (repo) {
           GitHub.fetchReleases(repo, function(err, data) {
-            if (err) { releases.textContent = '加载失败，请刷新重试'; return; }
-            if (!data || !data.length) { releases.textContent = '暂无发布记录'; return; }
+            if (err) { releases.textContent = '\u52a0\u8f7d\u5931\u8d25\uff0c\u8bf7\u5237\u65b0\u91cd\u8bd5'; return; }
+            if (!data || !data.length) { releases.textContent = '\u6682\u65e0\u53d1\u5e03\u8bb0\u5f55'; return; }
             var html = '';
             data.slice(0, 5).forEach(function(rel) {
               var date = rel.published_at ? new Date(rel.published_at).toLocaleDateString('zh-CN') : '--';
