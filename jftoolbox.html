@@ -7,7 +7,7 @@
 <link rel="icon" href="favicon.ico" type="image/x-icon">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<meta name="theme-color" content="#0a0a0f">
+<meta name="theme-color" content="#06060c">
 <title>极风工具箱 | JFToolbox</title>
 <link rel="stylesheet" href="jifeng-ui.css">
 </head>
@@ -18,8 +18,9 @@
     <a href="index.html" class="logo">极风工作室</a>
     <ul class="nl">
       <li><a href="index.html">首页</a></li>
-      <li><a href="jftoolbox.html" class="ac">极风工具箱</a></li>
+      <li><a href="jftoolbox.html" class="active">极风工具箱</a></li>
       <li><a href="jifengenvdetect.html">极风环境检测</a></li>
+      <li><a href="dashboard.html">控制台</a></li>
       <li><a href="https://github.com/Yangchengen-hub" target="_blank">GitHub</a></li>
       <li><button id="themeToggle" class="theme-toggle" aria-label="切换主题">☀️</button></li>
     </ul>
@@ -27,63 +28,94 @@
   </div>
 </nav>
 
-<section class="hr">
-  <div class="hc">
-    <div style="font-size:3rem">&#128295;</div>
-    <h1>极风<span class="ac">工具箱</span></h1>
-    <p class="hs">免Root OTG全能刷机/调试工具箱<br>为安卓发烧友打造的专业级工具</p>
-    <div class="lb">
-      <div class="li"><div class="lv" id="jfs">--</div><div class="ll">Stars</div></div>
-      <div class="li"><div class="lv">25+</div><div class="ll">功能</div></div>
-      <div class="li"><div class="lv" id="jfv">--</div><div class="ll">最新版本</div></div>
-      <div class="li"><div class="lv"><span class="ld"></span></div><div class="ll">活跃</div></div>
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      <span>免Root · OTG · 专业级</span>
     </div>
-    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
-      <a href="https://github.com/Yangchengen-hub/JFToolbox/releases" target="_blank" class="bt bt-p">&#128230; 下载APK</a>
-      <a href="https://github.com/Yangchengen-hub/JFToolbox" target="_blank" class="bt bt-s">&#128187; 查看源码</a>
+    <div style="font-size:3rem;margin-bottom:1rem">🔧</div>
+    <h1>极风<span class="gradient-text">工具箱</span></h1>
+    <p class="hero-subtitle">免Root OTG全能刷机/调试工具箱<br>为安卓发烧友打造的专业级工具</p>
+    <div class="stats">
+      <div class="stat-item" data-reveal><div class="stat-value" id="jfs">--</div><div class="stat-label">Stars</div></div>
+      <div class="stat-item" data-reveal><div class="stat-value">25+</div><div class="stat-label">功能</div></div>
+      <div class="stat-item" data-reveal><div class="stat-value" id="jfv">--</div><div class="stat-label">最新版本</div></div>
+      <div class="stat-item" data-reveal><div class="stat-value"><span class="stat-dot"></span></div><div class="stat-label">活跃</div></div>
+    </div>
+    <div class="hero-actions">
+      <a href="https://github.com/Yangchengen-hub/JFToolbox/releases" target="_blank" class="bt bt-p">📦 下载APK</a>
+      <a href="https://github.com/Yangchengen-hub/JFToolbox" target="_blank" class="bt bt-s">💻 查看源码</a>
     </div>
   </div>
 </section>
 
 <section id="features">
-  <div class="ct">
-    <h2 class="st">核心<span class="ac">功能</span></h2>
-    <div class="pg">
-      <div class="cd"><h3>&#128267; 免Root OTG刷机</h3><p style="color:#9898a8;font-size:.9rem;margin-top:.75rem">通过OTG连接，无需Root权限即可刷入Recovery、Boot等分区镜像</p></div>
-      <div class="cd"><h3>&#128268; ADB调试</h3><p style="color:#9898a8;font-size:.9rem;margin-top:.75rem">内置ADB Shell，支持命令执行、文件传输、日志抓取</p></div>
-      <div class="cd"><h3>&#128296; 分区管理</h3><p style="color:#9898a8;font-size:.9rem;margin-top:.75rem">查看、备份、擦除、刷入各分区，支持自定义分区表</p></div>
-      <div class="cd"><h3>&#128221; 日志分析</h3><p style="color:#9898a8;font-size:.9rem;margin-top:.75rem">实时抓取系统日志、内核日志、崩溃日志，支持关键词过滤</p></div>
-      <div class="cd"><h3>&#128260; 设备信息</h3><p style="color:#9898a8;font-size:.9rem;margin-top:.75rem">查看详细设备信息、分区表、内核版本、安全补丁等级</p></div>
-      <div class="cd"><h3>&#127942; Root检测</h3><p style="color:#9898a8;font-size:.9rem;margin-top:.75rem">多维度检测Root状态、Magisk安装、SafetyNet状态</p></div>
+  <div class="container">
+    <h2 class="section-title">核心<span class="gradient-text">功能</span></h2>
+    <p class="section-subtitle">六大专业功能模块，覆盖刷机调试全场景</p>
+    <div class="products">
+      <div class="cd" data-reveal>
+        <div class="product-icon">🔋</div>
+        <h3>免Root OTG刷机</h3>
+        <p style="color:var(--fg-2);font-size:.9rem;margin-top:.75rem">通过OTG连接，无需Root权限即可刷入Recovery、Boot等分区镜像</p>
+      </div>
+      <div class="cd" data-reveal>
+        <div class="product-icon">💻</div>
+        <h3>ADB调试</h3>
+        <p style="color:var(--fg-2);font-size:.9rem;margin-top:.75rem">内置ADB Shell，支持命令执行、文件传输、日志抓取</p>
+      </div>
+      <div class="cd" data-reveal>
+        <div class="product-icon">🔨</div>
+        <h3>分区管理</h3>
+        <p style="color:var(--fg-2);font-size:.9rem;margin-top:.75rem">查看、备份、擦除、刷入各分区，支持自定义分区表</p>
+      </div>
+      <div class="cd" data-reveal>
+        <div class="product-icon">📄</div>
+        <h3>日志分析</h3>
+        <p style="color:var(--fg-2);font-size:.9rem;margin-top:.75rem">实时抓取系统日志、内核日志、崩溃日志，支持关键词过滤</p>
+      </div>
+      <div class="cd" data-reveal>
+        <div class="product-icon">📊</div>
+        <h3>设备信息</h3>
+        <p style="color:var(--fg-2);font-size:.9rem;margin-top:.75rem">查看详细设备信息、分区表、内核版本、安全补丁等级</p>
+      </div>
+      <div class="cd" data-reveal>
+        <div class="product-icon">🏆</div>
+        <h3>Root检测</h3>
+        <p style="color:var(--fg-2);font-size:.9rem;margin-top:.75rem">多维度检测Root状态、Magisk安装、SafetyNet状态</p>
+      </div>
     </div>
   </div>
 </section>
 
 <section id="releases">
-  <div class="ct">
-    <h2 class="st">发布<span class="ac">历史</span></h2>
+  <div class="container">
+    <h2 class="section-title">发布<span class="gradient-text">历史</span></h2>
+    <p class="section-subtitle">持续更新，不断优化</p>
     <div id="release-list" data-repo="Yangchengen-hub/JFToolbox" style="color:var(--fg-2)">正在加载...</div>
   </div>
 </section>
 
-<ft>
-  <div style="max-width:1200px;margin:0 auto">
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
-      <div>
-        <h4 style="color:#00f5ff;margin-bottom:.5rem">极风工作室</h4>
-        <p style="color:#5a5a6e;font-size:.8rem">专注安卓玩机工具开发</p>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h4>极风工作室</h4>
+        <p>专注安卓玩机工具开发</p>
       </div>
-      <div style="display:flex;gap:1rem">
-        <a href="index.html" style="color:#9898a8;font-size:.8rem;text-decoration:none">首页</a>
-        <a href="jifengenvdetect.html" style="color:#9898a8;font-size:.8rem;text-decoration:none">极风环境检测</a>
-        <a href="https://github.com/Yangchengen-hub/JFToolbox" target="_blank" style="color:#9898a8;font-size:.8rem;text-decoration:none">GitHub</a>
+      <div class="footer-links">
+        <a href="index.html">首页</a>
+        <a href="jifengenvdetect.html">极风环境检测</a>
+        <a href="dashboard.html">控制台</a>
+        <a href="https://github.com/Yangchengen-hub/JFToolbox" target="_blank">GitHub</a>
       </div>
     </div>
-    <div style="border-top:1px solid rgba(0,245,255,.1);padding-top:1rem;margin-top:1rem">
-      <p style="color:#5a5a6e;font-size:.75rem">极风工作室 &copy; 2026 | 北京时间 <span id="ftt"></span></p>
+    <div class="footer-bottom">
+      <p>极风工作室 © 2026 | 北京时间 <span id="ftt"></span></p>
     </div>
   </div>
-</ft>
+</footer>
 
 <script src="jifeng-ui.js"></script>
 <script>
