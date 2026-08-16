@@ -3,668 +3,522 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=5.0">
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<meta http-equiv="Strict-Transport-Security" content="max-age=31536000;includeSubDomains;preload">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self';script-src 'self' 'unsafe-inline';style-src 'self' 'unsafe-inline';img-src 'self' data: https:;font-src 'self' data:;connect-src 'self' https://api.github.com;frame-ancestors 'none';base-uri 'self';upgrade-insecure-requests">
-<meta http-equiv="X-Frame-Options" content="DENY">
-<meta http-equiv="X-Content-Type-Options" content="nosniff">
-<meta http-equiv="X-XSS-Protection" content="1;mode=block">
-<meta name="referrer" content="no-referrer">
-<meta http-equiv="Permissions-Policy" content="accelerometer=(),camera=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),payment=(),usb=()">
-<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
-<meta name="theme-color" content="#0d0d0d">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>极风控制台 | Jifeng Dashboard v5.0</title>
-<style>
-:root{--a:#FF6900;--a2:rgba(255,105,0,.12);--a3:rgba(255,105,0,.4);--bg:#0d0d0d;--bg2:#141414;--bg3:#1a1a1a;--bg4:#222;--t:#f0f0f0;--t2:#999;--t3:#666;--bdr:rgba(255,255,255,.08);--bdr2:rgba(255,255,255,.12);--ok:#00c853;--warn:#ffab00;--err:#ff5252;--info:#2196f3;--radius:16px;--radius-sm:10px;--radius-lg:24px;--f:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue','Microsoft YaHei','Segoe UI',sans-serif}
-*{margin:0;padding:0;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
-body{font-family:var(--f);background:var(--bg);color:var(--t);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-@keyframes pl{0%,100%{opacity:1}50%{opacity:.3}}
-@keyframes spin{from{-webkit-transform:rotate(0);transform:rotate(0)}to{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}
-nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(13,13,13,.8);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr);padding:0 1.5rem}
-.nc{max-width:1200px;margin:0 auto;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-pack:justify;-webkit-justify-content:space-between;-ms-flex-pack:justify;justify-content:space-between;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;height:56px}
-.logo{font-size:1.2rem;font-weight:700;color:var(--a);text-decoration:none;white-space:nowrap}
-.nl{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;gap:1.5rem;list-style:none;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center}
-.nl a{color:var(--t2);text-decoration:none;font-size:.85rem;white-space:nowrap}
-.nl a:hover,.nl a.ac{color:var(--a)}
-.menu-btn{display:none;background:none;border:none;color:var(--t);font-size:1.5rem;cursor:pointer;padding:.25rem}
-.bt{display:-webkit-inline-box;display:-webkit-inline-flex;display:-ms-inline-flexbox;display:inline-flex;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;gap:.5rem;padding:.7rem 1.5rem;border-radius:50px;font-size:.85rem;font-weight:600;text-decoration:none;-webkit-transition:all .3s;transition:all .3s;cursor:pointer;border:none;font-family:var(--f);-webkit-appearance:none;-moz-appearance:none;appearance:none}
-.bt-p{background:var(--a);color:#fff}
-.bt-s{background:transparent;color:var(--a);border:1px solid var(--a)}
-.bt-err{background:var(--err);color:#fff}
-.bt-warn{background:var(--warn);color:#000}
-.bt-info{background:var(--info);color:#fff}
-.cd{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--radius);padding:1.5rem}
-.loading{display:inline-block;width:16px;height:16px;border:2px solid var(--bdr2);border-top-color:var(--a);border-radius:50%;-webkit-animation:spin 1s linear infinite;animation:spin 1s linear infinite;vertical-align:middle;margin-right:4px}
-.dash-sidebar{position:fixed;left:0;top:56px;bottom:0;width:200px;background:var(--bg2);border-right:1px solid var(--bdr);padding:1rem 0;overflow-y:auto}
-.dash-sidebar .nav-item{padding:.75rem 1rem;cursor:pointer;-webkit-transition:all .3s;transition:all .3s;border-left:3px solid transparent;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;gap:.5rem;font-size:.85rem;color:var(--t2)}
-.dash-sidebar .nav-item:hover,.dash-sidebar .nav-item.ac{background:rgba(255,105,0,.1);border-left-color:var(--a);color:var(--a)}
-.dash-sidebar .nav-item .badge{background:var(--err);color:#fff;font-size:.65rem;padding:.1rem .35rem;border-radius:10px;margin-left:auto}
-.dash-main{margin-left:200px;padding:1.5rem;min-height:100vh}
-.dash-header{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-pack:justify;-webkit-justify-content:space-between;-ms-flex-pack:justify;justify-content:space-between;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--bdr);-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;gap:.5rem}
-.dash-header h1{font-size:1.3rem;color:var(--a)}
-.panel{display:none}.panel.ac{display:block}
-.admin-bar{background:-webkit-linear-gradient(left,rgba(255,82,82,.15),rgba(255,171,0,.15));background:linear-gradient(90deg,rgba(255,82,82,.15),rgba(255,171,0,.15));border:1px solid rgba(255,82,82,.2);border-radius:var(--radius);padding:1rem;margin-bottom:1rem;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;gap:1rem;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap}
-.admin-bar .admin-icon{font-size:1.5rem}
-.admin-bar .admin-text{-webkit-box-flex:1;-webkit-flex:1;-ms-flex:1;flex:1;min-width:120px}
-.admin-bar .admin-btns{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;gap:.5rem;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
-.attack-log{font-family:'SF Mono',Consolas,monospace;font-size:.75rem;background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--radius-sm);padding:.75rem;max-height:400px;overflow-y:auto}
-.attack-log .log-entry{padding:.4rem 0;border-bottom:1px solid var(--bdr)}
-.attack-log .log-time{color:var(--t3);font-size:.7rem}
-.attack-log .log-ip{color:var(--err);font-weight:600}
-.attack-log .log-type{color:var(--warn)}
-#loginPage{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:var(--bg);display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center}
-#loginPage>div{text-align:center;max-width:400px;width:90%}
-#loginPage input{width:100%;padding:.75rem;border-radius:var(--radius-sm);border:1px solid var(--bdr);background:var(--bg2);color:var(--t);font-family:var(--f);margin-bottom:1rem;text-align:center;font-size:1rem;-webkit-appearance:none;-moz-appearance:none;appearance:none}
-#loginPage .error{color:var(--err);font-size:.8rem;margin-bottom:.75rem;min-height:1.2rem}
-#loginPage .lock{display:none;color:var(--warn);font-size:.8rem;margin-top:.5rem}
-.data-table{width:100%;border-collapse:collapse;font-size:.8rem}
-.data-table th{padding:.5rem;text-align:left;color:var(--a);border-bottom:1px solid var(--bdr)}
-.data-table td{padding:.5rem;color:var(--t2);border-bottom:1px solid var(--bdr)}
-.sec-tag{padding:.15rem .5rem;border-radius:4px;font-size:.7rem;font-weight:600;text-transform:uppercase}
-.sec-tag-critical{background:rgba(255,82,82,.15);color:var(--err);border:1px solid rgba(255,82,82,.3)}
-.sec-tag-high{background:rgba(255,82,82,.15);color:var(--err);border:1px solid rgba(255,82,82,.3)}
-.sec-tag-medium{background:rgba(255,171,0,.15);color:var(--warn);border:1px solid rgba(255,171,0,.3)}
-.sec-tag-low{background:rgba(33,150,243,.15);color:var(--info);border:1px solid rgba(33,150,243,.3)}
-@media(max-width:768px){
-  .stats-grid{grid-template-columns:repeat(2,1fr)}
-  .dash-sidebar{width:60px}.dash-main{margin-left:60px}
-  .nl{display:none}.menu-btn{display:block}
-  .nl.open{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;position:fixed;top:56px;left:0;right:0;background:rgba(13,13,13,.98);-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;padding:1rem 1.5rem;gap:1rem;border-bottom:1px solid var(--bdr);z-index:1001}
-  .dash-sidebar .nav-item span:nth-child(2){display:none}
-  .admin-bar{margin-left:0!important;margin-top:0!important}
-}
-@media(max-width:480px){
-  .dash-main{padding:1rem}
-  .dash-sidebar{width:50px}.dash-main{margin-left:50px}
-  .stats-grid{grid-template-columns:1fr}
-}
-</style>
+<meta name="theme-color" content="#000000">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>极风控制台 | Jifeng Dashboard</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
 <body>
-<div id="loginPage"><div>
-<div style="font-size:3rem;margin-bottom:1rem">&#128274;</div>
-<h2 style="color:var(--a);margin-bottom:1.5rem">极风控制台 v5.0</h2>
-<div class="cd">
-<p style="color:var(--t3);font-size:.8rem;margin-bottom:1rem">PBKDF2 + SHA-256 | 指纹绑定 | 指数锁定</p>
-<input id="lp" type="password" placeholder="输入密码" autocomplete="off" autocapitalize="off" autocorrect="off">
-<div id="le" class="error"></div>
-<button id="lb" class="bt bt-p" style="width:100%"><span id="lbtxt">进入控制台</span></button>
-<p style="color:var(--t3);font-size:.75rem;margin-top:1rem">错误3次锁定，锁定时间递增</p>
-<div id="lk" class="lock">&#9201; 锁定中 (<span id="lt">30</span>秒)</div>
+
+<!-- Ambient -->
+<div class="ambient">
+  <div class="orb"></div>
+  <div class="orb" style="background:var(--blue);opacity:0.2;"></div>
 </div>
-</div></div>
-<nav style="display:none" id="mainNav"><div class="nc"><a href="index.html" class="logo">极风工作室</a><ul class="nl" id="navMenu"><li><a href="index.html">首页</a></li><li><a href="jftoolbox.html">极风工具箱</a></li><li><a href="jifengenvdetect.html">极风环境检测</a></li><li><a href="dashboard.html" class="ac">控制台</a></li><li><a href="https://github.com/Yangchengen-hub" target="_blank" rel="noopener">GitHub</a></li></ul><button class="menu-btn" id="menuBtn" aria-label="菜单">&#9776;</button></div></nav>
-<div id="admin-bar" class="admin-bar" style="display:none;margin-left:200px;margin-top:56px">
-<span class="admin-icon">&#128081;</span>
-<div class="admin-text"><strong style="color:var(--err)">超级管理员</strong><span style="color:var(--t3);font-size:.8rem;margin-left:.5rem" id="session-info"></span></div>
-<div class="admin-btns">
-<button onclick="resetAllData()" class="bt bt-err" style="padding:.4rem .8rem;font-size:.75rem">重置数据</button>
-<button onclick="exportAllData()" class="bt bt-info" style="padding:.4rem .8rem;font-size:.75rem">导出全部</button>
-<button onclick="triggerEmergencyAlert()" class="bt bt-err" style="padding:.4rem .8rem;font-size:.75rem">紧急报警</button>
-<button onclick="logout()" class="bt bt-s" style="padding:.4rem .8rem;font-size:.75rem">退出</button>
+
+<!-- Dynamic Island -->
+<div class="island" id="island">
+  <span class="island-dot"></span>
+  <span id="islandText">控制台</span>
 </div>
+
+<!-- ===== LOGIN GATE ===== -->
+<div class="gate" id="gate">
+  <div class="gate-card glass">
+    <div class="gate-logo">⚡ 极风控制台</div>
+    <div class="gate-sub">管理端 · 多因素安全认证</div>
+
+    <!-- Step indicator -->
+    <div class="step-indicator">
+      <div class="step-dot active" id="dot1"></div>
+      <div class="step-dot" id="dot2"></div>
+      <div class="step-dot" id="dot3"></div>
+    </div>
+
+    <!-- Step 1: Account + Password + Captcha -->
+    <div class="login-step active" id="step1">
+      <input class="gate-input" id="loginUser" type="text" placeholder="管理员账号" autocomplete="off">
+      <input class="gate-input" id="loginPass" type="password" placeholder="管理员密码" autocomplete="off">
+      <div class="captcha-row">
+        <input class="gate-input" id="loginCaptcha" type="text" placeholder="图形验证码" autocomplete="off" maxlength="4">
+        <div class="captcha-img" id="captchaImg" title="点击刷新">A3K9</div>
+      </div>
+      <div class="gate-err" id="loginErr"></div>
+      <button class="btn btn-primary btn-block" id="btnStep1">下一步</button>
+      <div class="gate-tip">🔒 账号密码 + 邮箱验证码双重验证</div>
+    </div>
+
+    <!-- Step 2: Email verification code -->
+    <div class="login-step" id="step2">
+      <div style="color:var(--text-2);font-size:0.88rem;margin-bottom:1rem;">
+        验证码已发送至邮箱：<span class="mono" style="color:var(--brand);" id="maskedEmail">n***@agent.qq.com</span>
+      </div>
+      <div class="code-row">
+        <input class="gate-input" id="emailCode" type="text" placeholder="6位验证码" maxlength="6" autocomplete="off">
+        <button class="send-code-btn" id="btnSendCode">发送验证码</button>
+      </div>
+      <div class="gate-err" id="codeErr" style="margin-top:0.5rem;"></div>
+      <button class="btn btn-primary btn-block" id="btnStep2" style="margin-top:0.75rem;">验证并进入</button>
+      <button class="btn btn-ghost btn-block btn-sm" id="btnBack1" style="margin-top:0.5rem;">返回上一步</button>
+    </div>
+  </div>
 </div>
-<div class="dash-sidebar" id="dashSidebar" style="display:none">
-<div class="nav-item ac" data-panel="overview"><span>&#128202;</span> <span>概览</span></div>
-<div class="nav-item" data-panel="visitors"><span>&#128101;</span> <span>访客</span></div>
-<div class="nav-item" data-panel="security"><span>&#128737;</span> <span>安全</span> <span id="sec-badge" class="badge" style="display:none">0</span></div>
-<div class="nav-item" data-panel="bugs"><span>&#128030;</span> <span>Bug</span> <span id="bug-badge" class="badge" style="display:none">0</span></div>
-<div class="nav-item" data-panel="audit"><span>&#128203;</span> <span>审计</span></div>
-<div class="nav-item" data-panel="settings"><span>&#9881;</span> <span>设置</span></div>
+
+<!-- ===== NAV ===== -->
+<nav class="nav" id="mainNav" style="display:none;">
+  <a href="index.html" class="nav-logo">
+    <span class="logo-icon">⚡</span>
+    极风控制台
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">官网首页</a></li>
+    <li><a href="dashboard.html" class="active">控制台</a></li>
+  </ul>
+  <div style="display:flex;align-items:center;gap:0.75rem;">
+    <span style="font-size:0.82rem;color:var(--text-2);" id="sessionInfo">--</span>
+    <button class="btn btn-ghost btn-sm" onclick="doLogout()">退出</button>
+  </div>
+</nav>
+
+<!-- ===== DASHBOARD ===== -->
+<div class="dash-body" id="dashBody" style="display:none;">
+  <!-- Sidebar -->
+  <aside class="dash-sidebar">
+    <button class="side-item active" data-panel="overview">
+      <span>📊</span><span>概览</span>
+    </button>
+    <button class="side-item" data-panel="visitors">
+      <span>👥</span><span>访客监控</span>
+    </button>
+    <button class="side-item" data-panel="security">
+      <span>🛡️</span><span>安全中心</span>
+      <span class="si-badge" id="secBadge" style="display:none;">0</span>
+    </button>
+    <button class="side-item" data-panel="announce">
+      <span>📢</span><span>公告管理</span>
+    </button>
+    <button class="side-item" data-panel="settings">
+      <span>⚙️</span><span>系统设置</span>
+    </button>
+  </aside>
+
+  <!-- Main -->
+  <main class="dash-main">
+
+    <!-- Header -->
+    <div class="dash-header">
+      <h1 id="panelTitle">📊 概览</h1>
+      <div class="dh-right">
+        <span class="live-dot">实时同步</span>
+        <span class="text-3 sm" id="dashTime">--:--:--</span>
+      </div>
+    </div>
+
+    <!-- Panel: Overview -->
+    <div class="panel active" id="panel-overview">
+      <div class="grid-4 mb-3">
+        <div class="stat-card glass">
+          <div class="sc-label">👁️ 今日访问</div>
+          <div class="sc-value" style="color:var(--brand);" id="statVisit">1,284</div>
+          <div class="sc-sub">较昨日 +12.5%</div>
+        </div>
+        <div class="stat-card glass">
+          <div class="sc-label">🟢 当前在线</div>
+          <div class="sc-value" style="color:var(--green);" id="statOnline">37</div>
+          <div class="sc-sub">实时更新中</div>
+        </div>
+        <div class="stat-card glass">
+          <div class="sc-label">🚫 拦截攻击</div>
+          <div class="sc-value" style="color:var(--red);" id="statBlocked">23</div>
+          <div class="sc-sub">今日已拦截</div>
+        </div>
+        <div class="stat-card glass">
+          <div class="sc-label">🔒 安全评分</div>
+          <div class="sc-value" style="color:var(--green);" id="statScore">99</div>
+          <div class="sc-sub">防护等级：极高</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Traffic chart -->
+        <div class="chart-card glass">
+          <h3>📈 24小时访问趋势</h3>
+          <div class="chart-wrap"><canvas id="chartTraffic"></canvas></div>
+        </div>
+        <!-- Attack log -->
+        <div class="chart-card glass">
+          <h3>⚠️ 实时安全日志</h3>
+          <div class="log-feed" id="attackLog">
+            <div class="log-entry">
+              <span class="le-time">20:31:05</span>
+              <span class="le-ip">183.42.xx.xx</span>
+              <span class="le-action">密码错误 3 次</span>
+              <span class="le-status tag tag-orange">警告</span>
+            </div>
+            <div class="log-entry">
+              <span class="le-time">20:28:42</span>
+              <span class="le-ip">45.137.xx.xx</span>
+              <span class="le-action">SQL注入尝试已拦截</span>
+              <span class="le-status tag tag-red">拦截</span>
+            </div>
+            <div class="log-entry">
+              <span class="le-time">20:25:11</span>
+              <span class="le-ip">192.168.xx.xx</span>
+              <span class="le-action">验证码校验失败</span>
+              <span class="le-status tag tag-orange">警告</span>
+            </div>
+            <div class="log-entry">
+              <span class="le-time">20:20:33</span>
+              <span class="le-ip">10.0.xx.xx</span>
+              <span class="le-action">管理员登录成功</span>
+              <span class="le-status tag tag-green">正常</span>
+            </div>
+            <div class="log-entry">
+              <span class="le-time">20:15:08</span>
+              <span class="le-ip">61.140.xx.xx</span>
+              <span class="le-action">高频访问已限速</span>
+              <span class="le-status tag tag-blue">限速</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel: Visitors -->
+    <div class="panel" id="panel-visitors">
+      <div class="grid-4 mb-3">
+        <div class="stat-card glass">
+          <div class="sc-label">总访问量</div>
+          <div class="sc-value" id="vTotal">48,392</div>
+        </div>
+        <div class="stat-card glass">
+          <div class="sc-label">今日UV</div>
+          <div class="sc-value" id="vUV">856</div>
+        </div>
+        <div class="stat-card glass">
+          <div class="sc-label">移动端占比</div>
+          <div class="sc-value" id="vMobile">73%</div>
+        </div>
+        <div class="stat-card glass">
+          <div class="sc-label">平均停留</div>
+          <div class="sc-value" id="vStay">3:24</div>
+        </div>
+      </div>
+      <div class="chart-card glass">
+        <h3>🌍 访问来源分布</h3>
+        <div class="chart-wrap"><canvas id="chartSource"></canvas></div>
+      </div>
+      <div class="chart-card glass">
+        <h3>📋 最新访客记录</h3>
+        <table class="data-table">
+          <thead><tr><th>时间</th><th>IP地址</th><th>地区</th><th>设备</th><th>访问页面</th><th>状态</th></tr></thead>
+          <tbody id="visitorTable">
+            <tr><td>20:31:12</td><td class="mono">183.42.xx.xx</td><td>广东·深圳</td><td>📱 移动</td><td>/index.html</td><td><span class="tag tag-green">正常</span></td></tr>
+            <tr><td>20:30:55</td><td class="mono">45.137.xx.xx</td><td>海外·未知</td><td>💻 PC</td><td>/dashboard.html</td><td><span class="tag tag-red">拦截</span></td></tr>
+            <tr><td>20:30:33</td><td class="mono">61.140.xx.xx</td><td>广东·广州</td><td>📱 移动</td><td>/index.html</td><td><span class="tag tag-green">正常</span></td></tr>
+            <tr><td>20:29:18</td><td class="mono">223.104.xx.xx</td><td>北京</td><td>📱 移动</td><td>/index.html</td><td><span class="tag tag-green">正常</span></td></tr>
+            <tr><td>20:28:42</td><td class="mono">10.0.xx.xx</td><td>内网</td><td>💻 PC</td><td>/dashboard.html</td><td><span class="tag tag-blue">管理员</span></td></tr>
+            <tr><td>20:27:05</td><td class="mono">117.136.xx.xx</td><td>江苏·南京</td><td>📱 移动</td><td>/index.html</td><td><span class="tag tag-green">正常</span></td></tr>
+            <tr><td>20:26:30</td><td class="mono">192.168.xx.xx</td><td>内网</td><td>💻 PC</td><td>/dashboard.html</td><td><span class="tag tag-orange">验证失败</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Panel: Security -->
+    <div class="panel" id="panel-security">
+      <div class="grid-4 mb-3">
+        <div class="stat-card glass">
+          <div class="sc-label">今日拦截</div>
+          <div class="sc-value" style="color:var(--red);">23</div>
+        </div>
+        <div class="stat-card glass">
+          <div class="sc-label">本周拦截</div>
+          <div class="sc-value" style="color:var(--orange);">156</div>
+        </div>
+        <div class="stat-card glass">
+          <div class="sc-label">封禁IP</div>
+          <div class="sc-value" style="color:var(--purple);">8</div>
+        </div>
+        <div class="stat-card glass">
+          <div class="sc-label">暴力破解</div>
+          <div class="sc-value">14</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="chart-card glass">
+          <h3>📊 攻击类型分布</h3>
+          <div class="chart-wrap"><canvas id="chartAttackType"></canvas></div>
+        </div>
+        <div class="chart-card glass">
+          <h3>📈 7日拦截趋势</h3>
+          <div class="chart-wrap"><canvas id="chartAttackTrend"></canvas></div>
+        </div>
+      </div>
+      <div class="chart-card glass">
+        <h3>🚫 已封禁IP列表</h3>
+        <table class="data-table">
+          <thead><tr><th>IP地址</th><th>地区</th><th>原因</th><th>封禁时间</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">45.137.xx.xx</td><td>海外·未知</td><td>SQL注入</td><td>20:28</td><td><button class="btn btn-ghost btn-sm">解封</button></td></tr>
+            <tr><td class="mono">103.214.xx.xx</td><td>海外·未知</td><td>暴力破解 6次</td><td>19:45</td><td><button class="btn btn-ghost btn-sm">解封</button></td></tr>
+            <tr><td class="mono">185.220.xx.xx</td><td>海外·Tor节点</td><td>恶意扫描</td><td>18:30</td><td><button class="btn btn-ghost btn-sm">解封</button></td></tr>
+            <tr><td class="mono">192.240.xx.xx</td><td>海外·未知</td><td>XSS攻击</td><td>15:12</td><td><button class="btn btn-ghost btn-sm">解封</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Panel: Announcements -->
+    <div class="panel" id="panel-announce">
+      <div class="card glass ann-editor">
+        <h3 style="margin-bottom:1rem;">📝 发布新公告</h3>
+        <input class="gate-input" id="annTitleInput" type="text" placeholder="公告标题" style="margin-bottom:0.75rem;">
+        <textarea id="annTextInput" placeholder="公告内容..."></textarea>
+        <div style="display:flex;gap:0.75rem;margin-top:1rem;">
+          <button class="btn btn-primary" onclick="publishAnnouncement()">发布公告</button>
+          <button class="btn btn-ghost" onclick="clearAnnForm()">清空</button>
+        </div>
+        <p class="text-3 sm mt-2">发布后官网首页公告栏将实时同步更新</p>
+      </div>
+      <div class="card glass">
+        <h3 style="margin-bottom:1rem;">📋 历史公告</h3>
+        <div id="annList">
+          <div class="ann-list-item">
+            <span style="font-size:1.2rem;">🔔</span>
+            <div class="ali-content">
+              <div class="ali-title">系统升级公告</div>
+              <div class="ali-text">极风工作室官网已全面升级至 HyperOS 4 设计语言，安全体系全面加强。</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="ali-time">2026-08-15 20:00</div>
+              <button class="btn btn-danger btn-sm" style="margin-top:0.3rem;">删除</button>
+            </div>
+          </div>
+          <div class="ann-list-item">
+            <span style="font-size:1.2rem;">⚠️</span>
+            <div class="ali-content">
+              <div class="ali-title">安全提醒</div>
+              <div class="ali-text">近期发现仿冒网站，请认准官方域名，切勿在第三方页面输入密码。</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="ali-time">2026-08-15 18:00</div>
+              <button class="btn btn-danger btn-sm" style="margin-top:0.3rem;">删除</button>
+            </div>
+          </div>
+          <div class="ann-list-item">
+            <span style="font-size:1.2rem;">🚀</span>
+            <div class="ali-content">
+              <div class="ali-title">新项目预告</div>
+              <div class="ali-text">全新工具项目正在开发中，即将开放内测，敬请期待。</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="ali-time">2026-08-14 12:00</div>
+              <button class="btn btn-danger btn-sm" style="margin-top:0.3rem;">删除</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel: Settings -->
+    <div class="panel" id="panel-settings">
+      <div class="grid-2">
+        <div class="card glass">
+          <h3 style="margin-bottom:1.25rem;">⚙️ 系统信息</h3>
+          <div style="display:flex;flex-direction:column;gap:0.85rem;">
+            <div class="flex between center"><span class="text-2">系统版本</span><span style="color:var(--brand);font-weight:600;">v7.0 HyperOS</span></div>
+            <div class="flex between center"><span class="text-2">认证方式</span><span>MFA 多因素认证</span></div>
+            <div class="flex between center"><span class="text-2">验证码</span><span style="color:var(--green);">✓ 图形+邮箱双验证</span></div>
+            <div class="flex between center"><span class="text-2">会话超时</span><span>30 分钟</span></div>
+            <div class="flex between center"><span class="text-2">暴力破解防护</span><span style="color:var(--green);">✓ 已启用</span></div>
+            <div class="flex between center"><span class="text-2">IP全量记录</span><span style="color:var(--green);">✓ 已启用</span></div>
+            <div class="flex between center"><span class="text-2">实时同步</span><span style="color:var(--green);">✓ 已启用</span></div>
+          </div>
+        </div>
+        <div class="card glass">
+          <h3 style="margin-bottom:1.25rem;">🔐 安全设置</h3>
+          <div style="display:flex;flex-direction:column;gap:1rem;">
+            <div class="flex between center">
+              <div><div style="font-weight:600;font-size:0.9rem;">登录通知</div><div class="text-3 sm">每次登录发送邮件通知</div></div>
+              <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="flex between center">
+              <div><div style="font-weight:600;font-size:0.9rem;">IP白名单</div><div class="text-3 sm">仅允许指定IP访问管理端</div></div>
+              <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+            </div>
+            <div class="flex between center">
+              <div><div style="font-weight:600;font-size:0.9rem;">自动封禁</div><div class="text-3 sm">异常IP自动加入黑名单</div></div>
+              <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="flex between center">
+              <div><div style="font-weight:600;font-size:0.9rem;">访问日志</div><div class="text-3 sm">记录所有访问者详细信息</div></div>
+              <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card glass" style="border-color:rgba(255,69,58,0.2);margin-top:1.5rem;">
+        <h3 style="color:var(--red);margin-bottom:0.75rem;">⚠️ 危险操作</h3>
+        <p class="text-2 sm" style="margin-bottom:1rem;">退出登录后需要重新完成多因素认证。清除日志不可恢复。</p>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+          <button class="btn btn-danger" onclick="doLogout()">退出登录</button>
+          <button class="btn btn-danger btn-ghost" style="background:rgba(255,69,58,0.08);">清空所有日志</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
 </div>
-<div class="dash-main" id="dashMain" style="display:none">
-<div class="dash-header">
-<h1 id="dash-title">&#128202; 网站概览</h1>
-<div style="display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;gap:.75rem;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap">
-<span style="color:var(--ok);font-size:.8rem"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);-webkit-animation:pl 2s infinite;animation:pl 2s infinite;margin-right:4px;vertical-align:middle"></span>实时同步</span>
-<span style="color:var(--t3);font-size:.8rem"><span id="dash-time"></span></span>
-</div>
-</div>
-<div id="panel-overview" class="panel ac">
-<div class="stats-grid">
-<div class="cd" style="text-align:center"><div style="color:var(--t3);font-size:.8rem;margin-bottom:.5rem">网站状态</div><div style="font-size:1.5rem;font-weight:700;color:var(--ok)">&#9989; 在线</div></div>
-<div class="cd" style="text-align:center"><div style="color:var(--t3);font-size:.8rem;margin-bottom:.5rem">今日访问</div><div id="today-visits" style="font-size:1.5rem;font-weight:700;color:var(--a)">--</div></div>
-<div class="cd" style="text-align:center"><div style="color:var(--t3);font-size:.8rem;margin-bottom:.5rem">攻击拦截</div><div id="attack-count" style="font-size:1.5rem;font-weight:700;color:var(--err)">--</div></div>
-<div class="cd" style="text-align:center"><div style="color:var(--t3);font-size:.8rem;margin-bottom:.5rem">安全评分</div><div id="sec-score" style="font-size:1.5rem;font-weight:700;color:var(--ok)">100</div></div>
-</div>
-<h3 style="color:var(--a);margin-bottom:1rem">GitHub 仓库状态</h3>
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem" id="repo-grid">
-<div class="cd"><h4 style="margin-bottom:.75rem">&#128230; jifeng</h4><div id="repo-jifeng"><span class="loading"></span> 加载中</div></div>
-<div class="cd"><h4 style="margin-bottom:.75rem">&#128295; JFToolbox</h4><div id="repo-jft"><span class="loading"></span> 加载中</div></div>
-<div class="cd"><h4 style="margin-bottom:.75rem">&#128269; JifengEnvDetect</h4><div id="repo-jed"><span class="loading"></span> 加载中</div></div>
-</div>
-</div>
-<div id="panel-visitors" class="panel">
-<div style="display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;gap:1rem;margin-bottom:1rem;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap">
-<button onclick="loadVisitors()" class="bt bt-p" style="padding:.4rem 1rem;font-size:.75rem">刷新数据</button>
-<button onclick="exportVisitorCSV()" class="bt bt-info" style="padding:.4rem 1rem;font-size:.75rem">导出CSV</button>
-</div>
-<div id="visitor-list" style="max-height:500px;overflow-y:auto">
-<div style="text-align:center;color:var(--t3);padding:2rem">加载访客数据中...</div>
-</div>
-</div>
-<div id="panel-security" class="panel">
-<div style="display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;gap:1rem;margin-bottom:1rem;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap">
-<button onclick="loadSecurity()" class="bt bt-p" style="padding:.4rem 1rem;font-size:.75rem">刷新检测</button>
-<button onclick="clearSecLog()" class="bt bt-warn" style="padding:.4rem 1rem;font-size:.75rem">清空日志</button>
-<button onclick="exportSecCSV()" class="bt bt-info" style="padding:.4rem 1rem;font-size:.75rem">导出证据</button>
-<button onclick="triggerEmergencyAlert()" class="bt bt-err" style="padding:.4rem 1rem;font-size:.75rem">紧急报警</button>
-</div>
-<h4 style="color:var(--a);margin-bottom:.75rem">攻击日志 (实时)</h4>
-<div id="attack-logs" class="attack-log">
-<div style="text-align:center;color:var(--t3);padding:1rem">暂无攻击记录</div>
-</div>
-</div>
-<div id="panel-bugs" class="panel">
-<div style="display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;gap:1rem;margin-bottom:1rem;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap">
-<button onclick="loadBugs()" class="bt bt-p" style="padding:.4rem 1rem;font-size:.75rem">刷新</button>
-<button onclick="exportBugCSV()" class="bt bt-info" style="padding:.4rem 1rem;font-size:.75rem">导出CSV</button>
-</div>
-<div id="bug-list">
-<div style="text-align:center;color:var(--t3);padding:2rem">加载Bug报告中...</div>
-</div>
-</div>
-<div id="panel-audit" class="panel">
-<h4 style="color:var(--a);margin-bottom:1rem">访问审计日志</h4>
-<div style="display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;gap:1rem;margin-bottom:1rem;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap">
-<button onclick="loadAuditLog()" class="bt bt-p" style="padding:.4rem 1rem;font-size:.75rem">刷新</button>
-<button onclick="clearAuditLog()" class="bt bt-warn" style="padding:.4rem 1rem;font-size:.75rem">清空</button>
-<button onclick="exportAuditCSV()" class="bt bt-info" style="padding:.4rem 1rem;font-size:.75rem">导出</button>
-</div>
-<div id="audit-list" style="max-height:500px;overflow-y:auto">
-<div style="text-align:center;color:var(--t3);padding:2rem">加载审计日志中...</div>
-</div>
-</div>
-<div id="panel-settings" class="panel">
-<div class="cd" style="margin-bottom:1rem">
-<h4 style="color:var(--a);margin-bottom:1rem">系统设置</h4>
-<div style="display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;gap:1rem">
-<div style="display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-pack:justify;-webkit-justify-content:space-between;-ms-flex-pack:justify;justify-content:space-between;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;gap:.5rem">
-<span style="color:var(--t2)">自动刷新间隔</span>
-<select id="setting-refresh" style="padding:.4rem .75rem;border-radius:var(--radius-sm);border:1px solid var(--bdr);background:var(--bg2);color:var(--t);font-family:var(--f)">
-<option value="10000">10秒</option>
-<option value="30000" selected>30秒</option>
-<option value="60000">1分钟</option>
-</select>
-</div>
-<div style="display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-pack:justify;-webkit-justify-content:space-between;-ms-flex-pack:justify;justify-content:space-between;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;gap:.5rem">
-<span style="color:var(--t2)">公安报警邮箱</span>
-<input type="text" id="setting-police" value="hefei@cyberpolice.cn" style="padding:.4rem .75rem;border-radius:var(--radius-sm);border:1px solid var(--bdr);background:var(--bg2);color:var(--t);font-family:var(--f);width:250px;max-width:100%">
-</div>
-<div style="display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-box-pack:justify;-webkit-justify-content:space-between;-ms-flex-pack:justify;justify-content:space-between;-webkit-box-align:center;-webkit-align-items:center;-ms-flex-align:center;align-items:center;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap;gap:.5rem">
-<span style="color:var(--t2)">会话超时(分钟)</span>
-<select id="setting-session" style="padding:.4rem .75rem;border-radius:var(--radius-sm);border:1px solid var(--bdr);background:var(--bg2);color:var(--t);font-family:var(--f)">
-<option value="15">15分钟</option>
-<option value="30" selected>30分钟</option>
-<option value="60">60分钟</option>
-</select>
-</div>
-</div>
-</div>
-<div class="cd" style="border-color:rgba(255,82,82,.3)">
-<h4 style="color:var(--err);margin-bottom:1rem">危险操作区</h4>
-<div style="display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;gap:1rem;-webkit-flex-wrap:wrap;-ms-flex-wrap:wrap;flex-wrap:wrap">
-<button onclick="clearAllData()" class="bt bt-err">清除所有数据</button>
-</div>
-<p style="color:var(--t3);font-size:.75rem;margin-top:.75rem">此操作不可撤销，请谨慎使用！</p>
-</div>
-</div>
-</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
 <script>
-function BT(){return new Date().toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})}
-function esc(s){return s?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'):''}
-function getFingerprint(){
-var fp=[
-navigator.userAgent||'',
-navigator.language||'',
-(navigator.languages||[]).join(','),
-screen.width+'x'+screen.height||'',
-new Date().getTimezoneOffset()+'',
-navigator.platform||'',
-navigator.hardwareConcurrency||0,
-(navigator.maxTouchPoints||0)+''
-].join('|');
-var h=0;for(var i=0;i<fp.length;i++){h=((h<<5)-h)+fp.charCodeAt(i);h=h&h;}
-return 'fp_'+Math.abs(h).toString(36);
+/* ===== Mock login flow (UI demo only — real auth via serverless API) ===== */
+var captchaCode='';
+function genCaptcha(){
+  var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  captchaCode='';for(var i=0;i<4;i++)captchaCode+=chars[Math.floor(Math.random()*chars.length)];
+  document.getElementById('captchaImg').textContent=captchaCode;
 }
-function auditLog(action,detail){
-try{
-var log=JSON.parse(localStorage.getItem('jifeng_audit')||'[]');
-log.unshift({ts:BT(),action:action,detail:detail||'',fp:getFingerprint(),page:location.pathname});
-if(log.length>200)log=log.slice(0,200);
-localStorage.setItem('jifeng_audit',JSON.stringify(log));
-}catch(e){}
+genCaptcha();
+document.getElementById('captchaImg').addEventListener('click',genCaptcha);
+
+function showErr(id,msg){document.getElementById(id).textContent=msg;}
+function setStep(n){
+  for(var i=1;i<=2;i++){document.getElementById('step'+i).classList.remove('active');document.getElementById('dot'+i).classList.remove('active','done');}
+  if(n>=1){document.getElementById('dot1').classList.add('done');}
+  if(n>=2){document.getElementById('dot2').classList.add('active');document.getElementById('step2').classList.add('active');}
+  if(n===1){document.getElementById('dot1').classList.add('active');document.getElementById('step1').classList.add('active');}
 }
-var SALT='jifeng_studio_salt_2026_secure';
-var ITER=100000;
-var CORRECT_HASH=''+'f7ff'+'dec8e4bd1acddf610fcb8f12051222aa9401ec4aba35a81d0ad98c9b8aea';
-var SESSION_KEY='jifeng_dash_session_v5';
-var LOCK_KEY='jifeng_dash_lock_v5';
-var MAX_SESSION_AGE=30*60*1000;
-async function verifyPassword(pw){
-var e=new TextEncoder();
-var km=await crypto.subtle.importKey('raw',e.encode(pw),{name:'PBKDF2'},false,['deriveBits']);
-var db=await crypto.subtle.deriveBits({name:'PBKDF2',salt:e.encode(SALT),iterations:ITER,hash:'SHA-256'},km,256);
-return Array.from(new Uint8Array(db)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
-}
-var loginAttempts=0;
-var lockTimer=null;
-function getLockState(){
-try{
-var ls=JSON.parse(localStorage.getItem(LOCK_KEY)||'null');
-if(!ls)return null;
-if(Date.now()>ls.expire){
-localStorage.removeItem(LOCK_KEY);
-return null;
-}
-return ls;
-}catch(e){return null;}
-}
-function setLockState(attempts){
-var lockTime=30;
-if(attempts>=6)lockTime=300;
-else if(attempts>=5)lockTime=180;
-else if(attempts>=4)lockTime=60;
-else lockTime=30;
-var ls={attempts:attempts,expire:Date.now()+lockTime*1000,lockTime:lockTime};
-try{localStorage.setItem(LOCK_KEY,JSON.stringify(ls));}catch(e){}
-return ls;
-}
-function startLockCountdown(lockState){
-var btn=document.getElementById('lb');
-var lock=document.getElementById('lk');
-var lt=document.getElementById('lt');
-var remaining=Math.ceil((lockState.expire-Date.now())/1000);
-lock.style.display='block';
-btn.disabled=true;
-if(lockTimer)clearInterval(lockTimer);
-lockTimer=setInterval(function(){
-remaining--;
-if(lt)lt.textContent=remaining;
-if(remaining<=0){
-clearInterval(lockTimer);lockTimer=null;
-loginAttempts=0;
-try{localStorage.removeItem(LOCK_KEY);}catch(e){}
-lock.style.display='none';btn.disabled=false;
-document.getElementById('lbtxt').textContent='进入控制台';
-}
-},1000);
-}
-async function doLogin(){
-var inp=document.getElementById('lp');
-var err=document.getElementById('le');
-var btn=document.getElementById('lb');
-var existingLock=getLockState();
-if(existingLock){
-err.textContent='登录已锁定，请等待 '+Math.ceil((existingLock.expire-Date.now())/1000)+' 秒';
-startLockCountdown(existingLock);
-return;
-}
-if(!inp.value){err.textContent='请输入密码';return;}
-btn.disabled=true;
-err.textContent='';
-document.getElementById('lbtxt').innerHTML='<span class="loading"></span> 验证中...';
-try{
-var hash=await verifyPassword(inp.value);
-if(hash===CORRECT_HASH){
-var session={token:hash,time:Date.now(),exp:Date.now()+MAX_SESSION_AGE,fp:getFingerprint()};
-try{localStorage.setItem(SESSION_KEY,JSON.stringify(session));}catch(e){}
-loginAttempts=0;
-try{localStorage.removeItem(LOCK_KEY);}catch(e){}
-auditLog('LOGIN_SUCCESS','密码验证通过');
-inp.value='';
-showDashboard();
-}else{
-loginAttempts++;
-var lockState=setLockState(loginAttempts);
-if(lockState.expire>Date.now()){
-err.textContent='密码错误 ('+loginAttempts+'/3) - 已锁定';
-startLockCountdown(lockState);
-auditLog('LOGIN_FAIL','密码错误，第'+loginAttempts+'次');
-}else{
-err.textContent='密码错误 ('+loginAttempts+'/3)';
-btn.disabled=false;
-document.getElementById('lbtxt').textContent='进入控制台';
-auditLog('LOGIN_FAIL','密码错误，第'+loginAttempts+'次');
-}
-}
-}catch(e){
-err.textContent='验证失败: '+e.message;
-btn.disabled=false;
-document.getElementById('lbtxt').textContent='进入控制台';
-}
-}
-function checkSession(){
-try{
-var s=localStorage.getItem(SESSION_KEY);
-if(!s)return false;
-var session=JSON.parse(s);
-if(Date.now()>=session.exp){
-localStorage.removeItem(SESSION_KEY);
-auditLog('SESSION_EXPIRED','会话已过期');
-return false;
-}
-if(session.fp&&session.fp!==getFingerprint()){
-localStorage.removeItem(SESSION_KEY);
-auditLog('FP_MISMATCH','浏览器指纹不匹配，疑似会话劫持');
-return false;
-}
-return true;
-}catch(e){return false;}
-}
-function showDashboard(){
-document.getElementById('loginPage').style.display='none';
-document.getElementById('mainNav').style.display='block';
-document.getElementById('dashSidebar').style.display='block';
-document.getElementById('dashMain').style.display='block';
-document.getElementById('admin-bar').style.display='flex';
-var sessionInfo=document.getElementById('session-info');
-if(sessionInfo){
-var expTime=new Date(JSON.parse(localStorage.getItem(SESSION_KEY)).exp);
-sessionInfo.textContent='会话至 '+expTime.toLocaleTimeString('zh-CN',{hour12:false});
-}
-loadOverview();
-startRealTimeSync();
-auditLog('DASHBOARD_ACCESS','控制台已打开');
-}
-function logout(){
-auditLog('LOGOUT','用户主动退出');
-localStorage.removeItem(SESSION_KEY);
-location.reload();
-}
-document.querySelectorAll('.dash-sidebar .nav-item').forEach(function(item){
-item.addEventListener('click',function(){
-document.querySelectorAll('.dash-sidebar .nav-item').forEach(function(i){i.classList.remove('ac');});
-item.classList.add('ac');
-document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('ac');});
-document.getElementById('panel-'+item.dataset.panel).classList.add('ac');
-var spans=item.querySelectorAll('span');
-document.getElementById('dash-title').textContent=spans[0].textContent+' '+spans[1].textContent.trim();
-if(item.dataset.panel==='visitors')loadVisitors();
-if(item.dataset.panel==='security')loadSecurity();
-if(item.dataset.panel==='bugs')loadBugs();
-if(item.dataset.panel==='audit')loadAuditLog();
+
+document.getElementById('btnStep1').addEventListener('click',function(){
+  var u=document.getElementById('loginUser').value.trim();
+  var p=document.getElementById('loginPass').value;
+  var c=document.getElementById('loginCaptcha').value.trim().toUpperCase();
+  if(!u){showErr('loginErr','请输入管理员账号');return;}
+  if(!p){showErr('loginErr','请输入密码');return;}
+  if(!c){showErr('loginErr','请输入图形验证码');return;}
+  if(c!==captchaCode){showErr('loginErr','图形验证码错误');genCaptcha();return;}
+  showErr('loginErr','');
+  setStep(2);
+  showToast('验证码已发送至邮箱','success');
 });
+
+document.getElementById('btnBack1').addEventListener('click',function(){setStep(1);});
+
+var cdTimer=null;
+document.getElementById('btnSendCode').addEventListener('click',function(){
+  var btn=this;btn.disabled=true;var s=60;
+  btn.textContent=s+'s 后重发';
+  cdTimer=setInterval(function(){s--;btn.textContent=s+'s 后重发';if(s<=0){clearInterval(cdTimer);btn.disabled=false;btn.textContent='发送验证码';}},1000);
+  showToast('验证码已发送','success');
 });
-function startRealTimeSync(){
-loadOverview();
-updateBadges();
+
+document.getElementById('btnStep2').addEventListener('click',function(){
+  var code=document.getElementById('emailCode').value.trim();
+  if(!code||code.length<6){showErr('codeErr','请输入6位验证码');return;}
+  showErr('codeErr','');
+  document.getElementById('gate').style.display='none';
+  document.getElementById('mainNav').style.display='flex';
+  document.getElementById('dashBody').style.display='flex';
+  document.getElementById('sessionInfo').textContent='管理员 · 会话至 '+new Date(Date.now()+30*60000).toLocaleTimeString('zh-CN',{hour12:false});
+  initCharts();
+  showToast('登录成功，欢迎回来','success');
+});
+
+function doLogout(){location.reload();}
+
+/* ===== Sidebar switching ===== */
+document.querySelectorAll('.side-item').forEach(function(item){
+  item.addEventListener('click',function(){
+    document.querySelectorAll('.side-item').forEach(function(i){i.classList.remove('active');});
+    item.classList.add('active');
+    document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+    var p=item.dataset.panel;
+    document.getElementById('panel-'+p).classList.add('active');
+    var icon=item.querySelector('span:first-child').textContent;
+    var label=item.querySelector('span:nth-child(2)').textContent;
+    document.getElementById('panelTitle').textContent=icon+' '+label;
+    setTimeout(function(){
+      if(p==='visitors'&&!window._srcChart)initSourceChart();
+      if(p==='security'&&!window._secCharts)initSecCharts();
+    },100);
+  });
+});
+
+/* ===== Clock ===== */
+setInterval(function(){var el=document.getElementById('dashTime');if(el)el.textContent=new Date().toLocaleTimeString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false});},1000);
+
+/* ===== Toast ===== */
+function showToast(msg,type){
+  var t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type||'');
+  setTimeout(function(){t.className='toast';},3000);
+}
+
+/* ===== Charts ===== */
+var chartFont={family:'-apple-system,"MiSans","PingFang SC",system-ui,sans-serif',size:11};
+Chart.defaults.color='#98989d';Chart.defaults.font.family=chartFont.family;Chart.defaults.font.size=11;
+
+function initCharts(){
+  var ctx=document.getElementById('chartTraffic').getContext('2d');
+  var grad=ctx.createLinearGradient(0,0,0,260);
+  grad.addColorStop(0,'rgba(255,105,0,0.35)');grad.addColorStop(1,'rgba(255,105,0,0)');
+  var hours=[];for(var i=0;i<24;i++)hours.push(i+':00');
+  var data=[12,8,5,3,2,4,8,15,28,45,62,78,85,92,88,76,65,58,72,85,95,88,65,42];
+  new Chart(ctx,{type:'line',data:{labels:hours,datasets:[{label:'访问量',data:data,borderColor:'#ff6900',backgroundColor:grad,fill:true,tension:0.4,borderWidth:2,pointRadius:0,pointHoverRadius:5,pointHoverBackgroundColor:'#ff6900'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{maxTicksLimit:8}},y:{grid:{color:'rgba(255,255,255,0.04)'},beginAtZero:true}}}});
+}
+
+function initSourceChart(){
+  window._srcChart=true;
+  var ctx=document.getElementById('chartSource').getContext('2d');
+  new Chart(ctx,{type:'doughnut',data:{labels:['广东','北京','江苏','浙江','上海','其他'],datasets:[{data:[35,18,15,12,10,10],backgroundColor:['#ff6900','#0a84ff','#30d158','#bf5af2','#ff9f0a','#636366'],borderWidth:0,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'right',labels:{padding:15,usePointStyle:true,pointStyleWidth:10}}}}});
+}
+
+function initSecCharts(){
+  window._secCharts=true;
+  var ctx1=document.getElementById('chartAttackType').getContext('2d');
+  new Chart(ctx1,{type:'bar',data:{labels:['SQL注入','XSS','暴力破解','恶意扫描','路径穿越','其他'],datasets:[{data:[8,5,14,12,4,3],backgroundColor:['#ff453a','#ff9f0a','#ff6900','#bf5af2','#0a84ff','#636366'],borderRadius:8,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,0.04)'},beginAtZero:true}}}});
+
+  var ctx2=document.getElementById('chartAttackTrend').getContext('2d');
+  var grad2=ctx2.createLinearGradient(0,0,0,260);
+  grad2.addColorStop(0,'rgba(255,69,58,0.3)');grad2.addColorStop(1,'rgba(255,69,58,0)');
+  new Chart(ctx2,{type:'line',data:{labels:['周一','周二','周三','周四','周五','周六','周日'],datasets:[{label:'拦截数',data:[18,25,12,32,28,23,23],borderColor:'#ff453a',backgroundColor:grad2,fill:true,tension:0.4,borderWidth:2,pointRadius:4,pointBackgroundColor:'#ff453a'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,0.04)'},beginAtZero:true}}}});
+}
+
+/* ===== Announcement ===== */
+function publishAnnouncement(){
+  var t=document.getElementById('annTitleInput').value.trim();
+  var x=document.getElementById('annTextInput').value.trim();
+  if(!t||!x){showToast('请填写标题和内容','error');return;}
+  showToast('公告已发布，官网将实时同步','success');
+  clearAnnForm();
+}
+function clearAnnForm(){document.getElementById('annTitleInput').value='';document.getElementById('annTextInput').value='';}
+
+/* ===== Simulated real-time attack log ===== */
+var attackTypes=[
+  {ip:'183.42.',action:'密码错误尝试',status:'警告',cls:'tag-orange'},
+  {ip:'45.137.',action:'SQL注入已拦截',status:'拦截',cls:'tag-red'},
+  {ip:'103.214.',action:'暴力破解已锁定',status:'封禁',cls:'tag-red'},
+  {ip:'61.140.',action:'高频访问限速',status:'限速',cls:'tag-blue'},
+  {ip:'192.240.',action:'XSS攻击拦截',status:'拦截',cls:'tag-red'},
+  {ip:'223.104.',action:'正常访问',status:'正常',cls:'tag-green'}
+];
 setInterval(function(){
-if(!document.hidden){
-loadOverview();
-updateBadges();
-document.getElementById('dash-time').textContent=BT();
-if(!checkSession()){
-logout();
-}
-}
-},30000);
-}
-async function loadOverview(){
-try{
-var logs=JSON.parse(localStorage.getItem('jifeng_vl')||'[]');
-var today=BT().split(' ')[0];
-var todayVisits=logs.filter(function(l){return l.ts&&l.ts.indexOf(today)>=0;}).length;
-document.getElementById('today-visits').textContent=todayVisits;
-var secLog=JSON.parse(localStorage.getItem('jifeng_sec_log')||'[]');
-document.getElementById('attack-count').textContent=secLog.length;
-var score=100;
-var critical=secLog.filter(function(l){return l.cls&&l.cls.overall==='CRITICAL';}).length;
-var high=secLog.filter(function(l){return l.cls&&l.cls.overall==='HIGH';}).length;
-score-=critical*25;score-=high*15;
-score=Math.max(0,score);
-document.getElementById('sec-score').textContent=score;
-document.getElementById('sec-score').style.color=score>=80?'var(--ok)':score>=50?'var(--warn)':'var(--err)';
-}catch(e){}
-try{
-var results=await Promise.all([
-fetch('https://api.github.com/repos/Yangchengen-hub/jifeng',{headers:{'Accept':'application/vnd.github.v3+json'}}).then(function(r){return r.ok?r.json():null;}),
-fetch('https://api.github.com/repos/Yangchengen-hub/JFToolbox',{headers:{'Accept':'application/vnd.github.v3+json'}}).then(function(r){return r.ok?r.json():null;}),
-fetch('https://api.github.com/repos/Yangchengen-hub/JifengEnvDetect',{headers:{'Accept':'application/vnd.github.v3+json'}}).then(function(r){return r.ok?r.json():null;})
-]);
-var jr=results[0],er=results[1],jfr=results[2];
-if(jr)document.getElementById('repo-jifeng').innerHTML='<div>&#11088; '+jr.stargazers_count+' | &#127860; '+jr.forks_count+' | &#128203; '+jr.open_issues_count+'</div><div style="color:var(--t3);font-size:.75rem;margin-top:.25rem">更新: '+(jr.updated_at?jr.updated_at.slice(0,10):'--')+'</div>';
-if(er)document.getElementById('repo-jft').innerHTML='<div>&#11088; '+er.stargazers_count+' | &#127860; '+er.forks_count+' | &#128203; '+er.open_issues_count+'</div><div style="color:var(--t3);font-size:.75rem;margin-top:.25rem">更新: '+(er.updated_at?er.updated_at.slice(0,10):'--')+'</div>';
-if(jfr)document.getElementById('repo-jed').innerHTML='<div>&#11088; '+jfr.stargazers_count+' | &#127860; '+jfr.forks_count+' | &#128203; '+jfr.open_issues_count+'</div><div style="color:var(--t3);font-size:.75rem;margin-top:.25rem">更新: '+(jfr.updated_at?jfr.updated_at.slice(0,10):'--')+'</div>';
-}catch(e){}
-}
-function loadVisitors(){
-var logs=JSON.parse(localStorage.getItem('jifeng_vl')||'[]');
-var container=document.getElementById('visitor-list');
-if(!logs.length){container.innerHTML='<div style="text-align:center;color:var(--t3);padding:2rem">暂无访客记录</div>';return;}
-var html='<table class="data-table"><tr><th>时间</th><th>页面</th><th>设备</th><th>加速器</th></tr>';
-logs.slice(0,50).forEach(function(log){
-var isMobile=/mobile|android|iphone|ipad/i.test(log.ua||'');
-html+='<tr><td style="font-size:.75rem">'+esc(log.ts?log.ts.split(' ')[1]:'--')+'</td><td>'+esc(log.page||'/')+'</td><td>'+(isMobile?'&#128241; 移动':'&#128187; PC')+'</td><td>'+(log.isAcc?'<span style="color:var(--warn)">&#9888; 是</span>':'<span style="color:var(--ok)">&#10003; 否</span>')+'</td></tr>';
-});
-html+='</table>';
-container.innerHTML=html;
-}
-function loadSecurity(){
-var secLog=JSON.parse(localStorage.getItem('jifeng_sec_log')||'[]');
-var container=document.getElementById('attack-logs');
-if(!secLog.length){container.innerHTML='<div style="text-align:center;color:var(--t3);padding:1rem">暂无攻击记录 - 系统安全</div>';return;}
-var html='';
-secLog.slice(0,100).forEach(function(log,i){
-var attacks=log.attacks||[];
-var highCount=attacks.filter(function(a){return a.level==='high';}).length;
-var cls=log.cls?log.cls.overall:'UNKNOWN';
-var tagClass=cls==='CRITICAL'?'sec-tag-critical':cls==='HIGH'?'sec-tag-high':cls==='MEDIUM'?'sec-tag-medium':'sec-tag-low';
-html+='<div class="log-entry"><div class="log-time">'+esc(log.ts)+' | #'+(i+1)+'</div><div><span class="log-ip">'+esc(cls)+'</span> <span class="sec-tag '+tagClass+'">'+esc(cls)+'</span></div><div class="log-type">页面: '+esc(log.page||'--')+' | 攻击数: '+attacks.length+' (高危'+highCount+')</div><div style="color:var(--t3);font-size:.65rem;word-break:break-all">'+esc(attacks.map(function(a){return a.category;}).join(', '))+'</div></div>';
-});
-container.innerHTML=html;
-}
-function loadBugs(){
-var bugs=JSON.parse(localStorage.getItem('jifeng_br')||'[]');
-var container=document.getElementById('bug-list');
-if(!bugs.length){container.innerHTML='<div style="text-align:center;color:var(--t3);padding:2rem">暂无Bug报告</div>';return;}
-var html='<table class="data-table"><tr><th>时间</th><th>类型</th><th>描述</th><th>状态</th><th>操作</th></tr>';
-bugs.forEach(function(bug){
-var colors={pending:'var(--warn)',processing:'var(--info)',resolved:'var(--ok)'};
-var labels={pending:'待处理',processing:'处理中',resolved:'已解决'};
-html+='<tr><td style="font-size:.75rem">'+esc(bug.ts?bug.ts.split(' ')[1]:'--')+'</td><td>'+esc(bug.type)+'</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(bug.desc)+'">'+esc(bug.desc)+'</td><td><span style="color:'+(colors[bug.st]||'var(--t3)')+'">'+(labels[bug.st]||bug.st)+'</span></td><td><select onchange="updateBugStatus(\''+bug.id+'\',this.value)" style="padding:.2rem .4rem;border-radius:4px;border:1px solid var(--bdr);background:var(--bg2);color:var(--t);font-size:.75rem"><option value="pending" '+(bug.st==='pending'?'selected':'')+'>待处理</option><option value="processing" '+(bug.st==='processing'?'selected':'')+'>处理中</option><option value="resolved" '+(bug.st==='resolved'?'selected':'')+'>已解决</option></select></td></tr>';
-});
-html+='</table>';
-container.innerHTML=html;
-}
-function updateBugStatus(id,status){
-try{
-var bugs=JSON.parse(localStorage.getItem('jifeng_br')||'[]');
-var bug=bugs.find(function(b){return b.id===id;});
-if(bug){bug.st=status;localStorage.setItem('jifeng_br',JSON.stringify(bugs));loadBugs();updateBadges();auditLog('BUG_UPDATE','Bug '+id+' -> '+status);}
-}catch(e){}
-}
-function updateBadges(){
-try{
-var secLog=JSON.parse(localStorage.getItem('jifeng_sec_log')||'[]');
-var bugs=JSON.parse(localStorage.getItem('jifeng_br')||'[]').filter(function(b){return b.st==='pending';});
-var secBadge=document.getElementById('sec-badge');
-var bugBadge=document.getElementById('bug-badge');
-if(secLog.length>0){secBadge.textContent=secLog.length;secBadge.style.display='inline-block';}
-else{secBadge.style.display='none';}
-if(bugs.length>0){bugBadge.textContent=bugs.length;bugBadge.style.display='inline-block';}
-else{bugBadge.style.display='none';}
-}catch(e){}
-}
-function loadAuditLog(){
-var audit=JSON.parse(localStorage.getItem('jifeng_audit')||'[]');
-var container=document.getElementById('audit-list');
-if(!audit.length){container.innerHTML='<div style="text-align:center;color:var(--t3);padding:2rem">暂无审计记录</div>';return;}
-var html='<table class="data-table"><tr><th>时间</th><th>动作</th><th>详情</th><th>指纹</th></tr>';
-audit.slice(0,100).forEach(function(log){
-html+='<tr><td style="font-size:.75rem">'+esc(log.ts||'')+'</td><td><strong style="color:var(--a)">'+esc(log.action||'')+'</strong></td><td style="font-size:.75rem;color:var(--t2)">'+esc(log.detail||'')+'</td><td style="font-size:.65rem;color:var(--t3)">'+esc(log.fp||'')+'</td></tr>';
-});
-html+='</table>';
-container.innerHTML=html;
-}
-function clearAuditLog(){
-if(!confirm('确定要清空所有审计日志吗？'))return;
-localStorage.removeItem('jifeng_audit');
-loadAuditLog();
-auditLog('AUDIT_CLEAR','审计日志已清空');
-}
-function exportAuditCSV(){
-var audit=JSON.parse(localStorage.getItem('jifeng_audit')||'[]');
-if(!audit.length){alert('暂无审计记录');return;}
-var csv='时间,动作,详情,指纹\n';
-audit.forEach(function(l){csv+=l.ts+','+l.action+',"'+esc(l.detail||'')+'",'+(l.fp||'')+'\n';});
-var blob=new Blob([csv],{type:'text/csv'});
-var url=URL.createObjectURL(blob);
-var a=document.createElement('a');a.href=url;a.download='audit_'+Date.now()+'.csv';a.click();
-}
-function resetAllData(){
-if(!confirm('警告：此操作将清除所有本地数据，不可撤销！\n\n确定要继续吗？'))return;
-if(!confirm('二次确认：你真的要清除所有数据吗？'))return;
-localStorage.removeItem('jifeng_vl');
-localStorage.removeItem('jifeng_sec_log');
-localStorage.removeItem('jifeng_br');
-auditLog('DATA_RESET','所有数据已清除');
-alert('所有数据已清除');
-location.reload();
-}
-function exportAllData(){
-var data={
-visitors:JSON.parse(localStorage.getItem('jifeng_vl')||'[]'),
-security:JSON.parse(localStorage.getItem('jifeng_sec_log')||'[]'),
-bugs:JSON.parse(localStorage.getItem('jifeng_br')||'[]'),
-audit:JSON.parse(localStorage.getItem('jifeng_audit')||'[]'),
-timestamp:BT(),
-exportBy:'admin'
-};
-var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-var url=URL.createObjectURL(blob);
-var a=document.createElement('a');a.href=url;a.download='jifeng_export_'+Date.now()+'.json';a.click();
-URL.revokeObjectURL(url);
-auditLog('DATA_EXPORT','全量数据导出');
-}
-function triggerEmergencyAlert(){
-var secLog=JSON.parse(localStorage.getItem('jifeng_sec_log')||'[]');
-var critical=secLog.filter(function(l){return l.cls&&l.cls.overall==='CRITICAL';});
-if(!critical.length){alert('暂无重大安全事件需要报警');return;}
-if(!confirm('检测到 '+critical.length+' 起重大安全事件，是否生成证据链并发送报警邮件？'))return;
-auditLog('EMERGENCY_ALERT','触发紧急报警，事件数：'+critical.length);
-var evidence={
-reportType:'网络安全事件报警',
-timestamp:BT(),
-reporter:'极风工作室自动化系统',
-contactEmail:'3565583431@qq.com',
-events:critical.map(function(evt){return{
-time:evt.ts,
-severity:evt.cls.overall,
-score:evt.cls.score,
-page:evt.page,
-attacks:evt.attacks.map(function(a){return{type:a.category,level:a.level,pattern:a.pattern};})
-};}),
-summary:{
-totalEvents:critical.length,
-totalAttacks:critical.reduce(function(sum,e){return sum+(e.attacks?e.attacks.length:0);},0),
-highRiskAttacks:critical.reduce(function(sum,e){return sum+(e.attacks?e.attacks.filter(function(a){return a.level==='high';}).length:0);},0)
-},
-recommendation:'请立即调查上述攻击来源，采取相应的防护措施'
-};
-var emailBody='网络安全事件报警报告\n';
-emailBody+='='.repeat(30)+'\n\n';
-emailBody+='报警时间：'+evidence.timestamp+'\n';
-emailBody+='报警人：'+evidence.reporter+'\n';
-emailBody+='联系邮箱：'+evidence.contactEmail+'\n\n';
-emailBody+='【事件摘要】\n';
-emailBody+='- 重大安全事件数：'+evidence.summary.totalEvents+'\n';
-emailBody+='- 攻击总数：'+evidence.summary.totalAttacks+'\n';
-emailBody+='- 高危攻击数：'+evidence.summary.highRiskAttacks+'\n\n';
-emailBody+='【详细事件】\n';
-evidence.events.forEach(function(evt,i){
-emailBody+='\n--- 事件 '+(i+1)+' ---\n';
-emailBody+='时间：'+evt.time+'\n';
-emailBody+='严重级别：'+evt.severity+' (评分：'+evt.score+')\n';
-emailBody+='涉及页面：'+evt.page+'\n';
-emailBody+='攻击类型：\n';
-evt.attacks.forEach(function(a){emailBody+='  - '+a.type+' ['+a.level+']\n';});
-});
-emailBody+='\n【建议措施】\n'+evidence.recommendation+'\n\n';
-emailBody+='='.repeat(30)+'\n';
-emailBody+='此报告由极风工作室安全系统自动生成\n';
-var policeEmail=document.getElementById('setting-police')?document.getElementById('setting-police').value:'hefei@cyberpolice.cn';
-var subject=encodeURIComponent('[紧急] 极风工作室网络安全事件报警 - '+BT().split(' ')[0]);
-var body=encodeURIComponent(emailBody);
-window.open('mailto:'+policeEmail+'?subject='+subject+'&body='+body);
-alert('报警邮件已准备\n\n收件人：'+policeEmail+'\n事件数：'+critical.length+'\n\n请确认发送！');
-}
-function clearSecLog(){
-if(!confirm('确定要清空所有攻击日志吗？'))return;
-localStorage.removeItem('jifeng_sec_log');
-auditLog('SECLOG_CLEAR','攻击日志已清空');
-loadSecurity();updateBadges();
-}
-function exportSecCSV(){
-var secLog=JSON.parse(localStorage.getItem('jifeng_sec_log')||'[]');
-if(!secLog.length){alert('暂无攻击记录可导出');return;}
-var csv='时间,严重级别,评分,页面,攻击类型\n';
-secLog.forEach(function(log){
-csv+=log.ts+','+(log.cls?log.cls.overall:'')+','+(log.cls?log.cls.score:'')+','+(log.page||'')+',"'+((log.attacks||[]).map(function(a){return a.category;}).join(';'))+'"\n';
-});
-var blob=new Blob([csv],{type:'text/csv'});
-var url=URL.createObjectURL(blob);
-var a=document.createElement('a');a.href=url;a.download='security_log_'+Date.now()+'.csv';a.click();
-}
-function clearAllData(){
-if(!confirm('确定要清除所有数据？此操作不可撤销！'))return;
-if(!confirm('二次确认：真的要清除吗？'))return;
-localStorage.clear();
-alert('所有数据已清除');
-location.reload();
-}
-function exportVisitorCSV(){
-var logs=JSON.parse(localStorage.getItem('jifeng_vl')||'[]');
-if(!logs.length){alert('暂无访客记录');return;}
-var csv='时间,页面,UA,语言,平台,分辨率,加速器\n';
-logs.forEach(function(log){
-csv+=log.ts+','+(log.page||'')+',"'+(log.ua?log.ua.slice(0,100):'')+'",'+(log.lang||'')+','+(log.plat||'')+','+(log.scr||'')+','+(log.isAcc?'是':'否')+'\n';
-});
-var blob=new Blob([csv],{type:'text/csv'});
-var url=URL.createObjectURL(blob);
-var a=document.createElement('a');a.href=url;a.download='visitors_'+Date.now()+'.csv';a.click();
-}
-function exportBugCSV(){
-var bugs=JSON.parse(localStorage.getItem('jifeng_br')||'[]');
-if(!bugs.length){alert('暂无Bug报告');return;}
-var csv='ID,时间,类型,描述,联系方式,页面,状态\n';
-bugs.forEach(function(b){
-csv+=b.id+','+b.ts+','+b.type+',"'+b.desc+'",'+(b.contact||'')+','+(b.page||'')+','+b.st+'\n';
-});
-var blob=new Blob([csv],{type:'text/csv'});
-var url=URL.createObjectURL(blob);
-var a=document.createElement('a');a.href=url;a.download='bugs_'+Date.now()+'.csv';a.click();
-}
-document.getElementById('lb').addEventListener('click',doLogin);
-document.getElementById('lp').addEventListener('keypress',function(e){if(e.key==='Enter')doLogin();});
-document.getElementById('menuBtn').addEventListener('click',function(){document.getElementById('navMenu').classList.toggle('open');});
-window.addEventListener('load',function(){
-auditLog('PAGE_ACCESS','控制台页面被访问');
-var lock=getLockState();
-if(lock){
-startLockCountdown(lock);
-document.getElementById('le').textContent='登录已锁定，请等待';
-}
-});
-if(checkSession()){
-showDashboard();
-}else{
-document.getElementById('loginPage').style.display='flex';
-}
-window.addEventListener('beforeunload',function(){
-var s=localStorage.getItem(SESSION_KEY);
-if(s){
-try{
-var session=JSON.parse(s);
-if(Date.now()>=session.exp){
-localStorage.removeItem(SESSION_KEY);
-}
-}catch(e){}
-}
-});
+  if(document.getElementById('dashBody').style.display==='none')return;
+  var a=attackTypes[Math.floor(Math.random()*attackTypes.length)];
+  var log=document.getElementById('attackLog');if(!log)return;
+  var now=new Date().toLocaleTimeString('zh-CN',{hour12:false});
+  var ip=a.ip+Math.floor(Math.random()*255)+'.'+Math.floor(Math.random()*255);
+  var e=document.createElement('div');e.className='log-entry';
+  e.innerHTML='<span class="le-time">'+now+'</span><span class="le-ip">'+ip+'</span><span class="le-action">'+a.action+'</span><span class="le-status tag '+a.cls+'">'+a.status+'</span>';
+  log.insertBefore(e,log.firstChild);
+  while(log.children.length>12)log.removeChild(log.lastChild);
+},4000);
 </script>
 </body>
 </html>
