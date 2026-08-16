@@ -161,7 +161,11 @@
     JF.trackVisitor();
     JF.loadAnnouncement(function(a){
       if(a){document.getElementById('annTitle').textContent=a.title;document.getElementById('annText').textContent=a.content;document.getElementById('annTime').textContent=a.time_str||''}
+      else{document.getElementById('annTitle').textContent='🔔 欢迎访问极风工作室';document.getElementById('annText').textContent='官网已全面升级，安全体系全面加强。';document.getElementById('annTime').textContent=''}
     });
+  }else{
+    document.getElementById('annTitle').textContent='🔔 欢迎访问极风工作室';
+    document.getElementById('annText').textContent='官网已全面升级，安全体系全面加强。';
   }
 })();
 </script>
