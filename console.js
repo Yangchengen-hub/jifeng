@@ -4,7 +4,7 @@ var $=function(s,p){return(p||document).querySelector(s)};
 var $$=function(s,p){return Array.prototype.slice.call((p||document).querySelectorAll(s))};
 function toast(msg,type){var t=$('#toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');setTimeout(function(){t.className='toast'},3000)}
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
-function api(path,opts){opts=opts||{};opts.headers=opts.headers||{};opts.headers['Content-Type']='application/json';var token=sessionStorage.getItem('jf_token');if(token)opts.headers['Authorization']='Bearer '+token;return fetch(API+path,opts).then(function(r){return r.json().catch(function(){return{ok:r.ok}})}).catch(function(){return{ok:false,error:'网络错误，请检查网络或加速器'}})}
+function api(path,opts){opts=opts||{};opts.headers=opts.headers||{};opts.headers['Content-Type']='application/json';var token=sessionStorage.getItem('jf_token');if(token)opts.headers['Authorization']='Bearer '+token;var ctrl=new AbortController();opts.signal=ctrl.signal;var timer=setTimeout(function(){ctrl.abort()},12000);return fetch(API+path,opts).then(function(r){clearTimeout(timer);return r.json().catch(function(){return{ok:r.ok}})}).catch(function(e){clearTimeout(timer);return{ok:false,error:e.name==='AbortError'?'连接超时，请检查加速器是否开启':'网络错误，请检查网络或加速器'}})}
 function fmtTime(ts){var d=new Date(ts);return d.toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false,month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'})}
 
 /* ============ LOGIN ============ */

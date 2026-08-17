@@ -10,7 +10,9 @@
   function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
   function api(path,opts){
     opts=opts||{};opts.headers=opts.headers||{};opts.headers['Content-Type']='application/json';
-    return fetch(API_BASE+path,opts).then(function(r){return r.json().catch(function(){return{ok:r.ok}})}).catch(function(){return{ok:false,error:'网络错误'}});
+    var ctrl=new AbortController();opts.signal=ctrl.signal;
+    var timer=setTimeout(function(){ctrl.abort()},10000);
+    return fetch(API_BASE+path,opts).then(function(r){clearTimeout(timer);return r.json().catch(function(){return{ok:r.ok}})}).catch(function(){clearTimeout(timer);return{ok:false,error:'网络错误'}});
   }
   function fp(){
     var n=navigator,s=screen,w=window;
