@@ -2,212 +2,183 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=5.0">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="robots" content="noindex,nofollow">
 <title>控制台 · 极风工作室</title>
 <link rel="stylesheet" href="console.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23ff6900'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>J</text></svg>">
 </head>
 <body>
+<script>window.JF_API='https://my-vercel-site-six.vercel.app';</script>
 
 <!-- Login -->
 <div class="login-wrap" id="loginWrap">
-  <div class="login-bg"><div class="orb"></div><div class="orb"></div></div>
-  <div class="login-card">
+  <div class="login-bg"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
+  <div class="login-card glass-dark">
     <div class="login-logo">
       <div class="mark">J</div>
       <h1>安全控制台</h1>
-      <p>极风工作室 · 管理端 v8.0</p>
+      <p>极风工作室 · 管理端 v9.0</p>
     </div>
     <div class="step-indicator">
       <div class="step-dot active" id="dot1"></div>
+      <div class="step-line" id="line1"></div>
       <div class="step-dot" id="dot2"></div>
+      <div class="step-line" id="line2"></div>
       <div class="step-dot" id="dot3"></div>
     </div>
-
-    <div id="step1">
+    <div class="step-panel active" id="step1">
       <div class="form-group">
         <label>管理员账号</label>
-        <input type="text" id="loginUser" placeholder="请输入账号" autocomplete="off">
+        <input type="text" id="loginUser" placeholder="请输入账号" autocomplete="off" autocapitalize="off">
       </div>
       <div class="form-group">
         <label>密码</label>
         <input type="password" id="loginPass" placeholder="请输入密码">
       </div>
-      <button class="btn-login" id="btnStep1">下一步</button>
+      <button class="btn-login ripple" id="btnStep1">下一步</button>
     </div>
-
-    <div id="step2" style="display:none">
+    <div class="step-panel" id="step2">
       <div class="form-group">
         <label>人机验证</label>
         <div class="captcha-box" id="captchaBox">
-          <canvas id="captchaCanvas" width="120" height="40"></canvas>
-          <span>点击图片刷新</span>
+          <canvas id="captchaCanvas" width="140" height="48"></canvas>
+          <span class="captcha-hint">点击刷新</span>
         </div>
       </div>
       <div class="form-group">
         <label>请输入图中字符</label>
         <input type="text" id="captchaInput" placeholder="不区分大小写" maxlength="4" autocomplete="off">
       </div>
-      <button class="btn-login" id="btnStep2">下一步</button>
-      <button class="btn-login" style="background:rgba(255,255,255,0.08);margin-top:8px" id="btnBack2">返回</button>
+      <button class="btn-login ripple" id="btnStep2">下一步</button>
+      <button class="btn-back" id="btnBack2">返回</button>
     </div>
-
-    <div id="step3" style="display:none">
+    <div class="step-panel" id="step3">
       <div class="form-group">
         <label>邮箱验证码</label>
         <div class="code-row">
           <input type="text" id="emailCode" placeholder="000000" maxlength="6" inputmode="numeric">
-          <button class="btn-sm ghost" id="btnSendCode" style="white-space:nowrap">发送验证码</button>
+          <button class="btn-code" id="btnSendCode">发送验证码</button>
         </div>
       </div>
-      <button class="btn-login" id="btnStep3">进入控制台</button>
-      <button class="btn-login" style="background:rgba(255,255,255,0.08);margin-top:8px" id="btnBack3">返回</button>
+      <button class="btn-login ripple" id="btnStep3">进入控制台</button>
+      <button class="btn-back" id="btnBack3">返回</button>
     </div>
-
     <div class="login-msg" id="loginMsg"></div>
   </div>
 </div>
 
 <!-- Dashboard -->
-<div class="layout" id="dashboard" style="display:none">
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-      <div class="mark">J</div>
-      <span>极风控制台</span>
-    </div>
-    <nav class="side-nav">
-      <div class="side-item active" data-panel="overview"><span class="ico">📊</span>概览总览</div>
-      <div class="side-item" data-panel="visitors"><span class="ico">👥</span>访客监控</div>
-      <div class="side-item" data-panel="security"><span class="ico">🛡️</span>安全中心<span class="side-badge" id="secBadge">0</span></div>
-      <div class="side-item" data-panel="appeals"><span class="ico">📝</span>申诉审核<span class="side-badge" id="appealBadge">0</span></div>
-      <div class="side-item" data-panel="announce"><span class="ico">📢</span>公告管理</div>
-      <div class="side-item" data-panel="reports"><span class="ico">📄</span>报告中心</div>
-      <div class="side-item" data-panel="settings"><span class="ico">⚙️</span>系统设置</div>
-    </nav>
-    <div class="side-footer">
-      <div class="side-user">
-        <div class="avatar">N</div>
-        <div class="info"><div class="name">NUOYAN</div><div class="role">超级管理员</div></div>
+<div class="app" id="dashboard" style="display:none">
+  <!-- 顶部栏 -->
+  <header class="app-header glass-dark">
+    <div class="header-left">
+      <div class="header-mark">J</div>
+      <div>
+        <div class="header-title" id="panelTitle">概览总览</div>
+        <div class="header-sub"><span class="live-dot"></span>实时监控中</div>
       </div>
-      <button class="btn-sm ghost" style="width:100%;justify-content:center;margin-top:8px" id="btnLogout">退出登录</button>
     </div>
-  </aside>
+    <button class="header-refresh" id="btnRefreshOverview" title="刷新">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+    </button>
+  </header>
 
-  <main class="main">
+  <main class="app-main">
     <!-- Overview -->
-    <div class="panel active" id="panel-overview">
-      <div class="topbar">
-        <h2>概览总览</h2>
-        <div class="topbar-actions">
-          <span class="live-dot">实时监控中</span>
-          <button class="btn-sm primary" id="btnRefreshOverview">刷新数据</button>
-        </div>
-      </div>
+    <div class="panel active" id="panel-overview" data-title="概览总览">
       <div class="stat-grid">
-        <div class="stat-card"><div class="sc-top"><div class="sc-ico" style="background:rgba(10,132,255,0.15)">👥</div><span class="sc-trend up" id="trend-visitors">+0%</span></div><div class="sc-val" id="statVisitors">0</div><div class="sc-label">今日访问量</div></div>
-        <div class="stat-card"><div class="sc-top"><div class="sc-ico" style="background:rgba(255,69,58,0.15)">⚔️</div><span class="sc-trend down" id="trend-attacks">+0</span></div><div class="sc-val" id="statAttacks">0</div><div class="sc-label">今日攻击拦截</div></div>
-        <div class="stat-card"><div class="sc-top"><div class="sc-ico" style="background:rgba(255,214,10,0.15)">🚫</div><span class="sc-trend" id="trend-bans" style="background:rgba(255,255,255,0.08);color:var(--text-2)">0</span></div><div class="sc-val" id="statBans">0</div><div class="sc-label">封禁IP/设备</div></div>
-        <div class="stat-card"><div class="sc-top"><div class="sc-ico" style="background:rgba(48,209,88,0.15)">✅</div><span class="sc-trend up">100%</span></div><div class="sc-val" id="statUptime">99.9%</div><div class="sc-label">在线率</div></div>
+        <div class="stat-card"><div class="sc-ico" style="background:rgba(10,132,255,0.15);color:#0a84ff">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div><div class="sc-val" id="statVisitors">0</div><div class="sc-label">今日访问</div><div class="sc-trend up" id="trend-visitors">+0%</div></div>
+        <div class="stat-card"><div class="sc-ico" style="background:rgba(255,69,58,0.15);color:#ff453a">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div><div class="sc-val" id="statAttacks">0</div><div class="sc-label">攻击拦截</div><div class="sc-trend down" id="trend-attacks">+0</div></div>
+        <div class="stat-card"><div class="sc-ico" style="background:rgba(255,159,10,0.15);color:#ff9f0a">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+        </div><div class="sc-val" id="statBans">0</div><div class="sc-label">封禁数</div></div>
+        <div class="stat-card"><div class="sc-ico" style="background:rgba(48,209,88,0.15);color:#30d158">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div><div class="sc-val">99.9%</div><div class="sc-label">在线率</div></div>
       </div>
-      <div class="chart-row">
-        <div class="chart-card">
-          <h3>24小时访问趋势 <span class="sub">实时更新</span></h3>
-          <canvas id="chartTraffic" height="220"></canvas>
-        </div>
-        <div class="chart-card">
-          <h3>实时安全日志 <span class="sub" id="logCount">0 条</span></h3>
-          <div class="log-stream" id="logStream"></div>
-        </div>
+      <div class="chart-card">
+        <h3>24小时访问趋势</h3>
+        <canvas id="chartTraffic" height="180"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>实时安全日志 <span class="sub" id="logCount">0 条</span></h3>
+        <div class="log-stream" id="logStream"></div>
       </div>
     </div>
 
     <!-- Visitors -->
-    <div class="panel" id="panel-visitors">
-      <div class="topbar"><h2>访客监控</h2><button class="btn-sm primary" id="btnRefreshVisitors">刷新</button></div>
+    <div class="panel" id="panel-visitors" data-title="访客监控">
       <div class="stat-grid">
-        <div class="stat-card"><div class="sc-top"><div class="sc-ico" style="background:rgba(10,132,255,0.15)">👤</div></div><div class="sc-val" id="vTotal">0</div><div class="sc-label">总访客数</div></div>
-        <div class="stat-card"><div class="sc-top"><div class="sc-ico" style="background:rgba(191,90,242,0.15)">📱</div></div><div class="sc-val" id="vMobile">0</div><div class="sc-label">移动端</div></div>
-        <div class="stat-card"><div class="sc-top"><div class="sc-ico" style="background:rgba(255,149,0,0.15)">🌐</div></div><div class="sc-val" id="vDesktop">0</div><div class="sc-label">桌面端</div></div>
-        <div class="stat-card"><div class="sc-top"><div class="sc-ico" style="background:rgba(48,209,88,0.15)">🆕</div></div><div class="sc-val" id="vNew">0</div><div class="sc-label">今日新增</div></div>
+        <div class="stat-card"><div class="sc-ico" style="background:rgba(10,132,255,0.15);color:#0a84ff"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="sc-val" id="vTotal">0</div><div class="sc-label">总访客</div></div>
+        <div class="stat-card"><div class="sc-ico" style="background:rgba(191,90,242,0.15);color:#bf5af2"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12" y2="18"/></svg></div><div class="sc-val" id="vMobile">0</div><div class="sc-label">移动端</div></div>
+        <div class="stat-card"><div class="sc-ico" style="background:rgba(255,159,10,0.15);color:#ff9f0a"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><div class="sc-val" id="vDesktop">0</div><div class="sc-label">桌面端</div></div>
+        <div class="stat-card"><div class="sc-ico" style="background:rgba(48,209,88,0.15);color:#30d158"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 12v2M4.93 4.93l4.24 4.24m5.66 5.66l4.24 4.24M2 12h6m8 0h6M4.93 19.07l4.24-4.24m5.66-5.66l4.24-4.24"/></svg></div><div class="sc-val" id="vNew">0</div><div class="sc-label">今日新增</div></div>
       </div>
-      <div class="chart-row">
-        <div class="chart-card"><h3>设备/浏览器分布</h3><canvas id="chartDevice" height="220"></canvas></div>
-        <div class="chart-card"><h3>访问页面排行</h3><canvas id="chartPages" height="220"></canvas></div>
-      </div>
-      <div class="table-card">
-        <div class="tc-head"><h3>最新访客记录</h3></div>
-        <div class="table-wrap"><table>
-          <thead><tr><th>时间</th><th>IP</th><th>设备指纹</th><th>浏览器/系统</th><th>地区</th><th>页面</th><th>操作</th></tr></thead>
-          <tbody id="visitorTable"></tbody>
-        </table></div>
+      <div class="chart-card"><h3>设备分布</h3><canvas id="chartDevice" height="180"></canvas></div>
+      <div class="chart-card"><h3>页面排行</h3><canvas id="chartPages" height="180"></canvas></div>
+      <div class="chart-card">
+        <h3>最新访客</h3>
+        <div class="visitor-list" id="visitorTable"></div>
       </div>
     </div>
 
     <!-- Security -->
-    <div class="panel" id="panel-security">
-      <div class="topbar"><h2>安全中心</h2><button class="btn-sm primary" id="btnRefreshSecurity">刷新</button></div>
+    <div class="panel" id="panel-security" data-title="安全中心">
       <div class="stat-grid">
-        <div class="stat-card"><div class="sc-top"><div class="sc-ico" style="background:rgba(255,69,58,0.15)">🔥</div></div><div class="sc-val" id="secTotal">0</div><div class="sc-label">总攻击拦截</div></div>
-        <div class="stat-card"><div class="sc-top"><div class="sc-ico" style="background:rgba(255,149,0,0.15)">🎯</div></div><div class="sc-val" id="secToday">0</div><div class="sc-label">今日拦截</div></div>
-        <div class="stat-card"><div class="sc-top"><div class="sc-ico" style="background:rgba(255,214,10,0.15)">🚫</div></div><div class="sc-val" id="secBanned">0</div><div class="sc-label">已封禁</div></div>
-        <div class="stat-card"><div class="sc-top"><div class="sc-ico" style="background:rgba(48,209,88,0.15)">🛡️</div></div><div class="sc-val" id="secRate">0%</div><div class="sc-label">拦截率</div></div>
+        <div class="stat-card"><div class="sc-ico" style="background:rgba(255,69,58,0.15);color:#ff453a">🔥</div><div class="sc-val" id="secTotal">0</div><div class="sc-label">总拦截</div></div>
+        <div class="stat-card"><div class="sc-ico" style="background:rgba(255,159,10,0.15);color:#ff9f0a">🎯</div><div class="sc-val" id="secToday">0</div><div class="sc-label">今日</div></div>
+        <div class="stat-card"><div class="sc-ico" style="background:rgba(255,214,10,0.15);color:#ffd60a">🚫</div><div class="sc-val" id="secBanned">0</div><div class="sc-label">已封禁</div></div>
+        <div class="stat-card"><div class="sc-ico" style="background:rgba(48,209,88,0.15);color:#30d158">🛡️</div><div class="sc-val" id="secRate">0%</div><div class="sc-label">拦截率</div></div>
       </div>
-      <div class="chart-row">
-        <div class="chart-card"><h3>攻击类型分布</h3><canvas id="chartAttackType" height="220"></canvas></div>
-        <div class="chart-card"><h3>近7日拦截趋势</h3><canvas id="chartAttackTrend" height="220"></canvas></div>
-      </div>
-      <div class="table-card">
-        <div class="tc-head"><h3>封禁列表</h3><button class="btn-sm ghost" id="btnBanManual">手动封禁</button></div>
-        <div class="table-wrap"><table>
-          <thead><tr><th>封禁时间</th><th>IP</th><th>设备指纹</th><th>原因</th><th>类型</th><th>状态</th><th>操作</th></tr></thead>
-          <tbody id="banTable"></tbody>
-        </table></div>
+      <div class="chart-card"><h3>攻击类型</h3><canvas id="chartAttackType" height="180"></canvas></div>
+      <div class="chart-card"><h3>7日趋势</h3><canvas id="chartAttackTrend" height="180"></canvas></div>
+      <div class="chart-card">
+        <div class="card-head"><h3>封禁列表</h3><button class="btn-sm" id="btnBanManual">+ 封禁</button></div>
+        <div class="ban-list" id="banTable"></div>
       </div>
     </div>
 
     <!-- Appeals -->
-    <div class="panel" id="panel-appeals">
-      <div class="topbar"><h2>申诉审核</h2><button class="btn-sm primary" id="btnRefreshAppeals">刷新</button></div>
-      <div id="appealList"><p style="color:var(--text-3);text-align:center;padding:40px">暂无待审核申诉</p></div>
+    <div class="panel" id="panel-appeals" data-title="申诉审核">
+      <div id="appealList"><div class="empty-state"><div class="empty-ico">📭</div><p>暂无待审核申诉</p></div></div>
     </div>
 
-    <!-- Announcements -->
-    <div class="panel" id="panel-announce">
-      <div class="topbar"><h2>公告管理</h2></div>
+    <!-- Announce -->
+    <div class="panel" id="panel-announce" data-title="公告管理">
       <div class="form-card">
         <h3>发布新公告</h3>
         <input type="text" id="annTitleInput" placeholder="公告标题">
-        <textarea id="annContentInput" placeholder="公告内容..."></textarea>
-        <button class="btn-sm primary" id="btnPublishAnn">发布公告</button>
+        <textarea id="annContentInput" placeholder="公告内容..." rows="3"></textarea>
+        <button class="btn-login ripple" id="btnPublishAnn" style="padding:14px">发布公告</button>
       </div>
-      <div class="table-card">
-        <div class="tc-head"><h3>历史公告</h3></div>
-        <div class="table-wrap"><table>
-          <thead><tr><th>时间</th><th>标题</th><th>内容</th><th>操作</th></tr></thead>
-          <tbody id="annTable"></tbody>
-        </table></div>
+      <div class="chart-card">
+        <h3>历史公告</h3>
+        <div class="ann-list" id="annTable"></div>
       </div>
     </div>
 
     <!-- Reports -->
-    <div class="panel" id="panel-reports">
-      <div class="topbar"><h2>报告中心</h2></div>
-      <div class="stat-grid">
-        <div class="stat-card" style="cursor:pointer" id="btnReportDaily"><div class="sc-top"><div class="sc-ico" style="background:rgba(10,132,255,0.15)">📋</div></div><div class="sc-val" style="font-size:1.1rem">日报</div><div class="sc-label">每日运维报告</div></div>
-        <div class="stat-card" style="cursor:pointer" id="btnReportWeekly"><div class="sc-top"><div class="sc-ico" style="background:rgba(191,90,242,0.15)">📊</div></div><div class="sc-val" style="font-size:1.1rem">周报</div><div class="sc-label">周度安全报告</div></div>
-        <div class="stat-card" style="cursor:pointer" id="btnReportAttack"><div class="sc-top"><div class="sc-ico" style="background:rgba(255,69,58,0.15)">⚖️</div></div><div class="sc-val" style="font-size:1.1rem">取证</div><div class="sc-label">攻击证据报告</div></div>
-        <div class="stat-card" style="cursor:pointer" id="btnReportFull"><div class="sc-top"><div class="sc-ico" style="background:rgba(255,149,0,0.15)">📑</div></div><div class="sc-val" style="font-size:1.1rem">全量</div><div class="sc-label">完整运维报告</div></div>
+    <div class="panel" id="panel-reports" data-title="报告中心">
+      <div class="report-grid">
+        <div class="report-card ripple" id="btnReportDaily"><div class="rc-ico" style="background:rgba(10,132,255,0.15);color:#0a84ff">📋</div><div class="rc-title">每日运维</div><div class="rc-desc">访问+安全+访客</div></div>
+        <div class="report-card ripple" id="btnReportWeekly"><div class="rc-ico" style="background:rgba(191,90,242,0.15);color:#bf5af2">📊</div><div class="rc-title">周度安全</div><div class="rc-desc">7日趋势分析</div></div>
+        <div class="report-card ripple" id="btnReportAttack"><div class="rc-ico" style="background:rgba(255,69,58,0.15);color:#ff453a">⚖️</div><div class="rc-title">攻击取证</div><div class="rc-desc">法律证据报告</div></div>
+        <div class="report-card ripple" id="btnReportFull"><div class="rc-ico" style="background:rgba(255,159,10,0.15);color:#ff9f0a">📑</div><div class="rc-title">完整报告</div><div class="rc-desc">全量数据汇总</div></div>
       </div>
       <div class="form-card">
         <h3>报告预览</h3>
-        <div id="reportPreview" style="font-size:.85rem;color:var(--text-2);white-space:pre-wrap;min-height:200px">点击上方卡片生成对应报告...</div>
+        <div id="reportPreview" class="report-preview">点击上方卡片生成对应报告...</div>
       </div>
     </div>
 
     <!-- Settings -->
-    <div class="panel" id="panel-settings">
-      <div class="topbar"><h2>系统设置</h2></div>
+    <div class="panel" id="panel-settings" data-title="系统设置">
       <div class="form-card">
         <h3>安全策略</h3>
         <div class="setting-row"><div class="sr-info"><h4>反调试保护</h4><p>检测DevTools打开并记录</p></div><div class="toggle on" data-setting="antiDebug"></div></div>
@@ -215,21 +186,66 @@
         <div class="setting-row"><div class="sr-info"><h4>邮件实时告警</h4><p>安全事件实时发送邮件</p></div><div class="toggle on" data-setting="emailAlert"></div></div>
         <div class="setting-row"><div class="sr-info"><h4>设备指纹追踪</h4><p>采集浏览器指纹识别设备</p></div><div class="toggle on" data-setting="fpTrack"></div></div>
         <div class="setting-row"><div class="sr-info"><h4>每日运维报告</h4><p>每天自动发送运维日报</p></div><div class="toggle on" data-setting="dailyReport"></div></div>
-        <div class="setting-row"><div class="sr-info"><h4>二次违规永久封禁</h4><p>申诉后再次违规永久封禁IP+设备</p></div><div class="toggle on" data-setting="permaban"></div></div>
+        <div class="setting-row"><div class="sr-info"><h4>二次违规永久封禁</h4><p>申诉后再违规永久封禁IP+设备</p></div><div class="toggle on" data-setting="permaban"></div></div>
       </div>
       <div class="form-card">
         <h3>告警邮箱</h3>
-        <div class="setting-row"><div class="sr-info"><h4>当前接收邮箱</h4><p>所有安全告警和报告将发送至此</p></div><div style="font-weight:700;color:var(--brand)">3565583431@qq.com</div></div>
+        <div class="setting-row"><div class="sr-info"><h4>当前接收邮箱</h4><p>所有安全告警和报告发送至此</p></div><div style="font-weight:700;color:var(--brand);font-size:13px">3565583431@qq.com</div></div>
       </div>
+      <button class="btn-logout ripple" id="btnLogout">退出登录</button>
     </div>
   </main>
+
+  <!-- 底部Tab栏 -->
+  <nav class="tabbar glass-dark">
+    <div class="tab-item active" data-panel="overview">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>概览</span>
+    </div>
+    <div class="tab-item" data-panel="visitors">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+      <span>访客</span>
+    </div>
+    <div class="tab-item" data-panel="security">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>安全</span>
+      <div class="tab-badge" id="secBadge" style="display:none">0</div>
+    </div>
+    <div class="tab-item" data-panel="appeals">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span>申诉</span>
+      <div class="tab-badge" id="appealBadge" style="display:none">0</div>
+    </div>
+    <div class="tab-item" data-panel="more">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      <span>更多</span>
+    </div>
+  </nav>
+
+  <!-- 更多面板弹窗 -->
+  <div class="more-sheet" id="moreSheet">
+    <div class="more-handle"></div>
+    <div class="more-title">更多功能</div>
+    <div class="more-grid">
+      <div class="more-item" data-panel="announce">
+        <div class="mi-ico" style="background:rgba(255,159,10,0.15);color:#ff9f0a">📢</div>
+        <span>公告管理</span>
+      </div>
+      <div class="more-item" data-panel="reports">
+        <div class="mi-ico" style="background:rgba(10,132,255,0.15);color:#0a84ff">📄</div>
+        <span>报告中心</span>
+      </div>
+      <div class="more-item" data-panel="settings">
+        <div class="mi-ico" style="background:rgba(142,142,147,0.15);color:#8e8e93">⚙️</div>
+        <span>系统设置</span>
+      </div>
+    </div>
+  </div>
+  <div class="more-overlay" id="moreOverlay"></div>
 </div>
 
-<div class="modal-overlay" id="modal">
-  <div class="modal" id="modalContent"></div>
-</div>
+<div class="modal-overlay" id="modal"><div class="modal" id="modalContent"></div></div>
 <div class="toast" id="toast"></div>
-
 <script src="console.js"></script>
 </body>
 </html>

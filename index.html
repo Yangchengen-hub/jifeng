@@ -2,166 +2,270 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=5.0">
-<meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme:light)">
-<meta name="theme-color" content="#000000" media="(prefers-color-scheme:dark)">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="description" content="极风工作室 Jifeng Studio — 专注安卓深度玩机与网络科技研究，以极客精神打造专业级工具与解决方案。">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="description" content="极风工作室 Jifeng Studio — 专注安卓深度玩机与网络科技研究">
 <title>极风工作室 | Jifeng Studio</title>
 <link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23ff6900'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>J</text></svg>">
 </head>
-<body class="protected">
-<div class="ambient">
-  <div class="orb"></div>
-  <div class="orb"></div>
-  <div class="orb"></div>
+<body>
+<!-- 灵动岛状态条 -->
+<div class="island" id="island">
+  <span class="island-dot"></span>
+  <span class="island-text" id="islandText">安全防护运行中</span>
 </div>
 
-<nav class="nav" id="nav">
-  <a href="/" class="nav-logo">
+<!-- 顶部导航 -->
+<nav class="topbar" id="topbar">
+  <a href="./" class="nav-logo">
     <span class="logo-mark">J</span>
-    极风工作室
+    <span class="logo-text">极风工作室</span>
   </a>
-  <ul class="nav-links" id="navLinks">
-    <li><a href="#culture" class="active">理念</a></li>
-    <li><a href="#values">价值观</a></li>
-    <li><a href="#journey">历程</a></li>
-    <li><a href="#contact">联系</a></li>
-  </ul>
-  <button class="nav-toggle" id="navToggle" aria-label="菜单">
-    <span></span><span></span><span></span>
-  </button>
+  <div class="nav-links">
+    <a href="#culture" class="nav-link active">理念</a>
+    <a href="#values" class="nav-link">价值观</a>
+    <a href="#journey" class="nav-link">历程</a>
+  </div>
 </nav>
 
+<!-- Hero -->
 <section class="hero">
-  <div class="hero-badge">
-    <span class="dot"></span>
-    安全防护实时运行中
+  <div class="hero-bg">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
   </div>
-  <h1>极风<span class="grad">工作室</span></h1>
-  <p class="tagline">以极客精神探索技术边界，专注安卓深度玩机与网络科技研究。安全、极致、不妥协。</p>
-  <div class="hero-actions">
-    <a href="#culture" class="btn btn-primary">了解我们</a>
-    <a href="#journey" class="btn btn-ghost">发展历程</a>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="pulse-dot"></span>
+      <span>安全防护实时运行中</span>
+    </div>
+    <h1 class="hero-title">
+      <span class="ht-line">极风</span><span class="ht-line grad">工作室</span>
+    </h1>
+    <p class="hero-sub">以极客精神探索技术边界<br>专注安卓深度玩机与网络科技研究</p>
+    <div class="hero-actions">
+      <a href="#culture" class="btn btn-primary ripple">
+        <span>了解我们</span>
+      </a>
+      <a href="#journey" class="btn btn-ghost ripple">
+        <span>发展历程</span>
+      </a>
+    </div>
   </div>
-  <div class="hero-visual">
-    <div class="hero-card">
-      <div class="hero-stat"><div class="num" data-count="24">0</div><div class="lbl">小时安全防护</div></div>
-      <div class="hero-stat"><div class="num" data-count="99">0</div><div class="lbl">安全评分</div></div>
-      <div class="hero-stat"><div class="num" data-count="365">0</div><div class="lbl">天持续运行</div></div>
+  <div class="hero-stats glass">
+    <div class="stat">
+      <div class="stat-num grad" data-count="24">0</div>
+      <div class="stat-label">小时安全防护</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num grad" data-count="99">0</div>
+      <div class="stat-label">安全评分</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num grad" data-count="365">0</div>
+      <div class="stat-label">天持续运行</div>
     </div>
   </div>
 </section>
 
-<div class="announce-section">
-  <div class="announce-bar" id="announceBar">
-    <span class="ann-icon">📢</span>
+<!-- 公告栏 -->
+<section class="section">
+  <div class="ann-bar glass" id="annBar">
+    <div class="ann-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    </div>
     <div class="ann-content">
       <div class="ann-title" id="annTitle">加载中...</div>
       <div class="ann-text" id="annText">正在同步最新公告</div>
     </div>
-    <span class="ann-time" id="annTime">--</span>
+    <div class="ann-time" id="annTime">--</div>
   </div>
-</div>
+</section>
 
+<!-- 理念 -->
 <section class="section" id="culture">
-  <h2 class="section-title reveal">我们的<span class="grad">理念</span></h2>
-  <p class="section-sub reveal">由发烧友组成的技术团队，深耕移动端与网络安全领域</p>
-  <div class="culture-grid">
-    <div class="culture-card reveal">
-      <div class="culture-icon" style="background:rgba(255,105,0,0.12)">📱</div>
+  <div class="section-head reveal">
+    <h2 class="section-title">我们的<span class="grad">理念</span></h2>
+    <p class="section-sub">由发烧友组成的技术团队，深耕移动端与网络安全领域</p>
+  </div>
+  <div class="card-grid">
+    <div class="card glass reveal" style="--delay:0.05s">
+      <div class="card-icon icon-orange">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+      </div>
       <h3>安卓深度玩机</h3>
-      <p>专注 Android 系统底层研究，涵盖 Bootloader 解锁、Root 权限管理、自定义 Recovery、内核编译与系统定制。为发烧友提供安全可靠的玩机工具与教程，让每一台设备发挥极致性能。</p>
+      <p>专注 Android 系统底层研究，涵盖 Bootloader 解锁、Root 权限管理、内核定制与系统优化。</p>
     </div>
-    <div class="culture-card reveal">
-      <div class="culture-icon" style="background:rgba(10,132,255,0.12)">🌐</div>
+    <div class="card glass reveal" style="--delay:0.1s">
+      <div class="card-icon icon-blue">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
       <h3>网络科技研究</h3>
-      <p>探索网络协议、安全防护、数据加密与隐私保护技术。研究网络攻防原理，构建多层安全防护体系，提供网络诊断、流量分析与安全审计等专业解决方案。</p>
+      <p>探索网络协议、安全防护、数据加密与隐私保护技术，研究网络攻防与漏洞挖掘。</p>
     </div>
   </div>
 </section>
 
+<!-- 价值观 -->
 <section class="section" id="values">
-  <h2 class="section-title reveal">核心<span class="grad">价值观</span></h2>
-  <p class="section-sub reveal">三个词，定义我们做每一件事的态度</p>
-  <div class="values-grid">
-    <div class="value-item reveal">
-      <span class="value-emoji">🛡️</span>
-      <h4>安全第一</h4>
-      <p>每一行代码都经过安全审查，每一次访问都在实时监控之下。安全不是功能，是底线。</p>
+  <div class="section-head reveal">
+    <h2 class="section-title">核心<span class="grad">价值观</span></h2>
+  </div>
+  <div class="value-list">
+    <div class="value-item glass reveal" style="--delay:0.05s">
+      <div class="value-num">01</div>
+      <div class="value-info">
+        <h3>安全第一</h3>
+        <p>每一行代码都经过安全审计，用户数据保护是不可逾越的底线。</p>
+      </div>
     </div>
-    <div class="value-item reveal">
-      <span class="value-emoji">⚡</span>
-      <h4>追求极致</h4>
-      <p>不满足于"能用"，追求"好用"。从性能到体验，每一个细节都反复打磨。</p>
+    <div class="value-item glass reveal" style="--delay:0.1s">
+      <div class="value-num">02</div>
+      <div class="value-info">
+        <h3>追求极致</h3>
+        <p>不满足于"能用"，追求性能、体验与设计的极致平衡。</p>
+      </div>
     </div>
-    <div class="value-item reveal">
-      <span class="value-emoji">🔥</span>
-      <h4>永不妥协</h4>
-      <p>面对技术难题不退缩，面对安全威胁不手软。极客精神，就是死磕到底。</p>
+    <div class="value-item glass reveal" style="--delay:0.15s">
+      <div class="value-num">03</div>
+      <div class="value-info">
+        <h3>永不妥协</h3>
+        <p>面对技术难题不回避，用极客精神攻克每一个挑战。</p>
+      </div>
     </div>
   </div>
 </section>
 
+<!-- 发展历程 -->
 <section class="section" id="journey">
-  <h2 class="section-title reveal">发展<span class="grad">历程</span></h2>
-  <p class="section-sub reveal">从一个人的热爱，到一群人的坚持</p>
+  <div class="section-head reveal">
+    <h2 class="section-title">发展<span class="grad">历程</span></h2>
+  </div>
   <div class="timeline">
-    <div class="timeline-item reveal">
-      <div class="t-year">2024</div>
-      <h4>工作室成立</h4>
-      <p>出于对安卓玩机的热爱，极风工作室正式成立，开始发布第一批玩机工具。</p>
+    <div class="tl-item reveal" style="--delay:0.05s">
+      <div class="tl-dot grad-bg"></div>
+      <div class="tl-content glass">
+        <div class="tl-year">2024</div>
+        <h3>工作室成立</h3>
+        <p>出于对安卓玩机的热爱，极风工作室正式成立，开始发布第一批玩机工具。</p>
+      </div>
     </div>
-    <div class="timeline-item reveal">
-      <div class="t-year">2025</div>
-      <h4>安全体系搭建</h4>
-      <p>建立完整的网络安全防护体系，工具链覆盖刷机、检测、防护全流程。</p>
+    <div class="tl-item reveal" style="--delay:0.1s">
+      <div class="tl-dot grad-bg"></div>
+      <div class="tl-content glass">
+        <div class="tl-year">2025</div>
+        <h3>安全体系搭建</h3>
+        <p>建立完整的安全防护体系，覆盖内核级病毒查杀、恶意行为拦截与溯源。</p>
+      </div>
     </div>
-    <div class="timeline-item reveal">
-      <div class="t-year">2026</div>
-      <h4>全新升级</h4>
-      <p>官网全面重构，引入 HyperOS 4 设计语言，云端安全架构上线，开启新篇章。</p>
+    <div class="tl-item reveal" style="--delay:0.15s">
+      <div class="tl-dot grad-bg"></div>
+      <div class="tl-content glass">
+        <div class="tl-year">2026</div>
+        <h3>全平台生态</h3>
+        <p>官网与安全管理平台上线，形成 Windows / 移动端全平台工具矩阵。</p>
+      </div>
     </div>
   </div>
 </section>
 
+<!-- 页脚 -->
 <footer class="footer" id="contact">
-  <div class="footer-logo"><span class="grad">极风工作室</span> Jifeng Studio</div>
-  <p>专注安卓玩机与网络科技 · 安全 · 极致 · 不妥协</p>
-  <p>极风工作室 &copy; 2026 · 北京时间 <span class="clock" id="clock">--:--:--</span></p>
+  <div class="footer-content">
+    <div class="footer-logo"><span class="grad">极风工作室</span></div>
+    <p class="footer-desc">安全、极致、不妥协</p>
+    <div class="footer-links">
+      <a href="mailto:3565583431@qq.com">联系邮箱</a>
+    </div>
+    <p class="footer-copy">极风工作室 &copy; 2026 · 北京时间 <span class="clock" id="clock">--:--:--</span></p>
+  </div>
 </footer>
 
+<!-- Toast -->
 <div class="toast" id="toast"></div>
+
+<script>
+window.JF_API='https://my-vercel-site-six.vercel.app';
+</script>
 <script src="app.js"></script>
 <script>
 (function(){
-  var nav=document.getElementById('nav'),toggle=document.getElementById('navToggle'),links=document.getElementById('navLinks');
-  window.addEventListener('scroll',function(){nav.classList.toggle('scrolled',window.scrollY>20)});
-  toggle.addEventListener('click',function(){links.classList.toggle('open')});
-  links.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){links.classList.remove('open')})});
+  function tick(){var d=new Date();var el=document.getElementById('clock');if(el)el.textContent=d.toLocaleTimeString('zh-CN',{hour12:false});}
+  tick();setInterval(tick,1000);
 
-  function clock(){var el=document.getElementById('clock');if(el)el.textContent=new Date().toLocaleTimeString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})}
-  setInterval(clock,1000);clock();
+  var counted=false;
+  function countUp(){
+    if(counted)return;counted=true;
+    document.querySelectorAll('[data-count]').forEach(function(el){
+      var target=parseInt(el.dataset.count);var dur=1200;var t0=performance.now();
+      function step(t){var p=Math.min((t-t0)/dur,1);var e=1-Math.pow(1-p,3);el.textContent=Math.floor(e*target);if(p<1)requestAnimationFrame(step);}
+      requestAnimationFrame(step);
+    });
+  }
 
-  var reveals=document.querySelectorAll('.reveal');
-  var obs=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:0.15});
-  reveals.forEach(function(r){obs.observe(r)});
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('in');
+        if(e.target.querySelector('[data-count]'))countUp();
+        io.unobserve(e.target);
+      }
+    });
+  },{threshold:0.15});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el)});
 
-  document.querySelectorAll('[data-count]').forEach(function(el){
-    var target=parseInt(el.dataset.count),cur=0,step=Math.max(1,Math.floor(target/50));
-    var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){
-      var t=setInterval(function(){cur+=step;if(cur>=target){cur=target;clearInterval(t)}el.textContent=cur},25);
-      o.unobserve(el);
-    }})},{threshold:0.5});
-    o.observe(el);
+  setTimeout(function(){
+    document.querySelectorAll('.ht-line').forEach(function(el,i){
+      el.style.animationDelay=(i*0.12)+'s';
+      el.classList.add('ht-in');
+    });
+  },100);
+
+  var sections=['culture','values','journey'];
+  var navLinks=document.querySelectorAll('.nav-link');
+  window.addEventListener('scroll',function(){
+    var scrollY=window.scrollY;
+    var topbar=document.getElementById('topbar');
+    if(scrollY>20)topbar.classList.add('scrolled');else topbar.classList.remove('scrolled');
+    var current='';
+    sections.forEach(function(id){
+      var sec=document.getElementById(id);
+      if(sec&&sec.offsetTop-200<=scrollY)current=id;
+    });
+    navLinks.forEach(function(a){
+      a.classList.toggle('active',a.getAttribute('href')==='#'+current);
+    });
+  },{passive:true});
+
+  document.querySelectorAll('.ripple').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      var r=document.createElement('span');r.className='ripple-effect';
+      var rect=btn.getBoundingClientRect();
+      var size=Math.max(rect.width,rect.height);
+      r.style.width=r.style.height=size+'px';
+      r.style.left=(e.clientX-rect.left-size/2)+'px';
+      r.style.top=(e.clientY-rect.top-size/2)+'px';
+      btn.appendChild(r);setTimeout(function(){r.remove()},600);
+    });
   });
 
   if(window.JF){
     JF.trackVisitor();
     JF.loadAnnouncement(function(a){
-      if(a){document.getElementById('annTitle').textContent=a.title;document.getElementById('annText').textContent=a.content;document.getElementById('annTime').textContent=a.time_str||''}
-      else{document.getElementById('annTitle').textContent='🔔 欢迎访问极风工作室';document.getElementById('annText').textContent='官网已全面升级，安全体系全面加强。';document.getElementById('annTime').textContent=''}
+      if(a){
+        document.getElementById('annTitle').textContent=a.title;
+        document.getElementById('annText').textContent=a.content;
+        document.getElementById('annTime').textContent=a.time_str||'';
+      }else{
+        document.getElementById('annTitle').textContent='🔔 欢迎访问极风工作室';
+        document.getElementById('annText').textContent='官网已全面升级，安全体系全面加强。';
+        document.getElementById('annTime').textContent='';
+      }
     });
   }else{
     document.getElementById('annTitle').textContent='🔔 欢迎访问极风工作室';
