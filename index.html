@@ -219,6 +219,16 @@ window.JF_API='https://my-vercel-site-six.vercel.app';
   },{threshold:0.15});
   document.querySelectorAll('.reveal').forEach(function(el){io.observe(el)});
 
+  // Stats count-up
+  var statsEl=document.querySelector('.hero-stats');
+  if(statsEl){
+    var io2=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){if(e.isIntersecting){countUp();io2.disconnect()}});
+    },{threshold:0.3});
+    io2.observe(statsEl);
+  }
+  setTimeout(countUp,2000);
+
   setTimeout(function(){
     document.querySelectorAll('.ht-line').forEach(function(el,i){
       el.style.animationDelay=(i*0.12)+'s';
