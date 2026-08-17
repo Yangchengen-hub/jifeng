@@ -4,7 +4,7 @@ var $=function(s,p){return(p||document).querySelector(s)};
 var $$=function(s,p){return Array.prototype.slice.call((p||document).querySelectorAll(s))};
 function toast(msg,type){var t=$('#toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');setTimeout(function(){t.className='toast'},3000)}
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
-function api(path,opts){opts=opts||{};opts.headers=opts.headers||{};opts.headers['Content-Type']='application/json';var token=sessionStorage.getItem('jf_token');if(token)opts.headers['Authorization']='Bearer '+token;return fetch(API+path,opts).then(function(r){return r.json().catch(function(){return{ok:r.ok}})}).catch(function(){return{ok:false,error:'网络错误，请检查网络连接'}})}
+function api(path,opts){opts=opts||{};opts.headers=opts.headers||{};opts.headers['Content-Type']='application/json';var token=sessionStorage.getItem('jf_token');if(token)opts.headers['Authorization']='Bearer '+token;return fetch(API+path,opts).then(function(r){return r.json().catch(function(){return{ok:r.ok}})}).catch(function(){return{ok:false,error:'网络错误，请检查网络或加速器'}})}
 function fmtTime(ts){var d=new Date(ts);return d.toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false,month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'})}
 
 /* ============ LOGIN ============ */
@@ -47,7 +47,7 @@ $('#btnStep2').onclick=function(){
   if(!v)return msg('请输入验证码','err');
   if(v!==captchaCode)return msg('验证码错误','err'),genCaptcha();
   api('/api/auth/captcha',{method:'POST',body:JSON.stringify({captcha:v})}).then(function(d){
-    if(d.ok){showStep(3);msg('验证码已发送至邮箱','ok')}
+    if(d.ok){showStep(3);msg('')}
     else msg(d.error||'验证失败','err');
   });
 };
@@ -57,7 +57,11 @@ var codeTimer=null;
 $('#btnSendCode').onclick=function(){
   var btn=this;if(btn.disabled)return;btn.disabled=true;var s=60;
   btn.textContent=s+'s';codeTimer=setInterval(function(){s--;btn.textContent=s+'s';if(s<=0){clearInterval(codeTimer);btn.disabled=false;btn.textContent='发送验证码'}},1000);
-  api('/api/auth/sendcode',{method:'POST'}).then(function(d){if(!d.ok)toast(d.error||'发送失败','err')});
+  msg('正在发送验证码...','');
+  api('/api/auth/sendcode',{method:'POST'}).then(function(d){
+    if(d.ok)msg('验证码已发送至邮箱','ok');
+    else{msg(d.error||'发送失败','err');clearInterval(codeTimer);btn.disabled=false;btn.textContent='发送验证码'}
+  });
 };
 $('#btnStep3').onclick=function(){
   var c=$('#emailCode').value.trim();
@@ -72,13 +76,15 @@ $('#btnStep3').onclick=function(){
 function enterDashboard(){
   $('#loginWrap').style.display='none';
   $('#dashboard').style.display='block';
-  loadOverview();loadVisitors();loadSecurity();loadAppeals();loadAnnouncements();loadSettings();
+  loadOverview();loadVisitors();loadSecurity();loadAppeals();loadAnnouncements();loadPermBans();
   startRealtime();
 }
 $('#btnLogout').onclick=function(){sessionStorage.removeItem('jf_token');location.reload()};
 
-/* ============ NAV (Tabbar + More Sheet) ============ */
+/* ============ NAV ============ */
+var currentPanel='overview';
 function switchPanel(name){
+  currentPanel=name;
   $$('.panel').forEach(function(p){p.classList.remove('active')});
   var target=$('#panel-'+name);
   if(target){target.classList.add('active');
@@ -92,6 +98,7 @@ function switchPanel(name){
   if(name==='security')loadSecurity();
   if(name==='appeals')loadAppeals();
   if(name==='announce')loadAnnouncements();
+  if(name==='permanent')loadPermBans();
 }
 $$('.tab-item').forEach(function(item){
   item.onclick=function(){
@@ -123,16 +130,16 @@ function drawLine(canvasId,labels,datasets){
   ctx.fillStyle='#636366';ctx.font='10px sans-serif';ctx.textAlign='right';
   for(var i=0;i<=4;i++){var y=pad+(H-pad*2)*i/4;ctx.fillText(Math.round(max*(1-i/4)),pad-6,y+3)}
   ctx.textAlign='center';
-  var step=(W-pad*2)/(labels.length-1||1);
-  labels.forEach(function(l,i){if(i%Math.ceil(labels.length/8)===0)ctx.fillText(l,pad+i*step,H-12)});
+  var st=(W-pad*2)/(labels.length-1||1);
+  labels.forEach(function(l,i){if(i%Math.ceil(labels.length/8)===0)ctx.fillText(l,pad+i*st,H-12)});
   datasets.forEach(function(ds){
     ctx.strokeStyle=ds.color;ctx.lineWidth=2.5;ctx.beginPath();
-    ds.data.forEach(function(v,i){var x=pad+i*step,y=pad+(H-pad*2)*(1-v/max);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});
+    ds.data.forEach(function(v,i){var x=pad+i*st,y=pad+(H-pad*2)*(1-v/max);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});
     ctx.stroke();
-    ctx.lineTo(pad+(ds.data.length-1)*step,H-pad);ctx.lineTo(pad,H-pad);ctx.closePath();
+    ctx.lineTo(pad+(ds.data.length-1)*st,H-pad);ctx.lineTo(pad,H-pad);ctx.closePath();
     var g=ctx.createLinearGradient(0,pad,0,H-pad);g.addColorStop(0,ds.color+'30');g.addColorStop(1,ds.color+'00');
     ctx.fillStyle=g;ctx.fill();
-    ds.data.forEach(function(v,i){var x=pad+i*step,y=pad+(H-pad*2)*(1-v/max);ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fillStyle=ds.color;ctx.fill()});
+    ds.data.forEach(function(v,i){var x=pad+i*st,y=pad+(H-pad*2)*(1-v/max);ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fillStyle=ds.color;ctx.fill()});
   });
 }
 function drawBar(canvasId,labels,data,color){
@@ -223,10 +230,23 @@ function loadSecurity(){
     drawLine('chartAttackTrend',d.data.trendLabels||[],[{data:d.data.trendData||[],color:'#ff453a'}]);
     var html='';
     (d.data.bans||[]).forEach(function(b){
-      html+='<div class="ban-item"><div class="vi-info"><div class="vi-top"><span class="vi-ip">'+esc(b.ip)+'</span><span class="ban-type '+b.type+'">'+(b.type==='permanent'?'永久':'临时')+'</span></div><div class="ban-reason">'+esc(b.reason)+'</div><div class="vi-meta">'+fmtTime(b.time)+(b.fid?' · '+esc(b.fid.substring(0,12)):'')+'</div></div>'+(b.active?'<button class="vi-action unban" data-id="'+esc(b.id)+'">解封</button>':'<span class="vi-meta">已解除</span>')+'</div>';
+      if(b.type==='permanent')return;
+      html+='<div class="ban-item"><div class="vi-info"><div class="vi-top"><span class="vi-ip">'+esc(b.ip)+'</span><span class="ban-type temporary">临时</span></div><div class="ban-reason">'+esc(b.reason)+'</div><div class="vi-meta">'+fmtTime(b.time)+(b.fid?' · '+esc(b.fid.substring(0,12)):'')+'</div></div>'+(b.active?'<button class="vi-action unban" data-id="'+esc(b.id)+'">解封</button>':'<span class="vi-meta">已解除</span>')+'</div>';
     });
-    $('#banTable').innerHTML=html||'<div class="empty-state"><p>暂无封禁记录</p></div>';
+    $('#banTable').innerHTML=html||'<div class="empty-state"><p>暂无临时封禁</p></div>';
     $$('#banTable .vi-action.unban').forEach(function(b){b.onclick=function(){unban(b.dataset.id)}});
+  });
+}
+function loadPermBans(){
+  api('/api/stats/security').then(function(d){
+    if(!d.ok)return;
+    var permBans=(d.data.bans||[]).filter(function(b){return b.type==='permanent'});
+    var html='';
+    permBans.forEach(function(b){
+      html+='<div class="ban-item perm"><div class="vi-info"><div class="vi-top"><span class="vi-ip">'+esc(b.ip)+'</span><span class="ban-type permanent">永久</span></div><div class="ban-reason">'+esc(b.reason)+'</div><div class="vi-meta">'+fmtTime(b.time)+(b.fid?' · '+esc(b.fid.substring(0,12)):'')+'</div></div></div>';
+    });
+    var el=$('#permBanList');
+    if(el)el.innerHTML=html||'<div class="empty-state"><p>暂无永久封禁</p></div>';
   });
 }
 function loadAppeals(){
@@ -267,6 +287,11 @@ function banIP(ip,fid,reason){
     if(d.ok){toast('已封禁','ok');loadSecurity();loadVisitors()}else toast(d.error||'操作失败','err');
   });
 }
+function permBanIP(ip,fid,reason){
+  api('/api/security/permanent',{method:'POST',body:JSON.stringify({ip:ip,fid:fid,reason:reason})}).then(function(d){
+    if(d.ok){toast('已永久封禁','ok');loadSecurity();loadPermBans()}else toast(d.error||'操作失败','err');
+  });
+}
 function unban(id){
   api('/api/security/unban',{method:'POST',body:JSON.stringify({id:id})}).then(function(d){
     if(d.ok){toast('已解封','ok');loadSecurity()}else toast(d.error||'操作失败','err');
@@ -274,7 +299,7 @@ function unban(id){
 }
 function handleAppeal(id,action){
   api('/api/appeals/handle',{method:'POST',body:JSON.stringify({id:id,action:action})}).then(function(d){
-    if(d.ok){toast('操作成功','ok');loadAppeals();loadSecurity()}else toast(d.error||'操作失败','err');
+    if(d.ok){toast('操作成功','ok');loadAppeals();loadSecurity();loadPermBans()}else toast(d.error||'操作失败','err');
   });
 }
 function delAnn(id){
@@ -288,6 +313,14 @@ $('#btnPublishAnn').onclick=function(){
   api('/api/announcement/publish',{method:'POST',body:JSON.stringify({title:t,content:c})}).then(function(d){
     if(d.ok){toast('发布成功','ok');$('#annTitleInput').value='';$('#annContentInput').value='';loadAnnouncements()}else toast(d.error||'失败','err');
   });
+};
+
+/* ============ PERMANENT BAN ============ */
+$('#btnPermBan').onclick=function(){
+  var ip=$('#permIp').value.trim(),reason=$('#permReason').value.trim()||'管理员永久封禁';
+  if(!ip)return toast('请输入IP','err');
+  permBanIP(ip,$('#permFid').value.trim(),reason);
+  $('#permIp').value='';$('#permFid').value='';$('#permReason').value='';
 };
 
 /* ============ REPORTS ============ */
@@ -307,15 +340,12 @@ $$('.toggle').forEach(function(t){t.onclick=function(){t.classList.toggle('on');
 
 /* ============ HEADER REFRESH ============ */
 $('#btnRefreshOverview').onclick=function(){
-  var active=$('.panel.active');
-  if(active){
-    var id=active.id.replace('panel-','');
-    if(id==='overview')loadOverview();
-    else if(id==='visitors')loadVisitors();
-    else if(id==='security')loadSecurity();
-    else if(id==='appeals')loadAppeals();
-    else if(id==='announce')loadAnnouncements();
-  }
+  if(currentPanel==='overview')loadOverview();
+  else if(currentPanel==='visitors')loadVisitors();
+  else if(currentPanel==='security')loadSecurity();
+  else if(currentPanel==='appeals')loadAppeals();
+  else if(currentPanel==='announce')loadAnnouncements();
+  else if(currentPanel==='permanent')loadPermBans();
   toast('已刷新');
 };
 
@@ -371,11 +401,9 @@ document.addEventListener('click',function(e){
     api('/api/auth/check').then(function(d){if(d.ok)enterDashboard();else showStep(1)});
   }else{showStep(1)}
   window.addEventListener('resize',function(){
-    var active=$('.panel.active');if(!active)return;
-    var id=active.id.replace('panel-','');
-    if(id==='overview')loadOverview();
-    if(id==='visitors')loadVisitors();
-    if(id==='security')loadSecurity();
+    if(currentPanel==='overview')loadOverview();
+    if(currentPanel==='visitors')loadVisitors();
+    if(currentPanel==='security')loadSecurity();
   });
 })();
 })();

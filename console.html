@@ -194,6 +194,21 @@
       </div>
       <button class="btn-logout ripple" id="btnLogout">退出登录</button>
     </div>
+    <!-- Permanent Bans -->
+    <div class="panel" id="panel-permanent" data-title="永久封禁">
+      <div class="form-card">
+        <h3>添加永久封禁</h3>
+        <p style="color:var(--text-3);font-size:.8rem;margin-bottom:12px">永久封禁不可申诉，不可解封，请谨慎操作。</p>
+        <input type="text" id="permIp" placeholder="IP地址，如 1.2.3.4">
+        <input type="text" id="permFid" placeholder="设备指纹（可选）">
+        <input type="text" id="permReason" placeholder="封禁原因">
+        <button class="btn-login ripple" id="btnPermBan" style="background:linear-gradient(135deg,#ff453a,#ff9f0a);padding:14px">确认永久封禁</button>
+      </div>
+      <div class="chart-card">
+        <h3>永久封禁列表</h3>
+        <div class="ban-list" id="permBanList"></div>
+      </div>
+    </div>
   </main>
 
   <!-- 底部Tab栏 -->
@@ -238,6 +253,10 @@
       <div class="more-item" data-panel="settings">
         <div class="mi-ico" style="background:rgba(142,142,147,0.15);color:#8e8e93">⚙️</div>
         <span>系统设置</span>
+      </div>
+      <div class="more-item" data-panel="permanent">
+        <div class="mi-ico" style="background:rgba(255,69,58,0.15);color:#ff453a">🔒</div>
+        <span>永久封禁</span>
       </div>
     </div>
   </div>
