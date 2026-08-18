@@ -45,9 +45,8 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 }
 .nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px}
 .logo-mark{
-  width:36px;height:36px;border-radius:12px;background:var(--brand-gradient);
-  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;
-  box-shadow:0 4px 14px rgba(255,105,0,0.3);
+  width:38px;height:38px;border-radius:12px;object-fit:cover;
+  box-shadow:0 4px 14px rgba(255,105,0,0.2);border:1.5px solid rgba(255,255,255,0.6);
 }
 .nav-links{display:flex;gap:6px}
 .nav-link{
@@ -203,3 +202,26 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
   .card-grid{grid-template-columns:1fr 1fr}
   .value-list{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
 }
+
+
+/* ===== SITE STATUS OVERLAY ===== */
+.site-overlay{
+  position:fixed;inset:0;z-index:99999;display:none;
+  flex-direction:column;align-items:center;justify-content:center;
+  background:var(--bg);padding:40px 20px;text-align:center;
+}
+.site-overlay.show{display:flex}
+.site-overlay .so-icon{
+  width:90px;height:90px;border-radius:28px;margin-bottom:28px;
+  display:flex;align-items:center;justify-content:center;font-size:44px;
+  box-shadow:0 12px 40px rgba(0,0,0,0.1);
+}
+.site-overlay .so-icon.maintenance{background:linear-gradient(135deg,#ff9f0a,#ff6900)}
+.site-overlay .so-icon.blocked{background:linear-gradient(135deg,#ff453a,#ff9f0a)}
+.site-overlay h2{font-size:24px;font-weight:800;margin-bottom:12px}
+.site-overlay p{font-size:15px;color:var(--text-2);max-width:340px;line-height:1.7;margin-bottom:24px}
+.site-overlay .so-btn{
+  padding:14px 36px;border-radius:24px;background:var(--brand-gradient);color:#fff;
+  font-size:15px;font-weight:600;border:none;cursor:pointer;
+}
+.site-overlay .so-countdown{font-size:13px;color:var(--text-3);margin-top:16px}

@@ -8,19 +8,19 @@
 <meta name="robots" content="noindex,nofollow">
 <title>控制台 · 极风工作室</title>
 <link rel="stylesheet" href="console.css">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23ff6900'/><text x='50' y='72' font-size='60' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>J</text></svg>">
+<link rel="icon" type="image/png" href="favicon.png">
 </head>
 <body>
-<script>window.JF_API='';</script>
+<script>window.JF_API='https://jifeng-studio.netlify.app';</script>
 
 <!-- ====== LOGIN ====== -->
 <div class="login-wrap" id="loginWrap">
   <div class="login-bg"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
   <div class="login-card glass">
     <div class="login-logo">
-      <div class="mark">J</div>
+      <img class="login-avatar" src="avatar.png" alt="极风">
       <h1>安全控制台</h1>
-      <p>极风工作室 · 管理端 v10.0</p>
+      <p>极风工作室 · 管理端</p>
     </div>
 
     <!-- Trust check loading -->
@@ -112,7 +112,7 @@
 
   <header class="app-header glass">
     <div class="header-left">
-      <div class="header-mark">J</div>
+      <img class="header-avatar" src="avatar.png" alt="极风">
       <div>
         <div class="header-title" id="panelTitle">概览</div>
         <div class="header-sub"><span class="live-dot"></span><span id="headerSub">实时监控中</span></div>
@@ -291,10 +291,36 @@
       <div class="form-card">
         <h3>通知设置</h3>
         <div class="setting-row"><div class="sr-info"><h4>告警邮箱</h4><p>安全告警和报告接收邮箱</p></div><div style="font-weight:700;color:var(--brand);font-size:13px">3565583431@qq.com</div></div>
+        <div class="setting-row">
+          <div class="sr-info"><h4>每日报告时间</h4><p>自动发送运维日报的时间</p></div>
+          <input type="time" id="reportTimeInput" value="09:00" style="padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:var(--text);font-size:14px;width:110px">
+        </div>
+      </div>
+      <div class="form-card">
+        <h3>网站控制</h3>
+        <p style="color:var(--text-3);font-size:.8rem;margin-bottom:14px">实时控制官网状态，所有设备立即生效。</p>
+        <div class="site-mode-grid">
+          <button class="mode-btn active" data-mode="normal" id="modeNormal">
+            <div class="mode-ico" style="background:rgba(48,209,88,0.15);color:#30d158">✅</div>
+            <div class="mode-name">正常运行</div>
+          </button>
+          <button class="mode-btn" data-mode="maintenance" id="modeMaintenance">
+            <div class="mode-ico" style="background:rgba(255,159,10,0.15);color:#ff9f0a">🔧</div>
+            <div class="mode-name">维护中</div>
+          </button>
+          <button class="mode-btn" data-mode="shutdown" id="modeShutdown">
+            <div class="mode-ico" style="background:rgba(255,69,58,0.15);color:#ff453a">🚫</div>
+            <div class="mode-name">关停</div>
+          </button>
+        </div>
+        <div id="modeMsgBox" style="display:none;margin-top:12px">
+          <input type="text" id="modeMsgInput" placeholder="自定义提示消息（可选）">
+          <button class="btn-login ripple" id="btnApplyMode" style="padding:12px;margin-top:8px">应用</button>
+        </div>
       </div>
       <div class="form-card">
         <h3>关于</h3>
-        <div class="setting-row"><div class="sr-info"><h4>版本</h4><p>极风控制台</p></div><div style="color:var(--text-3);font-size:13px">v10.0</div></div>
+        
         <div class="setting-row"><div class="sr-info"><h4>托管平台</h4><p>Netlify Functions</p></div><div style="color:var(--green);font-size:13px">运行中</div></div>
       </div>
       <button class="btn-logout ripple" id="btnLogout">退出登录</button>

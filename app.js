@@ -170,6 +170,36 @@ window.JF={
     fetch(API+'/api/announcement').then(function(r){return r.json()}).then(function(d){
       if(d.ok&&d.data)cb(d.data);else cb(null);
     }).catch(function(){cb(null)});
+  },
+  checkSiteStatus:function(){
+    fetch(API+'/api/site/status',{signal:AbortSignal.timeout(5000)}).then(function(r){return r.json()}).then(function(d){
+      if(!d.ok)return;
+      var overlay=document.getElementById('siteOverlay');
+      if(!overlay)return;
+      if(d.mode==='shutdown'){
+        document.getElementById('soIcon').className='so-icon blocked';
+        document.getElementById('soIcon').textContent='🚫';
+        document.getElementById('soTitle').textContent='网站已关停';
+        document.getElementById('soMsg').textContent=d.shutdownMsg||'网站已关停。';
+        overlay.classList.add('show');
+      }else if(d.mode==='maintenance'){
+        document.getElementById('soIcon').className='so-icon maintenance';
+        document.getElementById('soIcon').textContent='🔧';
+        document.getElementById('soTitle').textContent='网站维护中';
+        document.getElementById('soMsg').textContent=d.maintenanceMsg||'网站正在维护中，请稍后再访。';
+        overlay.classList.add('show');
+      }else if(d.banned){
+        document.getElementById('soIcon').className='so-icon blocked';
+        document.getElementById('soIcon').textContent='⛔';
+        document.getElementById('soTitle').textContent=d.banned.permanent?'访问已被永久限制':'访问已被临时限制';
+        document.getElementById('soMsg').innerHTML='您的设备因异常行为已被限制访问。<br>如为误判，可<a href="./appeal.html" style="color:var(--brand);font-weight:600">提交申诉</a>。';
+        document.getElementById('soBtn').textContent='我要申诉';
+        document.getElementById('soBtn').onclick=function(){location.href='./appeal.html'};
+        overlay.classList.add('show');
+      }else{
+        overlay.classList.remove('show');
+      }
+    }).catch(function(){});
   }
 };
 })();
