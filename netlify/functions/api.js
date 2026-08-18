@@ -315,7 +315,7 @@ async function handleRoute(route, method, req, res, ctx) {
   }
 
   // Admin routes - check auth
-  const adminRoutes = ['announcement/all', 'announcement/publish', 'announcement/delete', 'stats/overview', 'stats/visitors', 'stats/devices', 'stats/security', 'logs/realtime', 'security/ban', 'security/unban', 'security/permanent', 'security/warnings', 'security/whitelist', 'security/whitelist/add', 'security/whitelist/remove', 'security/events', 'security/score', 'appeals', 'appeals/handle', 'reports/generate', 'reports/send-daily', 'settings', 'devices', 'devices/revoke', 'data/export', 'admin/site-mode', 'admin/report-time'];
+  const adminRoutes = ['announcement/all', 'announcement/publish', 'announcement/delete', 'stats/overview', 'stats/visitors', 'stats/devices', 'stats/security', 'logs/realtime', 'security/ban', 'security/unban', 'security/unban-ip', 'security/permanent', 'security/warnings', 'security/whitelist', 'security/whitelist/add', 'security/whitelist/remove', 'security/events', 'security/score', 'appeals', 'appeals/handle', 'reports/generate', 'reports/send-daily', 'settings', 'devices', 'devices/revoke', 'data/export', 'admin/site-mode', 'admin/report-time'];
   if (adminRoutes.includes(route)) {
     if (!auth.checkAdmin(req)) return j({ ok: false, error: '未授权' }, 401);
   }
@@ -357,7 +357,7 @@ async function handleRoute(route, method, req, res, ctx) {
     return j({ ok: true, data: { visitors, attacks, bans: bans.length, permBans: bans.filter(b => b.type === 'permanent').length, visitorTrend: trend, trafficLabels: hours, trafficData: [{ data: traffic, color: '#ff6900' }] } });
   }
 
-  if (route === 'stats/visitors', 'stats/devices') {
+  if (route === 'stats/visitors') {
     const today = new Date().toISOString().slice(0, 10);
     const total = await db.get('stats:visitors:total') || 0;
     const mobile = await db.get('stats:mobile:' + today) || 0;
@@ -466,8 +466,16 @@ async function handleRoute(route, method, req, res, ctx) {
     return j({ ok: true });
   }
 
-  if (route === 'security/unban' && method === 'POST') {
+  if (route === 'security/unban', 'security/unban-ip' && method === 'POST') {
     await sec.unban(req.body.id);
+    return j({ ok: true });
+  }
+
+  if (route === 'security/unban-ip' && method === 'POST') {
+    const { ip: uip, fid: ufid } = req.body;
+    if (uip) await sec.unbanByIp(uip);
+    if (ufid) await db.srem('banned:fids', ufid);
+    await sec.logSecurityEvent('unban', '管理员解封IP: ' + uip, { ip });
     return j({ ok: true });
   }
 

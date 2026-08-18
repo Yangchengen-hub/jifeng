@@ -216,11 +216,12 @@ $('#moreOverlay').onclick=closeMore;
 /* ===== CHARTS ===== */
 function setupCanvas(c){
   var dpr=window.devicePixelRatio||2;
-  var w=c.offsetWidth||c.parentElement.offsetWidth||320;
+  var rect=c.getBoundingClientRect();
+  var w=rect.width||c.clientWidth||c.parentElement.clientWidth||320;
   var h=parseInt(c.getAttribute('height'))||160;
+  if(w<10)w=c.parentElement.getBoundingClientRect().width||320;
   if(w<10)w=320;
-  c.width=w*dpr;c.height=h*dpr;
-  c.style.width=w+'px';
+  c.width=Math.floor(w*dpr);c.height=Math.floor(h*dpr);
   var ctx=c.getContext('2d');ctx.setTransform(1,0,0,1,0,0);ctx.scale(dpr,dpr);
   ctx.clearRect(0,0,w,h);
   return{ctx:ctx,W:w,H:h};
@@ -336,20 +337,22 @@ function loadOverview(){
     $('#statBans').textContent=d.data.bans||0;
     $('#trendVisitors').textContent=(d.data.visitorTrend>=0?'+':'')+(d.data.visitorTrend||0)+'%';
     $('#trendVisitors').className='sc-trend '+((d.data.visitorTrend||0)>=0?'up':'down');
-    drawLine('chartTraffic',d.data.trafficLabels||[],d.data.trafficData||[{data:[],color:'#ff6900'}]);
+    cacheAndDraw('chartTraffic',d.data.trafficLabels||[],d.data.trafficData||[{data:[],color:'#ff6900'}],null,'line');
   });
 }
 
 function loadVisitors(){
   api('/api/stats/visitors').then(function(d){
     if(!d.ok)return;
-    $('#vTotal').textContent=d.data.total||0;
-    $('#vMobile').textContent=d.data.mobile||0;
-    $('#vDesktop').textContent=d.data.desktop||0;
-    $('#vNew').textContent=d.data.todayNew||0;
+    var els=['vTotal','vMobile','vDesktop','vNew','statTotalVisitors','statTodayNew'];
+    var vals=[d.data.total,d.data.mobile,d.data.desktop,d.data.todayNew,d.data.total,d.data.todayNew];
+    els.forEach(function(id,i){var el=$('#'+id);if(el)el.textContent=vals[i]||0});
     cacheAndDraw('chartDevice',d.data.deviceLabels||['移动端','桌面端'],[d.data.mobile||0,d.data.desktop||0],['#0a84ff','#bf5af2'],'doughnut');
     cacheAndDraw('chartPages',d.data.pageLabels||[],d.data.pageData||[],'#ff6900','hbar');
-    renderVisitors(d.data.recent||[]);
+  });
+  api('/api/stats/devices').then(function(d){
+    if(!d.ok)return;
+    renderDevices(d.data||[]);
   });
 }
 
@@ -483,7 +486,7 @@ function renderVisitorDetail(v){
 }
 
 $('#visitorSearch').oninput=function(){
-  api('/api/stats/visitors').then(function(d){if(d.ok)renderVisitors(d.data.recent||[])});
+  if(window._devices)renderDevices(window._devices);
 };
 
 function loadSecurity(){
@@ -495,7 +498,7 @@ function loadSecurity(){
     $('#secRate').textContent=(d.data.rate||0)+'%';
     var badge=$('#secBadge');badge.textContent=d.data.today||0;badge.style.display=d.data.today>0?'flex':'none';
     drawBar('chartAttackType',d.data.typeLabels||[],d.data.typeData||[],'#ff453a');
-    drawLine('chartAttackTrend',d.data.trendLabels||[],[{data:d.data.trendData||[],color:'#ff453a'}]);
+    cacheAndDraw('chartAttackTrend',d.data.trendLabels||[],[{data:d.data.trendData||[],color:'#ff453a'}],null,'line');
     var tempBans=(d.data.bans||[]).filter(function(b){return b.type!=='permanent'});
     $('#tempBanCount').textContent=tempBans.length+' 条';
     var html='';
@@ -613,6 +616,11 @@ function loadSettings(){
 function banIP(ip,fid,reason){
   api('/api/security/ban',{method:'POST',body:JSON.stringify({ip:ip,fid:fid,reason:reason})}).then(function(d){
     if(d.ok){toast('已封禁','ok');island('已封禁IP: '+ip,true);loadSecurity();loadVisitors()}else toast(d.error||'操作失败','err');
+  });
+}
+function unbanIP(ip,fid){
+  api('/api/security/unban-ip',{method:'POST',body:JSON.stringify({ip:ip,fid:fid})}).then(function(d){
+    if(d.ok){toast('已解封','ok');loadSecurity();loadVisitors()}else toast(d.error||'操作失败','err');
   });
 }
 function permBanIP(ip,fid,reason){
