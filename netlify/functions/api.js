@@ -69,7 +69,7 @@ exports.handler = async function(event, context) {
   const method = req.method;
   const ip = sec.getClientIp(req);
   req.clientIp = ip;
-  const fid = (req.body.fp && req.body.fp.fid) || req.body.fid || req.headers['x-fp'] || '';
+  const fid = (req.body.fp && req.body.fp.fid) || req.body.fid || req.headers['x-fp'] || (event.queryStringParameters && event.queryStringParameters.fid) || '';
 
   // Admin exemption - authenticated admins skip all security checks
   let isAdminRequest = false;
@@ -315,7 +315,7 @@ async function handleRoute(route, method, req, res, ctx) {
   }
 
   // Admin routes - check auth
-  const adminRoutes = ['announcement/all', 'announcement/publish', 'announcement/delete', 'stats/overview', 'stats/visitors', 'stats/security', 'logs/realtime', 'security/ban', 'security/unban', 'security/permanent', 'security/warnings', 'security/whitelist', 'security/whitelist/add', 'security/whitelist/remove', 'security/events', 'security/score', 'appeals', 'appeals/handle', 'reports/generate', 'reports/send-daily', 'settings', 'devices', 'devices/revoke', 'data/export', 'admin/site-mode', 'admin/report-time'];
+  const adminRoutes = ['announcement/all', 'announcement/publish', 'announcement/delete', 'stats/overview', 'stats/visitors', 'stats/devices', 'stats/security', 'logs/realtime', 'security/ban', 'security/unban', 'security/permanent', 'security/warnings', 'security/whitelist', 'security/whitelist/add', 'security/whitelist/remove', 'security/events', 'security/score', 'appeals', 'appeals/handle', 'reports/generate', 'reports/send-daily', 'settings', 'devices', 'devices/revoke', 'data/export', 'admin/site-mode', 'admin/report-time'];
   if (adminRoutes.includes(route)) {
     if (!auth.checkAdmin(req)) return j({ ok: false, error: '未授权' }, 401);
   }
@@ -357,7 +357,7 @@ async function handleRoute(route, method, req, res, ctx) {
     return j({ ok: true, data: { visitors, attacks, bans: bans.length, permBans: bans.filter(b => b.type === 'permanent').length, visitorTrend: trend, trafficLabels: hours, trafficData: [{ data: traffic, color: '#ff6900' }] } });
   }
 
-  if (route === 'stats/visitors') {
+  if (route === 'stats/visitors', 'stats/devices') {
     const today = new Date().toISOString().slice(0, 10);
     const total = await db.get('stats:visitors:total') || 0;
     const mobile = await db.get('stats:mobile:' + today) || 0;
@@ -370,6 +370,65 @@ async function handleRoute(route, method, req, res, ctx) {
     }
     pageStats.sort((a, b) => b.count - a.count);
     return j({ ok: true, data: { total, mobile, desktop, todayNew: await db.get('stats:visitors:' + today) || 0, deviceLabels: ['移动端', '桌面端'], pageLabels: pageStats.map(p => p.page), pageData: pageStats.map(p => p.count), recent } });
+  }
+
+  if (route === 'stats/devices') {
+    const all = await db.lrange('visitors:recent', 0, 199);
+    const groups = {};
+    all.forEach(function(v) {
+      var key = v.fid || ('ip:' + v.ip);
+      if (!groups[key]) {
+        groups[key] = {
+          fid: v.fid || '',
+          ip: v.ip,
+          ips: [v.ip],
+          brand: v.brand || '',
+          model: v.model || '',
+          os: v.os || '',
+          browser: v.browser || '',
+          kernel: v.kernel || '',
+          androidVer: v.androidVer || '',
+          screen: v.screen || '',
+          gpu: v.gpu || '',
+          network: v.network || '',
+          colorScheme: v.colorScheme || '',
+          firstSeen: v.time,
+          lastSeen: v.time,
+          visits: 0,
+          totalDuration: 0,
+          totalClicks: 0,
+          maxScroll: 0,
+          actions: [],
+          pages: [],
+          warnings: 0,
+          banned: false
+        };
+      }
+      var g = groups[key];
+      g.visits++;
+      g.lastSeen = Math.max(g.lastSeen, v.time);
+      g.firstSeen = Math.min(g.firstSeen, v.time);
+      if (v.duration) g.totalDuration += v.duration;
+      if (v.clicks) g.totalClicks += v.clicks;
+      if (v.maxScroll) g.maxScroll = Math.max(g.maxScroll, v.maxScroll);
+      if (v.ip && g.ips.indexOf(v.ip) === -1) g.ips.push(v.ip);
+      if (v.page && g.pages.indexOf(v.page) === -1) g.pages.push(v.page);
+      if (v.actions && v.actions.length) {
+        v.actions.forEach(function(a) { g.actions.push(a); });
+      }
+      // Keep latest device info
+      if (v.brand) g.brand = v.brand;
+      if (v.model) g.model = v.model;
+      if (v.browser) g.browser = v.browser;
+    });
+    var devices = Object.values(groups).sort(function(a,b){return b.lastSeen - a.lastSeen});
+    // Check ban status for each
+    for (var d of devices) {
+      var banCheck = await sec.isBanned(d.ip, d.fid);
+      d.banned = !!banCheck;
+      d.permanentBan = !!(banCheck && banCheck.permanent);
+    }
+    return j({ ok: true, data: devices });
   }
 
   if (route === 'stats/security') {

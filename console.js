@@ -347,65 +347,99 @@ function loadVisitors(){
     $('#vMobile').textContent=d.data.mobile||0;
     $('#vDesktop').textContent=d.data.desktop||0;
     $('#vNew').textContent=d.data.todayNew||0;
-    setTimeout(function(){
-      drawDoughnut('chartDevice',d.data.deviceLabels||['移动端','桌面端'],[d.data.mobile||0,d.data.desktop||0],['#0a84ff','#bf5af2']);
-      drawHBar('chartPages',d.data.pageLabels||[],d.data.pageData||[],'#ff6900');
-    },50);
+    cacheAndDraw('chartDevice',d.data.deviceLabels||['移动端','桌面端'],[d.data.mobile||0,d.data.desktop||0],['#0a84ff','#bf5af2'],'doughnut');
+    cacheAndDraw('chartPages',d.data.pageLabels||[],d.data.pageData||[],'#ff6900','hbar');
     renderVisitors(d.data.recent||[]);
   });
 }
 
-function renderVisitors(list){
+function renderDevices(list){
   var search=($('#visitorSearch')||{}).value||'';
   var filtered=list;
   if(search){
     var q=search.toLowerCase();
-    filtered=list.filter(function(v){return(v.ip||'').toLowerCase().includes(q)||(v.browser||'').toLowerCase().includes(q)||(v.fid||'').toLowerCase().includes(q)||(v.gpu||'').toLowerCase().includes(q)||(v.brand||'').toLowerCase().includes(q)||(v.model||'').toLowerCase().includes(q)});
+    filtered=list.filter(function(v){return(v.ip||'').toLowerCase().includes(q)||(v.browser||'').toLowerCase().includes(q)||(v.fid||'').toLowerCase().includes(q)||(v.brand||'').toLowerCase().includes(q)||(v.model||'').toLowerCase().includes(q)});
   }
   var html='';
   filtered.forEach(function(v,idx){
-    var avatar=(v.browser?v.browser.charAt(0):'?');
-    var netIcon=v.network==='4g'?'📶':v.network==='3g'?'📶':v.network==='2g'?'📡':v.network==='wifi'||v.downlink>=5?'📶':'🌐';
-    var batIcon=v.battery?'🔋'+v.battery:'';
-    var dur=v.duration?Math.round(v.duration)+'s':'';
-    var clicks=v.clicks?'🖱️'+v.clicks:'';
     var deviceName=v.brand?(v.brand+' '+(v.model||'')).trim():(v.os||'未知设备');
-    html+='<div class="visitor-item visitor-expandable" data-idx="'+idx+'">'+
-      '<div class="vi-row">'+
-        '<div class="vi-avatar">'+esc(avatar)+'</div>'+
-        '<div class="vi-info">'+
-          '<div class="vi-top"><span class="vi-ip">'+esc(v.ip)+'</span>'+
-          (v.colorScheme==='dark'?'<span class="vi-tag dark">🌙</span>':'<span class="vi-tag light">☀️</span>')+
-          '</div>'+
-          '<div class="vi-meta">'+esc(v.browser||'未知')+' · '+esc(deviceName)+(v.androidVer?' Android '+esc(v.androidVer):'')+(v.kernel?' · 内核'+esc(v.kernel):'')+'</div>'+
-          '<div class="vi-tags">'+
-            (v.screen?'<span class="vi-mini">📱'+esc(v.screen)+'</span>':'')+
-            (v.network?'<span class="vi-mini">'+netIcon+esc(v.network.toUpperCase())+'</span>':'')+
-            (v.cores?'<span class="vi-mini">⚙️'+v.cores+'核</span>':'')+
-            (v.gpu?'<span class="vi-mini">🎮'+esc(v.gpu.substring(0,20))+'</span>':'')+
-            (batIcon?'<span class="vi-mini">'+batIcon+'</span>':'')+
-            (dur?'<span class="vi-mini">⏱️'+dur+'</span>':'')+
-            (clicks?'<span class="vi-mini">'+clicks+'</span>':'')+
-            (v.maxScroll?'<span class="vi-mini">📜'+v.maxScroll+'%</span>':'')+
-          '</div>'+
+    var avatar=(v.browser?v.browser.charAt(0):'?');
+    var banTag=v.banned?'<span class="vi-tag" style="background:rgba(255,69,58,0.15);color:var(--red)">⛔ 已封禁</span>':'';
+    var lastSeenStr=fmtTime(v.lastSeen);
+    html+='<div class="device-card" data-idx="'+idx+'">'+
+      '<div class="dc-header" onclick="toggleDevice('+idx+')">'+
+        '<div class="dc-avatar">'+esc(avatar)+'</div>'+
+        '<div class="dc-info">'+
+          '<div class="dc-name">'+esc(deviceName)+' '+banTag+'</div>'+
+          '<div class="dc-meta">'+esc(v.browser||'')+(v.androidVer?' · Android '+esc(v.androidVer):'')+(v.kernel?' · 内核'+esc(v.kernel):'')+'</div>'+
+          '<div class="dc-sub">'+esc(v.ip)+' · 访问'+v.visits+'次 · 最后'+lastSeenStr+'</div>'+
         '</div>'+
-        '<div class="vi-time">'+(v.timeStr||'')+'</div>'+
-        '<button class="vi-action ban" data-ip="'+esc(v.ip)+'" data-fid="'+esc(v.fid||'')+'" onclick="event.stopPropagation()">封禁</button>'+
-        '<button class="vi-action profile" data-idx="'+idx+'" onclick="event.stopPropagation()" style="background:rgba(10,132,255,0.13);color:var(--blue);margin-left:4px">档案</button>'+
+        '<div class="dc-arrow">›</div>'+
       '</div>'+
-      '<div class="vi-detail" id="vdetail_'+idx+'">'+renderVisitorDetail(v)+'</div>'+
+      '<div class="dc-body" id="dcbody_'+idx+'">'+renderDeviceProfile(v)+'</div>'+
     '</div>';
   });
-  $('#visitorTable').innerHTML=html||'<div class="empty-state"><p>暂无数据</p></div>';
-  $$('#visitorTable .vi-action.ban').forEach(function(b){b.onclick=function(e){e.stopPropagation();banIP(b.dataset.ip,b.dataset.fid,'管理员手动封禁')}});
-  $$('#visitorTable .vi-action.profile').forEach(function(b){b.onclick=function(e){e.stopPropagation();openDeviceProfile(filtered[parseInt(b.dataset.idx)])}});
-  $$('#visitorTable .visitor-expandable').forEach(function(item){
-    item.onclick=function(){
-      var idx=item.dataset.idx;
-      var detail=$('#vdetail_'+idx);
-      if(detail)detail.classList.toggle('show');
-    };
-  });
+  $('#visitorTable').innerHTML=html||'<div class="empty-state"><p>暂无访客</p></div>';
+  window._devices=filtered;
+}
+
+function toggleDevice(idx){
+  var body=$('#dcbody_'+idx);
+  if(body)body.classList.toggle('open');
+}
+
+function renderDeviceProfile(v){
+  var deviceName=v.brand?(v.brand+' '+(v.model||'')).trim():(v.os||'未知设备');
+  var h='';
+  // Stats row
+  h+='<div class="dc-stats">';
+  h+='<div class="dc-stat"><b>'+v.visits+'</b><span>访问</span></div>';
+  h+='<div class="dc-stat"><b>'+Math.round(v.totalDuration)+'s</b><span>停留</span></div>';
+  h+='<div class="dc-stat"><b>'+v.totalClicks+'</b><span>点击</span></div>';
+  h+='<div class="dc-stat"><b>'+v.maxScroll+'%</b><span>滚动</span></div>';
+  h+='</div>';
+  // Info grid
+  h+='<div class="dc-info-grid">';
+  var info=[
+    ['品牌',v.brand],['型号',v.model],['系统',v.os],['版本',v.androidVer||v.iosVer],
+    ['内核',v.kernel],['浏览器',v.browser],['屏幕',v.screen],['GPU',v.gpu?v.gpu.substring(0,30):''],
+    ['网络',v.network],['主题',v.colorScheme==='dark'?'深色':'浅色'],
+    ['首次',fmtTime(v.firstSeen)],['最后',fmtTime(v.lastSeen)]
+  ];
+  info.forEach(function(r){if(r[1])h+='<div class="dc-info-item"><span>'+r[0]+'</span><b>'+esc(String(r[1]))+'</b></div>'});
+  h+='</div>';
+  // IPs
+  if(v.ips&&v.ips.length){
+    h+='<div class="dc-section"><span class="dc-label">IP 地址 ('+v.ips.length+')</span>';
+    v.ips.forEach(function(ip){h+='<div class="dc-ip-row">'+esc(ip)+'</div>'});
+    h+='</div>';
+  }
+  // Pages
+  if(v.pages&&v.pages.length){
+    h+='<div class="dc-section"><span class="dc-label">访问页面</span>';
+    v.pages.forEach(function(p){h+='<span class="dc-page-tag">'+esc(p)+'</span>'});
+    h+='</div>';
+  }
+  // Timeline
+  if(v.actions&&v.actions.length){
+    h+='<div class="dc-section"><span class="dc-label">行为时间线 ('+v.actions.length+')</span><div class="timeline-list">';
+    v.actions.slice(-80).forEach(function(a){
+      var tag=a.t==='click'?'click':a.t==='visibility'?'visit':'warning';
+      var label=a.t==='click'?'点击':a.t==='visibility'?(a.d&&a.d.hidden?'离开':'回到'):'行为';
+      var detail=a.d?(a.d.text||a.d.href||a.d.tag||''):'';
+      h+='<div class="timeline-event"><span class="te-time">'+new Date(a.ts).toLocaleTimeString('zh-CN',{hour12:false})+'</span><div class="te-content"><span class="te-tag '+tag+'">'+label+'</span>'+esc(detail)+'</div></div>';
+    });
+    h+='</div></div>';
+  }
+  // Actions
+  h+='<div class="dc-actions">';
+  if(v.banned){
+    h+='<button class="dc-btn unban" onclick="event.stopPropagation();unbanIP(\''+esc(v.ip)+'\',\''+esc(v.fid||'')+'\')">解封</button>';
+  }else{
+    h+='<button class="dc-btn ban" onclick="event.stopPropagation();banIP(\''+esc(v.ip)+'\',\''+esc(v.fid||'')+'\',\'管理员手动封禁\')">封禁</button>';
+  }
+  h+='</div>';
+  return h;
 }
 
 function renderVisitorDetail(v){
@@ -676,7 +710,7 @@ function startRealtime(){
         div.innerHTML='<span class="log-tag '+l.type+'">'+l.typeLabel+'</span><div class="log-msg">'+esc(l.message)+'</div><span class="log-time">'+l.timeStr+'</span>';
         stream.insertBefore(div,stream.firstChild);
         if(stream.children.length>40)stream.removeChild(stream.lastChild);
-        if(l.type==='attack'||l.type==='ban'){island(l.message,true)}
+        // Security events collected for email digest, no popup
       });
       $('#logCount').textContent=logCount+' 条';
     });
@@ -916,6 +950,52 @@ function regBio(){
 function resetRegBtn(txt){
   var btn=document.getElementById('btnRegBio');
   if(btn){btn.disabled=false;btn.textContent=txt||'注册'}
+}
+
+/* ===== CHART CACHE & REDRAW ===== */
+var chartCache={};
+function cacheAndDraw(id,labels,data,colors,type){
+  chartCache[id]={labels:labels,data:data,colors:colors,type:type};
+  drawChartCached(id);
+}
+function drawChartCached(id){
+  var c=chartCache[id];if(!c)return;
+  var el=$(id);if(!el)return;
+  if(el.offsetWidth<10)return;
+  if(c.type==='doughnut')drawDoughnut(id,c.labels,c.data,c.colors);
+  else if(c.type==='hbar')drawHBar(id,c.labels,c.data,c.colors);
+  else if(c.type==='bar')drawBar(id,c.labels,c.data,c.colors);
+  else if(c.type==='line')drawLine(id,c.labels,c.data);
+}
+function redrawAllCharts(){
+  Object.keys(chartCache).forEach(function(id){
+    setTimeout(function(){drawChartCached(id)},100);
+  });
+}
+window.addEventListener('resize',function(){redrawAllCharts()});
+window.addEventListener('orientationchange',function(){setTimeout(redrawAllCharts,200)});
+
+
+/* ===== PWA INSTALL PROMPT ===== */
+var deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();deferredPrompt=e;
+  setTimeout(function(){showInstallBanner()},3000);
+});
+function showInstallBanner(){
+  if(localStorage.getItem('jf_pwa_dismissed'))return;
+  var existing=document.getElementById('pwaBanner');if(existing)return;
+  var banner=document.createElement('div');
+  banner.id='pwaBanner';
+  banner.style.cssText='position:fixed;bottom:90px;left:16px;right:16px;background:var(--card);backdrop-filter:var(--glass-blur);border-radius:18px;padding:16px;display:flex;align-items:center;gap:12px;z-index:999;box-shadow:var(--shadow);border:0.5px solid var(--border);animation:fadeUp .4s var(--spring)';
+  banner.innerHTML='<div style="font-size:28px">📱</div><div style="flex:1"><div style="font-weight:700;font-size:14px">安装控制端APP</div><div style="font-size:11px;color:var(--text-3)">添加到桌面，支持生物识别快速登录</div></div><button id="pwaInstall" style="padding:10px 18px;border-radius:14px;border:none;background:var(--brand-gradient);color:#fff;font-weight:600;font-size:13px;cursor:pointer">安装</button><button id="pwaDismiss" style="padding:8px;border:none;background:none;color:var(--text-3);font-size:18px;cursor:pointer">×</button>';
+  document.body.appendChild(banner);
+  document.getElementById('pwaInstall').onclick=function(){
+    if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){deferredPrompt=null;banner.remove()})}
+  };
+  document.getElementById('pwaDismiss').onclick=function(){
+    localStorage.setItem('jf_pwa_dismissed','1');banner.remove();
+  };
 }
 
 /* ===== INIT ===== */

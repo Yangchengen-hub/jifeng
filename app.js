@@ -172,7 +172,7 @@ window.JF={
     }).catch(function(){cb(null)});
   },
   checkSiteStatus:function(){
-    fetch(API+'/api/site/status',{signal:AbortSignal.timeout(5000)}).then(function(r){return r.json()}).then(function(d){
+    fetch(API+'/api/site/status?fid='+encodeURIComponent(fid),{signal:AbortSignal.timeout(5000)}).then(function(r){return r.json()}).then(function(d){
       if(!d.ok)return;
       var overlay=document.getElementById('siteOverlay');
       if(!overlay)return;
