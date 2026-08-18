@@ -2,6 +2,7 @@ const sec = require('../../lib/security');
 const db = require('../../lib/db');
 const auth = require('../../lib/auth');
 const email = require('../../lib/email');
+const wa = require('../../lib/webauthn');
 const enc = require('../../lib/crypto');
 const { setSecurityHeaders } = require('../../lib/api');
 
@@ -70,16 +71,20 @@ exports.handler = async function(event, context) {
   req.clientIp = ip;
   const fid = (req.body.fp && req.body.fp.fid) || req.body.fid || req.headers['x-fp'] || '';
 
+  // Admin exemption - authenticated admins skip all security checks
+  let isAdminRequest = false;
+  try { isAdminRequest = !!auth.checkAdmin(req); } catch(e) {}
+
   try {
-    // Ban check
-    const banned = await sec.isBanned(ip, fid);
-    if (banned && route !== 'appeals/submit' && route !== 'commitment/submit' && route !== 'commitment/check' && route !== 'site/status') {
+    // Ban check (skip for admins)
+    const banned = isAdminRequest ? null : await sec.isBanned(ip, fid);
+    if (banned && !['appeals/submit','commitment/submit','commitment/check','site/status','auth/login','auth/captcha','auth/sendcode','auth/verify','auth/trust','auth/check-trust','auth/wa/status','auth/wa/reg-options','auth/wa/reg-verify','auth/wa/login-options','auth/wa/login-verify'].includes(route)) {
       await sec.logSecurityEvent('blocked', '已封禁IP/设备尝试访问 ' + route, { ip, fid });
       return { statusCode: 403, headers: corsHeaders(), body: JSON.stringify({ ok: false, banned: true, permanent: !!banned.permanent, error: banned.permanent ? '永久限制' : '访问受限', appealUrl: './appeal.html' }) };
     }
 
-    // Rate limit
-    const rl = await sec.rateLimit(ip + ':' + route, 60, 60000);
+    // Rate limit (skip for admins)
+    const rl = isAdminRequest ? {limited:false} : await sec.rateLimit(ip + ':' + route, 60, 60000);
     if (rl.limited) {
       const wc = await sec.addWarning(ip, fid, '频率限制');
       if (wc >= 3) {
@@ -89,8 +94,8 @@ exports.handler = async function(event, context) {
       return { statusCode: 429, headers: corsHeaders(), body: JSON.stringify({ ok: false, warning: true, warningCount: wc, error: '请求过于频繁（警告' + wc + '/3）' }) };
     }
 
-    // Attack detection
-    const attack = sec.detectAttack(req);
+    // Attack detection (skip for admins)
+    const attack = isAdminRequest ? null : sec.detectAttack(req);
     if (attack && !['auth/login', 'auth/captcha', 'auth/sendcode', 'auth/verify', 'auth/trust', 'auth/check-trust'].includes(route)) {
       const anomalies = sec.detectAnomaly(req, req.body.fp);
       const reason = attack + (anomalies.length ? ' (' + anomalies.join(',') + ')' : '');
@@ -201,6 +206,33 @@ async function handleRoute(route, method, req, res, ctx) {
       const adminToken = auth.sign({ user: process.env.ADMIN_USER || 'NUOYAN', role: 'admin', exp: Date.now() + 86400000 });
       return j({ ok: true, token: adminToken, device });
     } catch (e) { return j({ ok: false }); }
+  }
+
+  // WebAuthn biometric auth
+  if (route === 'auth/wa/status' && method === 'GET') {
+    return j({ ok: true, registered: await wa.isRegistered() });
+  }
+  if (route === 'auth/wa/reg-options' && method === 'POST') {
+    if (!auth.checkAdmin(req)) return j({ ok: false, error: '请先登录' }, 401);
+    const options = await wa.getRegOptions();
+    return j({ ok: true, options });
+  }
+  if (route === 'auth/wa/reg-verify' && method === 'POST') {
+    if (!auth.checkAdmin(req)) return j({ ok: false, error: '请先登录' }, 401);
+    const result = await wa.verifyReg(req.body);
+    return j(result, result.ok ? 200 : 400);
+  }
+  if (route === 'auth/wa/login-options' && method === 'GET') {
+    const result = await wa.getLoginOptions();
+    return j(result, result.ok ? 200 : 400);
+  }
+  if (route === 'auth/wa/login-verify' && method === 'POST') {
+    const result = await wa.verifyLogin(req.body);
+    if (result.ok) {
+      const adminToken = auth.sign({ user: 'NUOYAN', role: 'admin', wa: true });
+      return j({ ok: true, token: adminToken });
+    }
+    return j(result, 401);
   }
 
   // visitor

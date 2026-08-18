@@ -216,9 +216,13 @@ $('#moreOverlay').onclick=closeMore;
 /* ===== CHARTS ===== */
 function setupCanvas(c){
   var dpr=window.devicePixelRatio||2;
-  var w=c.offsetWidth,h=parseInt(c.getAttribute('height'))||160;
+  var w=c.offsetWidth||c.parentElement.offsetWidth||320;
+  var h=parseInt(c.getAttribute('height'))||160;
+  if(w<10)w=320;
   c.width=w*dpr;c.height=h*dpr;
-  var ctx=c.getContext('2d');ctx.scale(dpr,dpr);
+  c.style.width=w+'px';
+  var ctx=c.getContext('2d');ctx.setTransform(1,0,0,1,0,0);ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,w,h);
   return{ctx:ctx,W:w,H:h};
 }
 function drawLine(canvasId,labels,datasets){
@@ -343,8 +347,10 @@ function loadVisitors(){
     $('#vMobile').textContent=d.data.mobile||0;
     $('#vDesktop').textContent=d.data.desktop||0;
     $('#vNew').textContent=d.data.todayNew||0;
-    drawDoughnut('chartDevice',d.data.deviceLabels||['移动端','桌面端'],[d.data.mobile||0,d.data.desktop||0],['#0a84ff','#bf5af2']);
-    drawHBar('chartPages',d.data.pageLabels||[],d.data.pageData||[],'#ff6900');
+    setTimeout(function(){
+      drawDoughnut('chartDevice',d.data.deviceLabels||['移动端','桌面端'],[d.data.mobile||0,d.data.desktop||0],['#0a84ff','#bf5af2']);
+      drawHBar('chartPages',d.data.pageLabels||[],d.data.pageData||[],'#ff6900');
+    },50);
     renderVisitors(d.data.recent||[]);
   });
 }
@@ -807,6 +813,110 @@ $('#reportTimeInput').onchange=function(){
     if(d.ok)toast('报告时间已保存','ok');
   });
 };
+
+
+/* ===== WEBAUTHN (Face ID / Fingerprint) ===== */
+function waSupported(){
+  return !!(window.PublicKeyCredential&&navigator.credentials&&navigator.credentials.create);
+}
+function bufToB64(buf){
+  var bytes=new Uint8Array(buf);var str='';
+  for(var i=0;i<bytes.byteLength;i++)str+=String.fromCharCode(bytes[i]);
+  return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+function b64ToBuf(b64){
+  var s=b64.replace(/-/g,'+').replace(/_/g,'\/');
+  while(s.length%4)s+='=';
+  var bin=atob(s);var bytes=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+  return bytes.buffer;
+}
+function checkBioStatus(){
+  if(!waSupported())return;
+  fetch(API+'/api/auth/wa/status').then(function(r){return r.json()}).then(function(d){
+    if(d.ok&&d.registered){
+      var btn=document.getElementById('btnBio');var hint=document.getElementById('bioHint');
+      if(btn)btn.style.display='flex';
+      if(hint)hint.style.display='block';
+    }
+  }).catch(function(){});
+}
+function bioLogin(){
+  var btn=document.getElementById('btnBio');
+  if(btn){btn.disabled=true;btn.textContent='验证中...'}
+  fetch(API+'/api/auth/wa/login-options').then(function(r){return r.json()}).then(function(d){
+    if(!d.ok){toast(d.error||'未注册生物识别','err');resetBioBtn();return}
+    var opts=d.options;
+    opts.challenge=b64ToBuf(opts.challenge);
+    if(opts.allowCredentials)opts.allowCredentials.forEach(function(c){c.id=b64ToBuf(c.id)});
+    return navigator.credentials.get({publicKey:opts});
+  }).then(function(assertion){
+    if(!assertion)return;
+    var body={
+      id:assertion.id,
+      rawId:bufToB64(assertion.rawId),
+      response:{
+        authenticatorData:bufToB64(assertion.response.authenticatorData),
+        clientDataJSON:bufToB64(assertion.response.clientDataJSON),
+        signature:bufToB64(assertion.response.signature),
+        userHandle:assertion.response.userHandle?bufToB64(assertion.response.userHandle):null
+      },
+      type:assertion.type
+    };
+    return fetch(API+'/api/auth/wa/login-verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json()});
+  }).then(function(d){
+    if(d&&d.ok){
+      localStorage.setItem('jf_token',d.token);
+      token=d.token;
+      showApp();loadDashboard();
+      toast('生物识别登录成功','ok');
+    }else if(d){
+      toast(d.error||'验证失败','err');
+    }
+    resetBioBtn();
+  }).catch(function(e){
+    toast('生物识别不可用: '+e.message,'err');
+    resetBioBtn();
+  });
+}
+function resetBioBtn(){
+  var btn=document.getElementById('btnBio');
+  if(btn){btn.disabled=false;btn.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/></svg> 生物识别登录';}
+}
+function regBio(){
+  var btn=document.getElementById('btnRegBio');
+  if(btn){btn.disabled=true;btn.textContent='注册中...'}
+  fetch(API+'/api/auth/wa/reg-options',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}}).then(function(r){return r.json()}).then(function(d){
+    if(!d.ok){toast(d.error||'请先登录','err');resetRegBtn();return}
+    var opts=d.options;
+    opts.challenge=b64ToBuf(opts.challenge);
+    opts.user.id=b64ToBuf(opts.user.id);
+    if(opts.excludeCredentials)opts.excludeCredentials.forEach(function(c){c.id=b64ToBuf(c.id)});
+    return navigator.credentials.create({publicKey:opts});
+  }).then(function(cred){
+    if(!cred)return;
+    var body={
+      id:cred.id,
+      rawId:bufToB64(cred.rawId),
+      response:{
+        attestationObject:bufToB64(cred.response.attestationObject),
+        clientDataJSON:bufToB64(cred.response.clientDataJSON),
+        transports:cred.response.getTransports?cred.response.getTransports():['internal']
+      },
+      type:cred.type
+    };
+    return fetch(API+'/api/auth/wa/reg-verify',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify(body)}).then(function(r){return r.json()});
+  }).then(function(d){
+    if(d&&d.ok){toast('生物识别注册成功','ok');resetRegBtn('已注册')}
+    else if(d){toast(d.error||'注册失败','err');resetRegBtn()}
+  }).catch(function(e){
+    toast('注册失败: '+e.message,'err');resetRegBtn();
+  });
+}
+function resetRegBtn(txt){
+  var btn=document.getElementById('btnRegBio');
+  if(btn){btn.disabled=false;btn.textContent=txt||'注册'}
+}
 
 /* ===== INIT ===== */
 (function(){
