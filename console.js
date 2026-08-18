@@ -342,15 +342,86 @@ function renderVisitors(list){
   var filtered=list;
   if(search){
     var q=search.toLowerCase();
-    filtered=list.filter(function(v){return(v.ip||'').toLowerCase().includes(q)||(v.browser||'').toLowerCase().includes(q)||(v.fid||'').toLowerCase().includes(q)});
+    filtered=list.filter(function(v){return(v.ip||'').toLowerCase().includes(q)||(v.browser||'').toLowerCase().includes(q)||(v.fid||'').toLowerCase().includes(q)||(v.gpu||'').toLowerCase().includes(q)});
   }
   var html='';
-  filtered.forEach(function(v){
+  filtered.forEach(function(v,idx){
     var avatar=(v.browser?v.browser.charAt(0):'?');
-    html+='<div class="visitor-item"><div class="vi-avatar">'+esc(avatar)+'</div><div class="vi-info"><div class="vi-top"><span class="vi-ip">'+esc(v.ip)+'</span></div><div class="vi-meta">'+esc(v.browser||'未知')+' · '+esc(v.os||'')+' · '+esc(v.page||'/')+'</div></div><div class="vi-time">'+(v.timeStr||'')+'</div><button class="vi-action ban" data-ip="'+esc(v.ip)+'" data-fid="'+esc(v.fid||'')+'">封禁</button></div>';
+    var netIcon=v.network==='4g'?'📶':v.network==='3g'?'📶':v.network==='2g'?'📡':v.network==='wifi'||v.downlink>=5?'📶':'🌐';
+    var batIcon=v.battery?'🔋'+v.battery:'';
+    var dur=v.duration?Math.round(v.duration)+'s':'';
+    var clicks=v.clicks?'🖱️'+v.clicks:'';
+    html+='<div class="visitor-item visitor-expandable" data-idx="'+idx+'">'+
+      '<div class="vi-row">'+
+        '<div class="vi-avatar">'+esc(avatar)+'</div>'+
+        '<div class="vi-info">'+
+          '<div class="vi-top"><span class="vi-ip">'+esc(v.ip)+'</span>'+
+          (v.colorScheme==='dark'?'<span class="vi-tag dark">🌙</span>':'<span class="vi-tag light">☀️</span>')+
+          '</div>'+
+          '<div class="vi-meta">'+esc(v.browser||'未知')+' · '+esc(v.os||'')+' · '+esc(v.page||'/')+'</div>'+
+          '<div class="vi-tags">'+
+            (v.screen?'<span class="vi-mini">📱'+esc(v.screen)+'</span>':'')+
+            (v.network?'<span class="vi-mini">'+netIcon+esc(v.network.toUpperCase())+'</span>':'')+
+            (v.cores?'<span class="vi-mini">⚙️'+v.cores+'核</span>':'')+
+            (v.gpu?'<span class="vi-mini">🎮'+esc(v.gpu.substring(0,20))+'</span>':'')+
+            (batIcon?'<span class="vi-mini">'+batIcon+'</span>':'')+
+            (dur?'<span class="vi-mini">⏱️'+dur+'</span>':'')+
+            (clicks?'<span class="vi-mini">'+clicks+'</span>':'')+
+            (v.maxScroll?'<span class="vi-mini">📜'+v.maxScroll+'%</span>':'')+
+          '</div>'+
+        '</div>'+
+        '<div class="vi-time">'+(v.timeStr||'')+'</div>'+
+        '<button class="vi-action ban" data-ip="'+esc(v.ip)+'" data-fid="'+esc(v.fid||'')+'" onclick="event.stopPropagation()">封禁</button>'+
+      '</div>'+
+      '<div class="vi-detail" id="vdetail_'+idx+'">'+renderVisitorDetail(v)+'</div>'+
+    '</div>';
   });
   $('#visitorTable').innerHTML=html||'<div class="empty-state"><p>暂无数据</p></div>';
-  $$('#visitorTable .vi-action.ban').forEach(function(b){b.onclick=function(){banIP(b.dataset.ip,b.dataset.fid,'管理员手动封禁')}});
+  $$('#visitorTable .vi-action.ban').forEach(function(b){b.onclick=function(e){e.stopPropagation();banIP(b.dataset.ip,b.dataset.fid,'管理员手动封禁')}});
+  $$('#visitorTable .visitor-expandable').forEach(function(item){
+    item.onclick=function(){
+      var idx=item.dataset.idx;
+      var detail=$('#vdetail_'+idx);
+      if(detail)detail.classList.toggle('show');
+    };
+  });
+}
+
+function renderVisitorDetail(v){
+  var rows=[
+    ['IP地址',v.ip],['设备指纹',v.fid?esc(v.fid.substring(0,24))+'...':''],
+    ['User-Agent',v.ua?esc(v.ua.substring(0,120)):''],
+    ['浏览器/系统',v.browser],['平台',v.platform],
+    ['语言',v.language+(v.languages?' ('+v.languages+')':'')],
+    ['时区',v.timezone+' (UTC'+(v.tzOffset>0?'-':'+')+(v.tzOffset/60)+')'],
+    ['屏幕',v.screen+' 色深:'+v.colorDepth+'bit 方向:'+v.orientation],
+    ['视口',v.viewport],['DPR',v.dpr+'x'],
+    ['CPU核心',v.cores],['内存',v.memory?v.memory+'GB':''],
+    ['触控点',v.touchPoints],
+    ['网络',v.network+' 下行:'+v.downlink+'Mbps RTT:'+v.rtt+'ms'],
+    ['GPU',v.gpu],['Canvas指纹',v.canvasHash],
+    ['电池',v.battery||'未知'],['主题',v.colorScheme==='dark'?'深色':'浅色'],
+    ['Cookie',v.cookieEnabled?'启用':'禁用'],['DNT',v.doNotTrack||'未设置'],
+    ['字体',v.fonts],['插件',v.plugins],
+    ['来源页',v.referrer||v.ref||'直接访问'],
+    ['停留时长',v.duration?Math.round(v.duration)+'秒':'进行中'],
+    ['点击次数',v.clicks||0],['滚动深度',(v.maxScroll||0)+'%'],
+    ['访问时间',new Date(v.time).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})]
+  ];
+  var html='<div class="vd-grid">';
+  rows.forEach(function(r){
+    if(r[1])html+='<div class="vd-item"><span class="vd-label">'+r[0]+'</span><span class="vd-val">'+esc(String(r[1]))+'</span></div>';
+  });
+  html+='</div>';
+  if(v.actions&&v.actions.length){
+    html+='<div class="vd-actions"><h4>行为日志 ('+v.actions.length+')</h4><div class="vd-action-list">';
+    v.actions.slice(-20).forEach(function(a){
+      var icon=a.t==='click'?'🖱️':a.t==='visibility'?'👁️':a.t==='copy'?'📋':a.t==='contextmenu'?'📌':'📝';
+      html+='<div class="vd-action"><span>'+icon+' '+esc(a.t)+'</span><span class="vd-action-d">'+esc((a.d&&a.d.text)||(a.d&&a.d.href)||'')+'</span><span class="vd-action-t">'+new Date(a.ts).toLocaleTimeString('zh-CN',{hour12:false})+'</span></div>';
+    });
+    html+='</div></div>';
+  }
+  return html;
 }
 
 $('#visitorSearch').oninput=function(){
