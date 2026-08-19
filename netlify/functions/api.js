@@ -339,7 +339,7 @@ async function handleRoute(route, method, req, res, ctx) {
   }
 
   // Admin routes - check auth
-  const adminRoutes = ['announcement/all', 'announcement/publish', 'announcement/delete', 'stats/overview', 'stats/visitors', 'stats/devices', 'stats/security', 'logs/realtime', 'security/ban', 'security/unban', 'security/unban-ip', 'security/permanent', 'security/warnings', 'security/whitelist', 'security/whitelist/add', 'security/whitelist/remove', 'security/events', 'security/score', 'appeals', 'appeals/handle', 'reports/generate', 'reports/send-daily', 'settings', 'devices', 'devices/revoke', 'data/export', 'admin/site-mode', 'admin/report-time', 'content', 'security/rules', 'system/health', 'security/clear-bans', 'security/clear-events'];
+  const adminRoutes = ['announcement/all', 'announcement/publish', 'announcement/delete', 'stats/overview', 'stats/visitors', 'stats/devices', 'stats/security', 'logs/realtime', 'security/ban', 'security/unban', 'security/unban-ip', 'security/permanent', 'security/warnings', 'security/whitelist', 'security/whitelist/add', 'security/whitelist/remove', 'security/events', 'security/score', 'appeals', 'appeals/handle', 'reports/generate', 'reports/send-daily', 'settings', 'devices', 'devices/revoke', 'data/export', 'admin/site-mode', 'admin/report-time', 'security/rules', 'system/health', 'security/clear-bans', 'security/clear-events'];
   if (adminRoutes.includes(route)) {
     if (!auth.checkAdmin(req)) return j({ ok: false, error: '未授权' }, 401);
   }
@@ -636,6 +636,7 @@ async function handleRoute(route, method, req, res, ctx) {
     }});
   }
   if (route === 'content' && method === 'POST') {
+    if (!auth.checkAdmin(req)) return j({ ok: false, error: '未授权' }, 401);
     const content = (await db.get('site_content')) || {};
     const body = req.body || {};
     if (body.heroTitle !== undefined) content.heroTitle = body.heroTitle;
