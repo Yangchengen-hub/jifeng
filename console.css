@@ -572,3 +572,142 @@ a{color:inherit;text-decoration:none}
   .sc-val{font-size:24px}
   .sc-ico{width:32px;height:32px;font-size:14px;border-radius:10px}
 }
+
+/* ===== QUICK ACTIONS ===== */
+.quick-actions{display:flex;flex-direction:column;gap:10px}
+.quick-actions .btn-login{width:100%;justify-content:center}
+
+/* ===== HEALTH GRID ===== */
+.health-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.health-item{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:14px;padding:14px;text-align:center}
+.health-item .hi-val{font-size:1.4rem;font-weight:800;background:var(--brand-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.health-item .hi-label{font-size:.72rem;color:var(--text-3);margin-top:4px}
+.health-item .hi-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+.health-item .hi-dot.on{background:#30d158}
+.health-item .hi-dot.off{background:#ff453a}
+
+/* ===== FORM GROUPS ===== */
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:.82rem;font-weight:600;color:var(--text-2);margin-bottom:6px}
+.form-group input,.form-group textarea{width:100%;padding:12px;border-radius:14px;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--text);font-size:14px;font-family:inherit;box-sizing:border-box}
+.form-group input:focus,.form-group textarea:focus{outline:none;border-color:var(--brand)}
+
+/* ===== NOTICE TOGGLE ===== */
+.toggle{width:50px;height:30px;border-radius:15px;background:rgba(120,120,128,0.32);position:relative;cursor:pointer;transition:all .3s;flex-shrink:0}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:all .3s;box-shadow:0 2px 4px rgba(0,0,0,0.2)}
+.toggle.on{background:var(--brand)}
+.toggle.on::after{left:23px}
+
+/* ===== BETTER SCROLLBAR ===== */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:rgba(120,120,128,0.3);border-radius:2px}
+
+/* ===== PANEL ANIMATIONS ===== */
+.panel{animation:panelFade .3s ease}
+@keyframes panelFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== LOG TYPES ===== */
+.log-tag.attack{background:rgba(255,69,58,0.15);color:#ff453a}
+.log-tag.ban{background:rgba(255,159,10,0.15);color:#ff9f0a}
+.log-tag.info{background:rgba(90,200,250,0.15);color:#5ac8fa}
+.log-tag.auth{background:rgba(191,90,242,0.15);color:#bf5af2}
+.log-tag.visit{background:rgba(48,209,88,0.15);color:#30d158}
+
+/* ===== UI POLISH v19 ===== */
+.stat-card{transition:transform .2s var(--spring),box-shadow .2s;position:relative;overflow:hidden}
+.stat-card:active{transform:scale(.97)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.5),transparent)}
+[data-theme="dark"] .stat-card::before{background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent)}
+
+.chart-card{transition:transform .2s var(--spring)}
+.chart-card:active{transform:scale(.99)}
+
+.header-btn{transition:all .2s var(--spring)}
+.header-btn:active{transform:scale(.88);background:rgba(255,105,0,0.15)}
+
+.tab-item{transition:all .3s var(--spring)}
+.tab-item:active{transform:scale(.92)}
+
+.sheet-item{transition:background .15s}
+.sheet-item:active{background:var(--card-2)}
+
+.btn-login{transition:all .2s var(--spring);position:relative;overflow:hidden}
+.btn-login:active{transform:scale(.97)}
+.btn-login::after{content:'';position:absolute;inset:0;background:linear-gradient(rgba(255,255,255,0.2),transparent);pointer-events:none}
+
+.mode-btn{transition:all .25s var(--spring)}
+.mode-btn:active{transform:scale(.95)}
+
+.device-card{transition:all .2s var(--spring)}
+.device-card:active{transform:scale(.99)}
+
+.dc-header{cursor:pointer;transition:background .15s}
+.dc-header:active{background:var(--card-2)}
+
+/* Better ripple */
+.ripple{position:relative;overflow:hidden}
+.ripple-effect{position:absolute;border-radius:50%;background:rgba(255,255,255,0.4);transform:scale(0);animation:rippleAnim .5s ease-out;pointer-events:none}
+@keyframes rippleAnim{to{transform:scale(3);opacity:0}}
+
+/* Smooth number transitions */
+.sc-val{transition:color .3s}
+
+/* Better focus states */
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--brand)!important;box-shadow:0 0 0 3px rgba(255,105,0,0.12)}
+
+/* Improved dynamic island */
+.dynamic-island{transition:all .4s var(--spring)}
+.dynamic-island.show{transform:translate(-50%,0) scale(1)!important}
+
+/* Better badges */
+.card-badge{background:var(--brand-gradient);color:#fff;padding:3px 10px;border-radius:20px;font-size:.68rem;font-weight:700;letter-spacing:.3px}
+
+/* Subtle gradient background for body */
+body{background-attachment:fixed}
+[data-theme="light"] body{background:linear-gradient(180deg,#fef7f5 0%,#fff5f0 50%,#fef7f5 100%)}
+[data-theme="dark"] body{background:linear-gradient(180deg,#000 0%,#0a0a0c 50%,#000 100%)}
+
+/* Improved glass cards */
+.chart-card,.form-card,.score-card{box-shadow:0 4px 24px rgba(0,0,0,0.04)}
+[data-theme="dark"] .chart-card,[data-theme="dark"] .form-card,[data-theme="dark"] .score-card{box-shadow:0 4px 24px rgba(0,0,0,0.3)}
+
+/* Better tab bar */
+.tab-bar{box-shadow:0 -4px 30px rgba(0,0,0,0.06)}
+[data-theme="dark"] .tab-bar{box-shadow:0 -4px 30px rgba(0,0,0,0.4)}
+
+/* Improved header */
+.app-header{box-shadow:0 1px 0 var(--border)}
+
+/* Better warning/ban items */
+.warning-item,.ban-item{transition:background .15s}
+.warning-item:active,.ban-item:active{background:var(--card-2)}
+
+/* Improved device profile */
+.dc-detail{animation:slideDown .3s var(--ease)}
+@keyframes slideDown{from{opacity:0;max-height:0}to{opacity:1;max-height:1000px}}
+
+/* Better scroll for log stream */
+.log-stream{scrollbar-width:thin}
+
+/* Improved announcement items */
+.ann-item{transition:background .15s}
+.ann-item:active{background:var(--card-2)}
+
+/* Better toggle animation */
+.toggle{transition:background .3s var(--spring)}
+.toggle::after{transition:left .3s var(--spring)}
+
+/* Improved score ring animation */
+#scoreArc{transition:stroke-dashoffset 1s var(--spring)}
+
+/* Better stat card icons */
+.sc-ico{transition:transform .3s var(--spring)}
+.stat-card:hover .sc-ico{transform:scale(1.1) rotate(-5deg)}
+
+/* Improved header avatar */
+.header-avatar{transition:transform .3s var(--spring);box-shadow:0 4px 14px rgba(255,105,0,0.3)}
+.header-avatar:active{transform:scale(.9)}
+
+/* Better live dot */
+.live-dot{animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(48,209,88,0.5)}50%{opacity:.7;box-shadow:0 0 0 6px rgba(48,209,88,0)}}

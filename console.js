@@ -325,28 +325,57 @@ function getBrandIcon(v){
   var b=(v.brand||'').toLowerCase();
   var os=(v.os||'').toLowerCase();
   var ua=(v.ua||'').toLowerCase();
-  if(b.includes('xiaomi')||b.includes('redmi')||b.includes('poco'))return 'MI';
-  if(b.includes('huawei')||b.includes('honor'))return 'HW';
-  if(b.includes('oppo')||b.includes('oneplus')||b.includes('realme'))return 'OP';
-  if(b.includes('vivo')||b.includes('iqoo'))return 'V';
-  if(b.includes('samsung'))return 'S';
-  if(b.includes('apple'))return '';
-  if(b.includes('lenovo'))return 'Le';
-  if(b.includes('motorola'))return 'M';
-  if(b.includes('google'))return 'G';
-  if(b.includes('asus'))return 'AS';
-  if(b.includes('sony'))return 'So';
-  if(b.includes('meizu'))return 'MZ';
-  if(b.includes('zte')||b.includes('nubia'))return 'Z';
-  if(b.includes('nokia'))return 'NK';
-  if(b.includes('htc'))return 'H';
-  if(b.includes('tecno')||b.includes('infinix'))return 'T';
-  if(os.includes('windows'))return 'W';
-  if(os.includes('mac'))return '';
-  if(os.includes('linux'))return 'L';
-  if(os.includes('android'))return 'A';
-  if(os.includes('ios'))return '';
-  return (v.browser?v.browser.charAt(0).toUpperCase():'?');
+  var svg=function(p,viewBox){return '<svg viewBox="'+(viewBox||'0 0 24 24')+'" width="22" height="22" fill="currentColor">'+p+'</svg>'};
+  // Xiaomi/Redmi/POCO
+  if(b.includes('xiaomi')||b.includes('redmi')||b.includes('poco'))return svg('<rect x="2" y="2" width="20" height="20" rx="4" fill="#FF6900"/><text x="12" y="16.5" text-anchor="middle" fill="#fff" font-size="11" font-weight="800" font-family="Arial">MI</text>','0 0 24 24');
+  // Huawei
+  if(b.includes('huawei'))return svg('<path d="M12 2C8 2 4 5 4 10c0 4 3 7 8 12 5-5 8-8 8-12 0-5-4-8-8-8zm0 4c2.5 0 4 2 4 4s-1.5 4-4 4-4-2-4-4 1.5-4 4-4z" fill="#CF0A2C"/>','0 0 24 24');
+  // HONOR
+  if(b.includes('honor'))return svg('<rect x="2" y="2" width="20" height="20" rx="4" fill="#222"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="8" font-weight="700" font-family="Arial">HONOR</text>','0 0 24 24');
+  // OPPO/OnePlus/realme
+  if(b.includes('oneplus'))return svg('<circle cx="12" cy="12" r="10" fill="#EB0029"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="10" font-weight="800" font-family="Arial">1+</text>','0 0 24 24');
+  if(b.includes('realme'))return svg('<circle cx="12" cy="12" r="10" fill="#FCCB0B"/><text x="12" y="16" text-anchor="middle" fill="#000" font-size="7" font-weight="800" font-family="Arial">realme</text>','0 0 24 24');
+  if(b.includes('oppo'))return svg('<circle cx="12" cy="12" r="10" fill="#1BA784"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="8" font-weight="700" font-family="Arial">OPPO</text>','0 0 24 24');
+  // vivo/iQOO
+  if(b.includes('iqoo'))return svg('<rect x="2" y="2" width="20" height="20" rx="4" fill="#FF5A00"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="8" font-weight="800" font-family="Arial">iQOO</text>','0 0 24 24');
+  if(b.includes('vivo'))return svg('<rect x="2" y="2" width="20" height="20" rx="4" fill="#415FFF"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="9" font-weight="700" font-family="Arial">vivo</text>','0 0 24 24');
+  // Samsung
+  if(b.includes('samsung'))return svg('<ellipse cx="12" cy="12" rx="11" ry="5" fill="none" stroke="#1428A0" stroke-width="2"/><text x="12" y="15.5" text-anchor="middle" fill="#1428A0" font-size="6.5" font-weight="700" font-family="Arial">SAMSUNG</text>','0 0 24 24');
+  // Apple
+  if(b.includes('apple')||os.includes('mac')||os.includes('ios'))return svg('<path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" fill="#fff"/>','0 0 24 24');
+  // Lenovo/Legion
+  if(b.includes('lenovo'))return svg('<rect x="2" y="2" width="20" height="20" rx="4" fill="#E2231A"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="8" font-weight="800" font-family="Arial">Lenovo</text>','0 0 24 24');
+  // Motorola
+  if(b.includes('motorola'))return svg('<circle cx="12" cy="12" r="10" fill="#5C2D91"/><path d="M12 6l3 6-3 6-3-6z" fill="#fff"/>','0 0 24 24');
+  // Google Pixel
+  if(b.includes('google'))return svg('<circle cx="12" cy="12" r="10" fill="#4285F4"/><path d="M12 7l5 5-5 5-5-5z" fill="#fff"/>','0 0 24 24');
+  // ASUS/ROG
+  if(b.includes('asus'))return svg('<rect x="2" y="2" width="20" height="20" rx="4" fill="#00539B"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="8" font-weight="800" font-family="Arial">ASUS</text>','0 0 24 24');
+  // Sony
+  if(b.includes('sony'))return svg('<rect x="2" y="2" width="20" height="20" rx="4" fill="#000"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="7" font-weight="700" font-family="Arial">SONY</text>','0 0 24 24');
+  // Meizu
+  if(b.includes('meizu'))return svg('<rect x="2" y="2" width="20" height="20" rx="4" fill="#00A0E9"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="7" font-weight="800" font-family="Arial">MEIZU</text>','0 0 24 24');
+  // ZTE/nubia
+  if(b.includes('zte')||b.includes('nubia'))return svg('<rect x="2" y="2" width="20" height="20" rx="4" fill="#D40000"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="8" font-weight="800" font-family="Arial">ZTE</text>','0 0 24 24');
+  // Nokia
+  if(b.includes('nokia'))return svg('<rect x="2" y="2" width="20" height="20" rx="4" fill="#124191"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="7" font-weight="700" font-family="Arial">NOKIA</text>','0 0 24 24');
+  // HTC
+  if(b.includes('htc'))return svg('<rect x="2" y="2" width="20" height="20" rx="4" fill="#8BC034"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="9" font-weight="800" font-family="Arial">HTC</text>','0 0 24 24');
+  // Infinix/TECNO
+  if(b.includes('tecno')||b.includes('infinix'))return svg('<rect x="2" y="2" width="20" height="20" rx="4" fill="#F7941D"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="7" font-weight="800" font-family="Arial">TECNO</text>','0 0 24 24');
+  // Windows
+  if(os.includes('windows'))return svg('<path d="M3 5.5L10.5 4.5V11.5H3V5.5M11.5 4.3L21 3V11.5H11.5V4.3M3 12.5H10.5V19.5L3 18.5V12.5M11.5 12.5H21V21L11.5 19.7V12.5Z" fill="#0078D4"/>','0 0 24 24');
+  // Linux
+  if(os.includes('linux'))return svg('<path d="M12 2C8 2 6 5 6 8c0 2 1 3 1 5s-1 3-1 5c0 2 2 4 6 4s6-2 6-4c0-2-1-3-1-5s1-3 1-5c0-3-2-6-6-6zm0 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3z" fill="#000"/>','0 0 24 24');
+  // Generic Android
+  if(os.includes('android'))return svg('<path d="M17.5 10.5a1 1 0 110 2 1 1 0 010-2zm-11 0a1 1 0 110 2 1 1 0 010-2zM12 2a1 1 0 011 1v1.07A5 5 0 0117.5 9v1h-11V9A5 5 0 0111 4.07V3a1 1 0 011-1zM7 11h10v6a2 2 0 01-2 2h-1v2h-2v-2h-4v2H8v-2H7a2 2 0 01-2-2v-6h2z" fill="#3DDC84"/>','0 0 24 24');
+  // Browser fallback
+  var br=(v.browser||'').toLowerCase();
+  if(br.includes('chrome'))return svg('<circle cx="12" cy="12" r="10" fill="none" stroke="#4285F4" stroke-width="2.5"/><circle cx="12" cy="12" r="3.5" fill="#4285F4"/><path d="M12 8.5L14 5M12 15.5L10 19" stroke="#EA4335" stroke-width="2.5"/>','0 0 24 24');
+  if(br.includes('firefox'))return svg('<circle cx="12" cy="12" r="10" fill="#FF7139"/>','0 0 24 24');
+  if(br.includes('edge'))return svg('<circle cx="12" cy="12" r="10" fill="#0078D4"/>','0 0 24 24');
+  if(br.includes('safari'))return svg('<circle cx="12" cy="12" r="10" fill="none" stroke="#0078D4" stroke-width="2"/><polygon points="12,7 14,12 12,17 10,12" fill="#FF3B30"/>','0 0 24 24');
+  return svg('<circle cx="12" cy="12" r="10" fill="var(--text-3)"/>','0 0 24 24');
 }
 
 function renderDevices(list){
@@ -622,12 +651,12 @@ function loadSettings(){
 
 window.banIP=function(ip,fid,reason){
   api('/api/security/ban',{method:'POST',body:JSON.stringify({ip:ip,fid:fid,reason:reason})}).then(function(d){
-    if(d.ok){toast('已封禁','ok');island('已封禁IP: '+ip,true);loadSecurity();loadVisitors()}else toast(d.error||'操作失败','err');
+    if(d.ok){toast('已封禁','ok');island('已封禁IP: '+ip,true);loadSecurity();loadVisitors();loadOverview();setTimeout(function(){loadSecurity();loadVisitors();loadOverview()},2000)}else toast(d.error||'操作失败','err');
   });
 }
 window.unbanIP=function(ip,fid){
   api('/api/security/unban-ip',{method:'POST',body:JSON.stringify({ip:ip,fid:fid})}).then(function(d){
-    if(d.ok){toast('已解封','ok');loadSecurity();loadVisitors()}else toast(d.error||'操作失败','err');
+    if(d.ok){toast('已解封','ok');loadSecurity();loadVisitors();loadOverview();setTimeout(function(){loadSecurity();loadVisitors();loadOverview()},2000)}else toast(d.error||'操作失败','err');
   });
 }
 function permBanIP(ip,fid,reason){
@@ -713,6 +742,100 @@ $('#btnRefresh').onclick=function(){
 };
 
 /* ===== REALTIME ===== */
+
+/* ===== CONTENT MANAGEMENT ===== */
+function loadContent(){
+  api('/api/content').then(function(d){
+    if(!d.ok)return;
+    var c=d.data;
+    if($('#contentHeroTitle'))$('#contentHeroTitle').value=c.heroTitle||'';
+    if($('#contentHeroSubtitle'))$('#contentHeroSubtitle').value=c.heroSubtitle||'';
+    if($('#contentNotice'))$('#contentNotice').value=c.notice||'';
+    if($('#noticeToggle')){
+      if(c.noticeEnabled)$('#noticeToggle').classList.add('on');else $('#noticeToggle').classList.remove('on');
+    }
+  });
+}
+if($('#btnSaveContent'))$('#btnSaveContent').onclick=function(){
+  var title=$('#contentHeroTitle').value.trim();
+  var sub=$('#contentHeroSubtitle').value.trim();
+  api('/api/content',{heroTitle:title,heroSubtitle:sub}).then(function(d){
+    if(d.ok){toast('内容已保存','ok');island('首页内容已更新',true)}
+  });
+};
+if($('#btnSaveNotice'))$('#btnSaveNotice').onclick=function(){
+  var notice=$('#contentNotice').value.trim();
+  var enabled=$('#noticeToggle').classList.contains('on');
+  api('/api/content',{notice:notice,noticeEnabled:enabled}).then(function(d){
+    if(d.ok){toast('公告已保存','ok');island('公告已更新',true)}
+  });
+};
+if($('#noticeToggle'))$('#noticeToggle').onclick=function(){this.classList.toggle('on')};
+
+/* ===== SECURITY RULES ===== */
+function loadRules(){
+  api('/api/security/rules').then(function(d){
+    if(!d.ok)return;
+    var r=d.data;
+    if($('#ruleRateLimit'))$('#ruleRateLimit').value=r.rateLimit||60;
+    if($('#ruleWarnThreshold'))$('#ruleWarnThreshold').value=r.warningThreshold||3;
+    if($('#ruleBanDuration'))$('#ruleBanDuration').value=Math.round((r.banDuration||3600000)/3600000);
+    if($('#ruleMaxLogin'))$('#ruleMaxLogin').value=r.maxLoginAttempts||5;
+  });
+}
+if($('#btnSaveRules'))$('#btnSaveRules').onclick=function(){
+  var rules={
+    rateLimit:parseInt($('#ruleRateLimit').value)||60,
+    warningThreshold:parseInt($('#ruleWarnThreshold').value)||3,
+    banDuration:(parseInt($('#ruleBanDuration').value)||1)*3600000,
+    maxLoginAttempts:parseInt($('#ruleMaxLogin').value)||5
+  };
+  api('/api/security/rules',rules).then(function(d){
+    if(d.ok){toast('规则已保存','ok');island('安全规则已更新',true)}
+  });
+};
+if($('#btnClearBans'))$('#btnClearBans').onclick=function(){
+  if(!confirm('确定清空所有封禁？所有被封IP/设备将立即解封。'))return;
+  api('/api/security/clear-bans',{}).then(function(d){
+    if(d.ok){toast('已清空所有封禁','ok');island('所有封禁已解除',true);loadSecurity();loadVisitors()}
+  });
+};
+if($('#btnClearEvents'))$('#btnClearEvents').onclick=function(){
+  if(!confirm('确定清空所有安全事件记录？'))return;
+  api('/api/security/clear-events',{}).then(function(d){
+    if(d.ok){toast('已清空事件','ok');loadSecurity()}
+  });
+};
+if($('#btnExportData'))$('#btnExportData').onclick=function(){
+  api('/api/data/export').then(function(d){
+    if(d.ok&&d.data){
+      var blob=new Blob([JSON.stringify(d.data,null,2)],{type:'application/json'});
+      var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+      a.download='jifeng-data-'+new Date().toISOString().slice(0,10)+'.json';a.click();
+      toast('数据已导出','ok');
+    }
+  });
+};
+
+/* ===== SYSTEM HEALTH ===== */
+function loadHealth(){
+  api('/api/system/health').then(function(d){
+    if(!d.ok)return;
+    var h=d.data;
+    var el=$('#systemHealth');
+    if(!el)return;
+    var days=Math.floor(h.uptime/86400000);
+    var hours=Math.floor((h.uptime%86400000)/3600000);
+    el.innerHTML=
+      '<div class="health-item"><div class="hi-val">'+days+'天'+hours+'时</div><div class="hi-label">运行时间</div></div>'+
+      '<div class="health-item"><div class="hi-val">'+h.storage.visitors+'</div><div class="hi-label">访客记录</div></div>'+
+      '<div class="health-item"><div class="hi-val">'+h.storage.activeBans+'</div><div class="hi-label">活跃封禁</div></div>'+
+      '<div class="health-item"><div class="hi-val">'+h.storage.keys+'</div><div class="hi-label">数据键数</div></div>'+
+      '<div class="health-item"><div class="hi-val"><span class="hi-dot '+(h.emailAlert?'on':'off')+'"></span>'+(h.emailAlert?'开启':'关闭')+'</div><div class="hi-label">邮件告警</div></div>'+
+      '<div class="health-item"><div class="hi-val"><span class="hi-dot '+(h.autoBan?'on':'off')+'"></span>'+(h.autoBan?'开启':'关闭')+'</div><div class="hi-label">自动封禁</div></div>';
+  });
+}
+
 var logCount=0;
 function startRealtime(){
   setInterval(function(){
@@ -730,7 +853,7 @@ function startRealtime(){
       $('#logCount').textContent=logCount+' 条';
     });
   },4000);
-  setInterval(function(){loadOverview();loadScore()},30000);
+  setInterval(function(){loadOverview();loadScore();if($("#panel-rules").classList.contains("active"))loadHealth()},10000);
 }
 
 /* ===== MANUAL BAN MODAL ===== */

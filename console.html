@@ -282,6 +282,62 @@
       </div>
     </div>
 
+    <!-- ===== CONTENT ===== -->
+    <div class="panel" id="panel-content" data-title="内容管理">
+      <div class="form-card">
+        <h3>首页内容</h3>
+        <div class="form-group">
+          <label>主标题</label>
+          <input type="text" id="contentHeroTitle" placeholder="极风工作室" maxlength="20">
+        </div>
+        <div class="form-group">
+          <label>副标题</label>
+          <input type="text" id="contentHeroSubtitle" placeholder="专注玩机与网络科技" maxlength="50">
+        </div>
+        <button class="btn-login ripple" id="btnSaveContent" style="margin-top:8px">保存内容</button>
+      </div>
+      <div class="form-card">
+        <h3>公告栏</h3>
+        <div class="setting-row">
+          <div class="sr-info"><h4>启用公告栏</h4><p>在官网顶部显示滚动公告</p></div>
+          <div class="toggle on" id="noticeToggle"></div>
+        </div>
+        <div class="form-group" style="margin-top:12px">
+          <label>公告内容</label>
+          <textarea id="contentNotice" rows="3" placeholder="输入公告内容..." maxlength="200" style="width:100%;padding:12px;border-radius:14px;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--text);font-size:14px;resize:none;font-family:inherit"></textarea>
+        </div>
+        <button class="btn-login ripple" id="btnSaveNotice" style="margin-top:8px">保存公告</button>
+      </div>
+    </div>
+
+    <!-- ===== SECURITY RULES ===== -->
+    <div class="panel" id="panel-rules" data-title="安全规则">
+      <div class="form-card">
+        <h3>访问控制</h3>
+        <div class="setting-row"><div class="sr-info"><h4>频率限制（次/分钟）</h4><p>单IP每分钟最大请求数</p></div>
+          <input type="number" id="ruleRateLimit" value="60" min="10" max="300" style="width:80px;padding:8px;border-radius:10px;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--text);text-align:center"></div>
+        <div class="setting-row"><div class="sr-info"><h4>警告阈值</h4><p>触发几次警告后封禁</p></div>
+          <input type="number" id="ruleWarnThreshold" value="3" min="1" max="10" style="width:80px;padding:8px;border-radius:10px;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--text);text-align:center"></div>
+        <div class="setting-row"><div class="sr-info"><h4>临时封禁时长（小时）</h4><p>自动封禁的持续时间</p></div>
+          <input type="number" id="ruleBanDuration" value="1" min="1" max="168" style="width:80px;padding:8px;border-radius:10px;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--text);text-align:center"></div>
+        <div class="setting-row"><div class="sr-info"><h4>登录失败上限</h4><p>密码错误几次后锁定</p></div>
+          <input type="number" id="ruleMaxLogin" value="5" min="3" max="20" style="width:80px;padding:8px;border-radius:10px;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--text);text-align:center"></div>
+        <button class="btn-login ripple" id="btnSaveRules" style="margin-top:12px">保存规则</button>
+      </div>
+      <div class="form-card">
+        <h3>快捷操作</h3>
+        <div class="quick-actions">
+          <button class="btn-login ripple" id="btnClearBans" style="background:rgba(255,159,10,0.15);color:#ff9f0a">清空所有封禁</button>
+          <button class="btn-login ripple" id="btnClearEvents" style="background:rgba(255,69,58,0.15);color:#ff453a">清空安全事件</button>
+          <button class="btn-login ripple" id="btnExportData" style="background:rgba(90,200,250,0.15);color:#5ac8fa">导出全部数据</button>
+        </div>
+      </div>
+      <div class="form-card">
+        <h3>系统状态</h3>
+        <div id="systemHealth" class="health-grid"></div>
+      </div>
+    </div>
+
     <!-- ===== SETTINGS ===== -->
     <div class="panel" id="panel-settings" data-title="系统设置">
       <div class="form-card">

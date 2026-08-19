@@ -171,6 +171,26 @@ window.JF={
       if(d.ok&&d.data)cb(d.data);else cb(null);
     }).catch(function(){cb(null)});
   },
+  loadContent:function(){
+    fetch(API+'/api/content').then(function(r){return r.json()}).then(function(d){
+      if(!d.ok||!d.data)return;
+      var c=d.data;
+      var titleEl=document.querySelector('.hero-title');
+      var subEl=document.querySelector('.hero-subtitle');
+      if(titleEl&&c.heroTitle)titleEl.textContent=c.heroTitle;
+      if(subEl&&c.heroSubtitle)subEl.textContent=c.heroSubtitle;
+      // Notice bar
+      var noticeBar=document.getElementById('noticeBar');
+      if(noticeBar){
+        if(c.noticeEnabled&&c.notice){
+          noticeBar.textContent=c.notice;
+          noticeBar.style.display='block';
+        }else{
+          noticeBar.style.display='none';
+        }
+      }
+    }).catch(function(){});
+  },
   checkSiteStatus:function(){
     fetch(API+'/api/site/status?fid='+encodeURIComponent(fid),{signal:AbortSignal.timeout(5000)}).then(function(r){return r.json()}).then(function(d){
       if(!d.ok)return;

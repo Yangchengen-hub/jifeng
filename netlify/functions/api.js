@@ -80,13 +80,13 @@ exports.handler = async function(event, context) {
   try {
     // Ban check (skip for admins)
     const banned = isAdminRequest ? null : await sec.isBanned(ip, fid);
-    if (banned && !['appeals/submit','commitment/submit','commitment/check','site/status','auth/login','auth/captcha','auth/sendcode','auth/verify','auth/trust','auth/check-trust','auth/wa/status','auth/wa/reg-options','auth/wa/reg-verify','auth/wa/login-options','auth/wa/login-verify'].includes(route)) {
+    if (banned && !['appeals/submit','commitment/submit','commitment/check','site/status','auth/login','auth/captcha','auth/sendcode','auth/verify','auth/trust','auth/check-trust','auth/wa/status','auth/wa/reg-options','auth/wa/reg-verify','auth/wa/login-options','auth/wa/login-verify', 'content'].includes(route)) {
       await sec.logSecurityEvent('blocked', '已封禁IP/设备尝试访问 ' + route, { ip, fid });
       return { statusCode: 403, headers: corsHeaders(), body: JSON.stringify({ ok: false, banned: true, permanent: !!banned.permanent, error: banned.permanent ? '永久限制' : '访问受限', appealUrl: './appeal.html' }) };
     }
 
     // Rate limit (skip for admins)
-    const rl = isAdminRequest ? {limited:false} : await sec.rateLimit(ip + ':' + route, 60, 60000);
+    const rl = isAdminRequest ? {limited:false} : await sec.rateLimit(ip + ':' + route, ['content','announcement','site/status'].includes(route) ? 120 : 60, 60000);
     if (rl.limited) {
       const wc = await sec.addWarning(ip, fid, '频率限制');
       if (wc >= 3) {
@@ -98,7 +98,7 @@ exports.handler = async function(event, context) {
 
     // Attack detection (skip for admins)
     const attack = isAdminRequest ? null : sec.detectAttack(req);
-    if (attack && !['auth/login', 'auth/captcha', 'auth/sendcode', 'auth/verify', 'auth/trust', 'auth/check-trust'].includes(route)) {
+    if (attack && !['auth/login', 'auth/captcha', 'auth/sendcode', 'auth/verify', 'auth/trust', 'auth/check-trust', 'content', 'announcement', 'site/status'].includes(route)) {
       const anomalies = sec.detectAnomaly(req, req.body.fp);
       const reason = attack + (anomalies.length ? ' (' + anomalies.join(',') + ')' : '');
       const wc = await sec.addWarning(ip, fid, reason);
@@ -126,7 +126,12 @@ exports.handler = async function(event, context) {
 
 async function handleRoute(route, method, req, res, ctx) {
   const { ip, fid } = ctx;
-  const j = (data, status) => ({ statusCode: status || 200, headers: corsHeaders(), body: JSON.stringify(data) });
+  const j = (data, status) => ({ statusCode: status || 200, headers: { ...corsHeaders(),
+    'X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','X-XSS-Protection':'1;mode=block',
+    'Referrer-Policy':'strict-origin-when-cross-origin',
+    'Permissions-Policy':'geolocation=(),microphone=(),camera=(),payment=(),usb=()',
+    'Strict-Transport-Security':'max-age=31536000;includeSubDomains'
+  }, body: JSON.stringify(data) });
 
   // Auto daily report check (poor man's cron - runs on first invocation after report time)
   try {
@@ -334,7 +339,7 @@ async function handleRoute(route, method, req, res, ctx) {
   }
 
   // Admin routes - check auth
-  const adminRoutes = ['announcement/all', 'announcement/publish', 'announcement/delete', 'stats/overview', 'stats/visitors', 'stats/devices', 'stats/security', 'logs/realtime', 'security/ban', 'security/unban', 'security/unban-ip', 'security/permanent', 'security/warnings', 'security/whitelist', 'security/whitelist/add', 'security/whitelist/remove', 'security/events', 'security/score', 'appeals', 'appeals/handle', 'reports/generate', 'reports/send-daily', 'settings', 'devices', 'devices/revoke', 'data/export', 'admin/site-mode', 'admin/report-time'];
+  const adminRoutes = ['announcement/all', 'announcement/publish', 'announcement/delete', 'stats/overview', 'stats/visitors', 'stats/devices', 'stats/security', 'logs/realtime', 'security/ban', 'security/unban', 'security/unban-ip', 'security/permanent', 'security/warnings', 'security/whitelist', 'security/whitelist/add', 'security/whitelist/remove', 'security/events', 'security/score', 'appeals', 'appeals/handle', 'reports/generate', 'reports/send-daily', 'settings', 'devices', 'devices/revoke', 'data/export', 'admin/site-mode', 'admin/report-time', 'content', 'security/rules', 'system/health', 'security/clear-bans', 'security/clear-events'];
   if (adminRoutes.includes(route)) {
     if (!auth.checkAdmin(req)) return j({ ok: false, error: '未授权' }, 401);
   }
@@ -617,6 +622,81 @@ async function handleRoute(route, method, req, res, ctx) {
       await db.set('settings', settings);
       return j({ ok: true });
     }
+  }
+
+  // Content management - homepage content
+  if (route === 'content' && method === 'GET') {
+    const content = (await db.get('site_content')) || {};
+    return j({ ok: true, data: {
+      heroTitle: content.heroTitle || '极风工作室',
+      heroSubtitle: content.heroSubtitle || '专注玩机与网络科技',
+      notice: content.notice || '',
+      noticeEnabled: content.noticeEnabled !== false,
+      stats: content.stats || {}
+    }});
+  }
+  if (route === 'content' && method === 'POST') {
+    const content = (await db.get('site_content')) || {};
+    const body = req.body || {};
+    if (body.heroTitle !== undefined) content.heroTitle = body.heroTitle;
+    if (body.heroSubtitle !== undefined) content.heroSubtitle = body.heroSubtitle;
+    if (body.notice !== undefined) content.notice = body.notice;
+    if (body.noticeEnabled !== undefined) content.noticeEnabled = body.noticeEnabled;
+    await db.set('site_content', content);
+    return j({ ok: true });
+  }
+
+  // Security rules configuration
+  if (route === 'security/rules' && method === 'GET') {
+    const rules = (await db.get('security_rules')) || {};
+    return j({ ok: true, data: {
+      rateLimit: rules.rateLimit || 60,
+      rateWindow: rules.rateWindow || 60000,
+      warningThreshold: rules.warningThreshold || 3,
+      banDuration: rules.banDuration || 3600000,
+      maxLoginAttempts: rules.maxLoginAttempts || 5,
+      sessionTimeout: rules.sessionTimeout || 86400000,
+      ...rules
+    }});
+  }
+  if (route === 'security/rules' && method === 'POST') {
+    const rules = (await db.get('security_rules')) || {};
+    Object.assign(rules, req.body || {});
+    await db.set('security_rules', rules);
+    return j({ ok: true });
+  }
+
+  // System health
+  if (route === 'system/health' && method === 'GET') {
+    const settings = (await db.get('settings')) || {};
+    const allKeys = await db.keys('*');
+    const visitors = await db.lrange('visitors:recent', 0, -1);
+    const bans = await db.lrange('bans:list', 0, -1);
+    const events = await db.lrange('events:list', 0, -1);
+    const activeBans = bans.filter(b => b.active).length;
+    return j({ ok: true, data: {
+      uptime: Date.now() - 1787097600000,
+      storage: { keys: allKeys.length, visitors: visitors.length, bans: bans.length, events: events.length, activeBans },
+      siteMode: settings.siteMode || 'normal',
+      emailAlert: settings.emailAlert !== false,
+      autoBan: settings.autoBan !== false,
+      antiDebug: settings.antiDebug !== false,
+      fpTrack: settings.fpTrack !== false,
+      timestamp: Date.now()
+    }});
+  }
+
+  // Bulk actions
+  if (route === 'security/clear-bans' && method === 'POST') {
+    await db.del('bans:list');
+    await db.del('banned:ips');
+    await db.del('banned:fids');
+    await sec.logSecurityEvent('admin', '管理员清空所有封禁', { ip });
+    return j({ ok: true });
+  }
+  if (route === 'security/clear-events' && method === 'POST') {
+    await db.del('events:list');
+    return j({ ok: true });
   }
 
   // Site mode control (maintenance/shutdown)
