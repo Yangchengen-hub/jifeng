@@ -1,5 +1,5 @@
 (function(){
-var API=window.JF_API||'';
+var API=window.JF_API||'https://jifeng-studio.netlify.app';
 var $=function(s,p){return(p||document).querySelector(s)};
 var $$=function(s,p){return Array.prototype.slice.call((p||document).querySelectorAll(s))};
 
@@ -351,20 +351,26 @@ function renderDevices(list){
   window._devices=filtered;
 }
 
-function toggleDevice(idx){
-  var body=$('#dcbody_'+idx);
-  if(body)body.classList.toggle('open');
+window.toggleDevice=function(idx){
+  var cards=document.querySelectorAll('.device-card');
+  var card=cards[idx];
+  if(!card)return;
+  var body=card.querySelector('.dc-body');
+  if(!body)return;
+  body.classList.toggle('open');
+  card.classList.toggle('open');
 }
 
 function renderDeviceProfile(v){
+  v=v||{};
   var deviceName=v.brand?(v.brand+' '+(v.model||'')).trim():(v.os||'未知设备');
   var h='';
   // Stats row
   h+='<div class="dc-stats">';
-  h+='<div class="dc-stat"><b>'+v.visits+'</b><span>访问</span></div>';
-  h+='<div class="dc-stat"><b>'+Math.round(v.totalDuration)+'s</b><span>停留</span></div>';
-  h+='<div class="dc-stat"><b>'+v.totalClicks+'</b><span>点击</span></div>';
-  h+='<div class="dc-stat"><b>'+v.maxScroll+'%</b><span>滚动</span></div>';
+  h+='<div class="dc-stat"><b>'+(v.visits||0)+'</b><span>访问</span></div>';
+  h+='<div class="dc-stat"><b>'+Math.round(v.totalDuration||0)+'s</b><span>停留</span></div>';
+  h+='<div class="dc-stat"><b>'+(v.totalClicks||0)+'</b><span>点击</span></div>';
+  h+='<div class="dc-stat"><b>'+(v.maxScroll||0)+'%</b><span>滚动</span></div>';
   h+='</div>';
   // Info grid
   h+='<div class="dc-info-grid">';
@@ -578,12 +584,12 @@ function loadSettings(){
   });
 }
 
-function banIP(ip,fid,reason){
+window.banIP=function(ip,fid,reason){
   api('/api/security/ban',{method:'POST',body:JSON.stringify({ip:ip,fid:fid,reason:reason})}).then(function(d){
     if(d.ok){toast('已封禁','ok');island('已封禁IP: '+ip,true);loadSecurity();loadVisitors()}else toast(d.error||'操作失败','err');
   });
 }
-function unbanIP(ip,fid){
+window.unbanIP=function(ip,fid){
   api('/api/security/unban-ip',{method:'POST',body:JSON.stringify({ip:ip,fid:fid})}).then(function(d){
     if(d.ok){toast('已解封','ok');loadSecurity();loadVisitors()}else toast(d.error||'操作失败','err');
   });

@@ -128,6 +128,23 @@ async function handleRoute(route, method, req, res, ctx) {
   const { ip, fid } = ctx;
   const j = (data, status) => ({ statusCode: status || 200, headers: corsHeaders(), body: JSON.stringify(data) });
 
+  // Auto daily report check (poor man's cron - runs on first invocation after report time)
+  try {
+    const settings = (await db.get('settings')) || {};
+    const reportTime = settings.reportTime || '09:00';
+    const [rh, rm] = reportTime.split(':').map(Number);
+    const now = new Date(Date.now() + 8*3600000); // Shanghai time
+    const lastReport = await db.get('lastDailyReport');
+    const today = now.toISOString().slice(0,10);
+    if (settings.emailAlert !== false && lastReport !== today && (now.getUTCHours() > rh || (now.getUTCHours() === rh && now.getUTCMinutes() >= rm))) {
+      await db.set('lastDailyReport', today);
+      const visitors = await db.get('stats:visitors:' + today) || 0;
+      const attacks = await db.get('stats:attacks:' + today) || 0;
+      const activeBans = (await db.lrange('bans:list', 0, -1)).filter(b => b.active).length;
+      await email.dailyReport('今日访问: ' + visitors + '\n今日攻击: ' + attacks + '\n当前封禁: ' + activeBans);
+    }
+  } catch(e) { console.error('Daily report error:', e.message); }
+
   // auth/login
   if (route === 'auth/login' && method === 'POST') {
     const { username, password } = req.body;
@@ -353,7 +370,8 @@ async function handleRoute(route, method, req, res, ctx) {
     const hours = [], traffic = [];
     for (let i = 23; i >= 0; i--) {
       const d = new Date(Date.now() - i * 3600000);
-      hours.push(d.getHours() + ':00');
+      const sh = new Date(d.getTime() + 8*3600000);
+      hours.push(sh.getUTCHours() + ':00');
       traffic.push(await db.get('stats:visitors:hour:' + shHour(d)) || 0);
     }
     return j({ ok: true, data: { visitors, attacks, bans: bans.length, permBans: bans.filter(b => b.type === 'permanent').length, visitorTrend: trend, trafficLabels: hours, trafficData: [{ data: traffic, color: '#ff6900' }] } });
@@ -468,7 +486,7 @@ async function handleRoute(route, method, req, res, ctx) {
     return j({ ok: true });
   }
 
-  if (route === 'security/unban', 'security/unban-ip' && method === 'POST') {
+  if (route === 'security/unban' && method === 'POST') {
     await sec.unban(req.body.id);
     return j({ ok: true });
   }
@@ -591,17 +609,21 @@ async function handleRoute(route, method, req, res, ctx) {
 
   // Site mode control (maintenance/shutdown)
   if (route === 'admin/site-mode' && method === 'POST') {
-    const { mode, msg } = req.body;
-    if (!['normal', 'maintenance', 'shutdown'].includes(mode)) return j({ ok: false, error: '无效模式' });
-    const settings = (await db.get('settings')) || {};
-    settings.siteMode = mode;
-    if (msg) {
-      if (mode === 'maintenance') settings.maintenanceMsg = msg;
-      if (mode === 'shutdown') settings.shutdownMsg = msg;
+    try {
+      const { mode, msg } = req.body;
+      if (!['normal', 'maintenance', 'shutdown'].includes(mode)) return j({ ok: false, error: '无效模式' });
+      const settings = (await db.get('settings')) || {};
+      settings.siteMode = mode;
+      if (msg) {
+        if (mode === 'maintenance') settings.maintenanceMsg = msg;
+        if (mode === 'shutdown') settings.shutdownMsg = msg;
+      }
+      await db.set('settings', settings);
+      await sec.logSecurityEvent('auth', '网站模式切换为: ' + mode, { ip });
+      return j({ ok: true });
+    } catch(e) {
+      return j({ ok: false, error: e.message });
     }
-    await db.set('settings', settings);
-    await sec.logSecurityEvent('auth', '网站模式切换为: ' + mode, { ip });
-    return j({ ok: true });
   }
 
   // Report time setting
@@ -689,7 +711,7 @@ async function handleRoute(route, method, req, res, ctx) {
   }
 
   // Data export
-  if (route === 'data/export', 'admin/site-mode', 'admin/report-time' && method === 'POST') {
+  if (route === 'data/export' && method === 'POST') {
     const { type } = req.body;
     let data = {};
     if (type === 'all' || type === 'security') {

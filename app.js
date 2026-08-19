@@ -1,5 +1,5 @@
 (function(){
-var API=window.JF_API||'';
+var API=window.JF_API||'https://jifeng-studio.netlify.app';
 var fid=localStorage.getItem('jf_fid')||('f_'+Date.now().toString(36)+Math.random().toString(36).slice(2,10));
 localStorage.setItem('jf_fid',fid);
 
