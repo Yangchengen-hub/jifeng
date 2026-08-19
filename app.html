@@ -239,12 +239,18 @@ input,button{font-family:inherit;color:inherit;-webkit-user-select:text;user-sel
     <div class="login-desc">使用指纹或面容快速登录<br>安全管控尽在掌握</div>
     <button class="bio-btn" id="btnBioLogin">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/></svg>
-      指纹/面容登录
+      指纹 / 面容登录
     </button>
-    <div class="login-divider">或使用密码</div>
+    <div class="login-divider">其他登录方式</div>
     <input class="login-input" type="text" id="loginUser" placeholder="管理员账号" value="NUOYAN" autocomplete="username">
     <input class="login-input" type="password" id="loginPass" placeholder="密码" autocomplete="current-password">
     <button class="login-btn-alt" id="btnPassLogin">密码登录</button>
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <input class="login-input" type="email" id="loginEmail" placeholder="邮箱验证码登录" style="margin-bottom:0;flex:1">
+      <button class="login-btn-alt" id="btnSendCode" style="width:auto;padding:14px 16px;white-space:nowrap">发送</button>
+    </div>
+    <input class="login-input" type="text" id="loginCode" placeholder="输入6位验证码" style="margin-top:10px;letter-spacing:4px;text-align:center;font-size:18px;font-weight:700" maxlength="6">
+    <button class="login-btn-alt" id="btnEmailLogin" style="margin-top:10px">邮箱验证码登录</button>
     <div class="login-msg" id="loginMsg"></div>
   </div>
 </div>
@@ -322,13 +328,29 @@ input,button{font-family:inherit;color:inherit;-webkit-user-select:text;user-sel
           <div class="action-ico" style="background:rgba(255,69,58,0.15);color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
           <span class="action-label">安全</span>
         </button>
+        <button class="action-btn" onclick="showQuickAnnounce()">
+          <div class="action-ico" style="background:rgba(255,159,10,0.15);color:var(--orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></div>
+          <span class="action-label">公告</span>
+        </button>
         <button class="action-btn" onclick="refreshData()">
           <div class="action-ico" style="background:rgba(48,209,88,0.15);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
           <span class="action-label">刷新</span>
         </button>
+        <button class="action-btn" onclick="clearAllBans()">
+          <div class="action-ico" style="background:rgba(90,200,250,0.15);color:#5ac8fa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
+          <span class="action-label">解封</span>
+        </button>
+        <button class="action-btn" onclick="sendTestEmail()">
+          <div class="action-ico" style="background:rgba(191,90,242,0.15);color:var(--purple)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+          <span class="action-label">测试邮件</span>
+        </button>
+        <button class="action-btn" onclick="switchPage('settings')">
+          <div class="action-ico" style="background:rgba(120,120,128,0.15);color:var(--text-2)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+          <span class="action-label">设置</span>
+        </button>
         <button class="action-btn" onclick="openConsole()">
-          <div class="action-ico" style="background:rgba(191,90,242,0.15);color:var(--purple)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
-          <span class="action-label">控制台</span>
+          <div class="action-ico" style="background:rgba(0,0,0,0.05);color:var(--text-3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+          <span class="action-label">网页版</span>
         </button>
       </div>
 
@@ -410,13 +432,30 @@ input,button{font-family:inherit;color:inherit;-webkit-user-select:text;user-sel
 
 <script>
 var API=window.JF_API||'';
-var token=localStorage.getItem('jf_token')||'';
+var token=loadToken();
 var refreshTimer=null;
 var approvalTimer=null;
 
 function $(s){return document.querySelector(s)}
 function $$(s){return document.querySelectorAll(s)}
-function toast(msg,type){var t=$('#toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');setTimeout(function(){t.className='toast'},2500)}
+function toast(msg,type){
+  var t=$('#toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');
+  setTimeout(function(){t.className='toast'},2500);
+  haptic(type==='err'?'heavy':'light');
+}
+function haptic(pattern){
+  try{
+    if(navigator.vibrate)navigator.vibrate(pattern==='heavy'?[30,40,30]:pattern==='success'?[20]:10);
+  }catch(e){}
+}
+function formatTime(ts){
+  var d=new Date(ts);
+  return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0')+':'+d.getSeconds().toString().padStart(2,'0');
+}
+function formatDate(ts){
+  var d=new Date(ts);
+  return (d.getMonth()+1)+'/'+d.getDate()+' '+formatTime(ts);
+}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
 function api(path,opts){
@@ -447,71 +486,151 @@ $('#btnPassLogin').onclick=function(){
   if(!u||!p){$('#loginMsg').textContent='请输入账号密码';$('#loginMsg').className='login-msg error';return}
   $('#loginMsg').textContent='登录中...';$('#loginMsg').className='login-msg';
   api('auth/login',{method:'POST',body:{username:u,password:p}}).then(function(d){
-    if(d.ok&&d.token){token=d.token;localStorage.setItem('jf_token',token);$('#loginMsg').textContent='登录成功';$('#loginMsg').className='login-msg ok';setTimeout(showApp,500)}
+    if(d.ok&&d.token){saveToken(d.token);$('#loginMsg').textContent='登录成功';$('#loginMsg').className='login-msg ok';setTimeout(showApp,500)}
     else{$('#loginMsg').textContent=d.error||'登录失败';$('#loginMsg').className='login-msg error'}
   });
 };
+
+// ===== EMAIL CODE LOGIN =====
+var codeTimer=null;
+$('#btnSendCode').onclick=function(){
+  var email=$('#loginEmail').value.trim();
+  if(!email||!email.includes('@')){$('#loginMsg').textContent='请输入有效邮箱';$('#loginMsg').className='login-msg error';return}
+  var btn=$('#btnSendCode');btn.disabled=true;btn.textContent='发送中...';
+  api('auth/sendcode',{method:'POST',body:{email:email}}).then(function(d){
+    if(d.ok){
+      $('#loginMsg').textContent='验证码已发送至 '+email;$('#loginMsg').className='login-msg ok';
+      var s=60;btn.textContent=s+'s';codeTimer=setInterval(function(){s--;btn.textContent=s+'s';if(s<=0){clearInterval(codeTimer);btn.disabled=false;btn.textContent='发送'}},1000);
+    }else{
+      btn.disabled=false;btn.textContent='发送';
+      $('#loginMsg').textContent=d.error||'发送失败';$('#loginMsg').className='login-msg error';
+    }
+  });
+};
+$('#btnEmailLogin').onclick=function(){
+  var email=$('#loginEmail').value.trim(),code=$('#loginCode').value.trim();
+  if(!email||!code){$('#loginMsg').textContent='请输入邮箱和验证码';$('#loginMsg').className='login-msg error';return}
+  $('#loginMsg').textContent='验证中...';$('#loginMsg').className='login-msg';
+  api('auth/verify',{method:'POST',body:{email:email,code:code}}).then(function(d){
+    if(d.ok&&d.token){saveToken(d.token);$('#loginMsg').textContent='登录成功';$('#loginMsg').className='login-msg ok';setTimeout(showApp,500)}
+    else{$('#loginMsg').textContent=d.error||'验证失败';$('#loginMsg').className='login-msg error'}
+  });
+};
+
+// ===== ENCRYPTED TOKEN STORAGE =====
+function saveToken(t){
+  try{
+    token=t;
+    // Encrypt token with device-bound key before storing
+    var deviceId=localStorage.getItem('jf_device_id');
+    if(!deviceId){deviceId=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36);localStorage.setItem('jf_device_id',deviceId)}
+    // Store token obfuscated (basic XOR with device ID)
+    var enc='';
+    for(var i=0;i<t.length;i++){enc+=String.fromCharCode(t.charCodeAt(i)^deviceId.charCodeAt(i%deviceId.length))}
+    localStorage.setItem('jf_token_enc',btoa(enc));
+    localStorage.removeItem('jf_token');
+  }catch(e){
+    // Fallback: plain storage if encryption fails
+    token=t;localStorage.setItem('jf_token',t);
+  }
+}
+function loadToken(){
+  try{
+    var enc=localStorage.getItem('jf_token_enc');
+    if(enc){
+      var deviceId=localStorage.getItem('jf_device_id')||'';
+      var raw=atob(enc),dec='';
+      for(var i=0;i<raw.length;i++){dec+=String.fromCharCode(raw.charCodeAt(i)^deviceId.charCodeAt(i%deviceId.length))}
+      return dec;
+    }
+    return localStorage.getItem('jf_token')||'';
+  }catch(e){return localStorage.getItem('jf_token')||''}
+}
+// Override token initialization
+token=loadToken();
 
 // ===== BIOMETRIC LOGIN =====
 $('#btnBioLogin').onclick=function(){doBiometricLogin()};
 $('#bioIcon').onclick=function(){doBiometricLogin()};
 
 function doBiometricLogin(){
-  if(!window.PublicKeyCredential){toast('此设备不支持生物识别','err');return}
-  $('#bioScan').classList.add('show');
-  $('#bioScan').querySelector('.bio-scan-sub').textContent='请将手指放在指纹传感器上';
-  api('auth/wa/login-options',{method:'POST'}).then(function(d){
-    if(!d.ok||!d.options){throw new Error(d.error||'无注册凭证')}
-    var opts=d.options;
-    opts.challenge=base64ToBuf(opts.challenge);
-    opts.allowCredentials=(opts.allowCredentials||[]).map(function(c){return{id:base64ToBuf(c.id),type:c.type,transports:c.transports}});
-    return navigator.credentials.get({publicKey:opts});
-  }).then(function(assertion){
-    if(!assertion)throw new Error('验证取消');
-    var authData={
-      id:bufToBase64(assertion.rawId),
-      response:{
-        authenticatorData:bufToBase64(assertion.response.authenticatorData),
-        clientDataJSON:bufToBase64(assertion.response.clientDataJSON),
-        signature:bufToBase64(assertion.response.signature)
-      },
-      type:assertion.type
-    };
-    return api('auth/wa/login-verify',{method:'POST',body:{credential:authData}});
-  }).then(function(d){
+  try{
+    if(!window.PublicKeyCredential){toast('此设备不支持生物识别，请用密码或邮箱登录','err');return}
+    $('#bioScan').classList.add('show');
+    $('#bioScan').querySelector('.bio-scan-sub').textContent='请验证指纹或面容';
+    PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(available){
+      if(!available){throw new Error('NO_HARDWARE')}
+      return api('auth/wa/login-options',{method:'POST'});
+    }).then(function(d){
+      if(!d.ok||!d.options){throw new Error(d.error||'NO_CREDENTIAL')}
+      var opts=d.options;
+      opts.challenge=base64ToBuf(opts.challenge);
+      opts.allowCredentials=(opts.allowCredentials||[]).map(function(c){
+        try{return{id:base64ToBuf(c.id),type:c.type,transports:c.transports||['internal']}}catch(e){return null}
+      }).filter(Boolean);
+      return navigator.credentials.get({publicKey:opts});
+    }).then(function(assertion){
+      if(!assertion)throw new Error('CANCELLED');
+      var authData={
+        id:bufToBase64(assertion.rawId),
+        response:{
+          authenticatorData:bufToBase64(assertion.response.authenticatorData),
+          clientDataJSON:bufToBase64(assertion.response.clientDataJSON),
+          signature:bufToBase64(assertion.response.signature)
+        },
+        type:assertion.type
+      };
+      return api('auth/wa/login-verify',{method:'POST',body:{credential:authData}});
+    }).then(function(d){
+      $('#bioScan').classList.remove('show');
+      if(d.ok&&d.token){saveToken(d.token);toast('验证成功','ok');setTimeout(showApp,500)}
+      else{toast(d.error||'验证失败','err')}
+    }).catch(function(e){
+      $('#bioScan').classList.remove('show');
+      var msg=e.message||'';
+      if(msg==='NO_CREDENTIAL')toast('请先在设置中注册生物识别','err');
+      else if(msg==='NO_HARDWARE')toast('设备无生物识别硬件','err');
+      else if(msg==='CANCELLED'||e.name==='NotAllowedError'){}
+      else toast('生物识别不可用，请用密码或邮箱登录','err');
+    });
+  }catch(err){
     $('#bioScan').classList.remove('show');
-    if(d.ok&&d.token){token=d.token;localStorage.setItem('jf_token',token);toast('验证成功','ok');setTimeout(showApp,500)}
-    else{toast(d.error||'验证失败','err')}
-  }).catch(function(e){
-    $('#bioScan').classList.remove('show');
-    if(e.message&&e.message.indexOf('无注册凭证')>=0){toast('请先注册生物识别','err')}
-    else if(e.name!=='NotAllowedError'){toast('生物识别不可用，请用密码登录','err')}
-  });
+    toast('生物识别初始化失败，请用密码或邮箱登录','err');
+  }
 }
 
 function registerBiometric(){
-  if(!window.PublicKeyCredential){toast('此设备不支持生物识别','err');return}
-  api('auth/wa/reg-options',{method:'POST'}).then(function(d){
-    if(!d.ok)throw new Error(d.error||'注册失败');
-    var opts=d.options;
-    opts.challenge=base64ToBuf(opts.challenge);
-    opts.user.id=base64ToBuf(opts.user.id);
-    opts.excludeCredentials=(opts.excludeCredentials||[]).map(function(c){return{id:base64ToBuf(c.id),type:c.type}});
-    return navigator.credentials.create({publicKey:opts});
-  }).then(function(cred){
-    if(!cred)throw new Error('注册取消');
-    var data={
-      id:bufToBase64(cred.rawId),
-      response:{
-        attestationObject:bufToBase64(cred.response.attestationObject),
-        clientDataJSON:bufToBase64(cred.response.clientDataJSON)
-      },
-      type:cred.type
-    };
-    return api('auth/wa/reg-verify',{method:'POST',body:{credential:data}});
-  }).then(function(d){
-    if(d.ok)toast('生物识别注册成功','ok');else toast(d.error||'注册失败','err');
-  }).catch(function(e){toast(e.message||'注册失败','err')});
+  try{
+    if(!window.PublicKeyCredential){toast('此设备不支持生物识别','err');return}
+    PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(available){
+      if(!available)throw new Error('设备无生物识别硬件');
+      return api('auth/wa/reg-options',{method:'POST'});
+    }).then(function(d){
+      if(!d.ok)throw new Error(d.error||'注册失败');
+      var opts=d.options;
+      opts.challenge=base64ToBuf(opts.challenge);
+      opts.user.id=base64ToBuf(opts.user.id);
+      opts.excludeCredentials=(opts.excludeCredentials||[]).map(function(c){
+        try{return{id:base64ToBuf(c.id),type:c.type}}catch(e){return null}
+      }).filter(Boolean);
+      return navigator.credentials.create({publicKey:opts});
+    }).then(function(cred){
+      if(!cred)throw new Error('注册取消');
+      var data={
+        id:bufToBase64(cred.rawId),
+        response:{
+          attestationObject:bufToBase64(cred.response.attestationObject),
+          clientDataJSON:bufToBase64(cred.response.clientDataJSON)
+        },
+        type:cred.type
+      };
+      return api('auth/wa/reg-verify',{method:'POST',body:{credential:data}});
+    }).then(function(d){
+      if(d.ok)toast('生物识别注册成功','ok');else toast(d.error||'注册失败','err');
+    }).catch(function(e){
+      if(e.message!=='注册取消'&&e.name!=='NotAllowedError')toast(e.message||'注册失败','err');
+    });
+  }catch(err){toast('生物识别初始化失败','err')}
 }
 
 function base64ToBuf(b64){var bin=atob(b64);var buf=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);return buf.buffer}
@@ -569,7 +688,8 @@ function loadVisitors(){
       var badge=v.banned?'<span class="visitor-badge vb-banned">封禁</span>':(v.warnings?'<span class="visitor-badge vb-warn">警告</span>':'<span class="visitor-badge vb-normal">正常</span>');
       var name=v.brand?v.brand+' '+v.model:(v.os||'未知设备');
       var meta=v.browser+' · '+(v.ip||'')+' · '+v.visits+'次访问';
-      return '<div class="visitor-item"><div class="visitor-avatar">'+brandIcon(v)+'</div><div class="visitor-info"><div class="visitor-name">'+esc(name)+'</div><div class="visitor-meta">'+esc(meta)+'</div></div>'+badge+'</div>';
+      var banBtn=v.banned?'':'<button onclick="quickBan(\''+v.ip+'\',\''+v.fid+'\')" style="padding:6px 12px;border-radius:10px;border:none;background:rgba(255,69,58,0.15);color:var(--red);font-size:12px;font-weight:700;flex-shrink:0">封禁</button>';
+      return '<div class="visitor-item"><div class="visitor-avatar">'+brandIcon(v)+'</div><div class="visitor-info"><div class="visitor-name">'+esc(name)+'</div><div class="visitor-meta">'+esc(meta)+'</div></div>'+banBtn+badge+'</div>';
     }).join('');
   });
 }
@@ -645,7 +765,66 @@ $$('.toggle').forEach(function(t){
 });
 
 function openConsole(){window.location.href='console.html'}
-function logout(){token='';localStorage.removeItem('jf_token');$('#app').classList.remove('show');showLogin()}
+
+// Quick announcement
+function showQuickAnnounce(){
+  var text=prompt('发布公告（将显示在官网顶部）:');
+  if(!text||!text.trim())return;
+  api('announcement/publish',{method:'POST',body:{content:text.trim()}}).then(function(d){
+    if(d.ok){toast('公告已发布','ok');haptic('success')}else toast(d.error||'发布失败','err');
+  });
+}
+
+// Clear all bans
+function clearAllBans(){
+  if(!confirm('确定清空所有封禁？'))return;
+  api('security/clear-bans',{method:'POST'}).then(function(d){
+    if(d.ok){toast('已清空所有封禁','ok');haptic('success');refreshData()}else toast(d.error||'操作失败','err');
+  });
+}
+
+// Send test email
+function sendTestEmail(){
+  toast('正在发送测试邮件...');
+  api('reports/send-daily',{method:'POST'}).then(function(d){
+    if(d.ok)toast('测试邮件已发送','ok');else toast(d.error||'发送失败','err');
+  });
+}
+
+// Quick ban from visitor list
+function quickBan(ip,fid){
+  if(!ip&&!fid)return;
+  var reason=prompt('封禁原因:','手动封禁');
+  if(reason===null)return;
+  api('security/ban',{method:'POST',body:{ip:ip,fid:fid,reason:reason||'手动封禁',permanent:false}}).then(function(d){
+    if(d.ok){toast('已封禁','ok');haptic('heavy');loadVisitors();refreshData()}else toast(d.error||'封禁失败','err');
+  });
+}
+
+// Pull to refresh
+var touchStartY=0;
+document.addEventListener('touchstart',function(e){
+  var scrollEl=document.querySelector('.app-content');
+  if(scrollEl&&scrollEl.scrollTop<=0)touchStartY=e.touches[0].clientY;
+},{passive:true});
+document.addEventListener('touchend',function(e){
+  var scrollEl=document.querySelector('.app-content');
+  if(scrollEl&&touchStartY>0){
+    var diff=e.changedTouches[0].clientY-touchStartY;
+    if(diff>80&&scrollEl.scrollTop<=0){
+      haptic('light');
+      refreshData();
+      if($('#page-visitors').classList.contains('active'))loadVisitors();
+      if($('#page-security').classList.contains('active'))loadSecurity();
+    }
+  }
+  touchStartY=0;
+},{passive:true});
+
+// Network status
+window.addEventListener('online',function(){toast('网络已恢复','ok')});
+window.addEventListener('offline',function(){toast('网络连接断开','err')});
+function logout(){token='';localStorage.removeItem('jf_token');localStorage.removeItem('jf_token_enc');$('#app').classList.remove('show');showLogin()}
 
 // ===== TIMERS =====
 function startTimers(){
