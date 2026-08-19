@@ -14,7 +14,7 @@
   --safe-bottom:env(safe-area-inset-bottom,0px);
   --glass-blur:blur(30px) saturate(180%);
 }
-@media(prefers-color-scheme:dark){
+@media not all{
   :root{
     --bg:#000000;--bg-elevated:#1c1c1e;--bg-glass:rgba(28,28,30,0.72);
     --text:#f5f5f7;--text-2:#aeaeb2;--text-3:#636366;
@@ -24,6 +24,7 @@
 }
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{
+  color-scheme:light only;
   font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','MiSans','HarmonyOS Sans',sans-serif;
   background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;
   padding-bottom:calc(40px + var(--safe-bottom));
@@ -60,7 +61,7 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
   background:var(--bg-glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
   border:0.5px solid rgba(255,255,255,0.5);
 }
-@media(prefers-color-scheme:dark){.glass{border-color:rgba(255,255,255,0.08)}}
+@media not all{.glass{border-color:rgba(255,255,255,0.08)}}
 
 /* ===== HERO ===== */
 .hero{
@@ -73,7 +74,7 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 .blob2{width:300px;height:300px;background:radial-gradient(circle,#ffb088,transparent 70%);bottom:5%;left:-90px;animation-delay:-3.5s}
 .blob3{width:260px;height:260px;background:radial-gradient(circle,#ffd6a0,transparent 70%);top:35%;left:45%;animation-delay:-6s;opacity:0.35}
 .blob4{width:200px;height:200px;background:radial-gradient(circle,#c8a8ff,transparent 70%);bottom:30%;right:10%;animation-delay:-1.5s;opacity:0.25}
-@media(prefers-color-scheme:dark){
+@media not all{
   .blob{opacity:0.2}
   .blob1{background:radial-gradient(circle,#ff6900,transparent 70%)}
   .blob2{background:radial-gradient(circle,#ff9500,transparent 70%)}
@@ -98,7 +99,7 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 .btn:active{transform:scale(0.94)}
 .btn-primary{background:var(--brand-gradient);color:#fff;box-shadow:0 8px 28px rgba(255,105,0,0.35)}
 .btn-ghost{background:var(--bg-glass);backdrop-filter:var(--glass-blur);color:var(--text);border:0.5px solid rgba(255,105,0,0.1)}
-@media(prefers-color-scheme:dark){.btn-ghost{border-color:rgba(255,255,255,0.1)}}
+@media not all{.btn-ghost{border-color:rgba(255,255,255,0.1)}}
 .ripple-effect{position:absolute;border-radius:50%;background:rgba(255,255,255,0.3);transform:scale(0);animation:ripple 0.6s ease-out forwards;pointer-events:none}
 @keyframes ripple{to{transform:scale(2.5);opacity:0}}
 
@@ -110,7 +111,7 @@ button{font-family:inherit;border:none;background:none;cursor:pointer;color:inhe
 .stat-num{font-size:30px;font-weight:800;line-height:1.2}
 .stat-label{font-size:12px;color:var(--text-3);margin-top:4px}
 .stat-divider{width:1px;height:36px;background:rgba(0,0,0,0.06)}
-@media(prefers-color-scheme:dark){.stat-divider{background:rgba(255,255,255,0.1)}}
+@media not all{.stat-divider{background:rgba(255,255,255,0.1)}}
 
 /* ===== SECTIONS ===== */
 .section{padding:20px;max-width:720px;margin:0 auto}

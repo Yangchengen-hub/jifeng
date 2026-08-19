@@ -1,4 +1,6 @@
 const sec = require('../../lib/security');
+function shDate(d){d=d||new Date();return new Date(d.getTime()+8*3600*1000).toISOString().slice(0,10)}
+function shHour(d){d=d||new Date();return new Date(d.getTime()+8*3600*1000).toISOString().slice(0,13)}
 const db = require('../../lib/db');
 const auth = require('../../lib/auth');
 const email = require('../../lib/email');
@@ -237,9 +239,9 @@ async function handleRoute(route, method, req, res, ctx) {
 
   // visitor
   if (route === 'visitor' && method === 'POST') {
-    const { fp: fpData, page, ref } = req.body;
+    const { fp: fpData } = req.body;
     if (!fpData || !fpData.fid) return j({ ok: false }, 400);
-    await sec.logVisitor(ip, fpData, page, ref);
+    await sec.logVisitor(ip, fpData, fpData.page || '/', fpData.ref || '');
     return j({ ok: true });
   }
 
@@ -341,8 +343,8 @@ async function handleRoute(route, method, req, res, ctx) {
   }
 
   if (route === 'stats/overview') {
-    const today = new Date().toISOString().slice(0, 10);
-    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    const today = shDate();
+    const yesterday = shDate(new Date(Date.now() - 86400000));
     const visitors = await db.get('stats:visitors:' + today) || 0;
     const yv = await db.get('stats:visitors:' + yesterday) || 0;
     const attacks = await db.get('stats:attacks:' + today) || 0;
@@ -352,13 +354,13 @@ async function handleRoute(route, method, req, res, ctx) {
     for (let i = 23; i >= 0; i--) {
       const d = new Date(Date.now() - i * 3600000);
       hours.push(d.getHours() + ':00');
-      traffic.push(await db.get('stats:visitors:hour:' + d.toISOString().slice(0, 13)) || 0);
+      traffic.push(await db.get('stats:visitors:hour:' + shHour(d)) || 0);
     }
     return j({ ok: true, data: { visitors, attacks, bans: bans.length, permBans: bans.filter(b => b.type === 'permanent').length, visitorTrend: trend, trafficLabels: hours, trafficData: [{ data: traffic, color: '#ff6900' }] } });
   }
 
   if (route === 'stats/visitors') {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = shDate();
     const total = await db.get('stats:visitors:total') || 0;
     const mobile = await db.get('stats:mobile:' + today) || 0;
     const desktop = await db.get('stats:desktop:' + today) || 0;
@@ -432,7 +434,7 @@ async function handleRoute(route, method, req, res, ctx) {
   }
 
   if (route === 'stats/security') {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = shDate();
     const total = await db.get('stats:attacks:total') || 0;
     const todayCount = await db.get('stats:attacks:' + today) || 0;
     const bans = await db.lrange('bans:list', 0, -1);
@@ -445,7 +447,7 @@ async function handleRoute(route, method, req, res, ctx) {
     });
     const days = [], trend = [];
     for (let i = 6; i >= 0; i--) {
-      const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+      const d = shDate(new Date(Date.now() - i * 86400000));
       days.push(d.slice(5));
       trend.push(await db.get('stats:attacks:' + d) || 0);
     }
@@ -555,7 +557,7 @@ async function handleRoute(route, method, req, res, ctx) {
   if (route === 'reports/generate' && method === 'POST') {
     const { type } = req.body;
     const now = new Date();
-    const today = now.toISOString().slice(0, 10);
+    const today = shDate(now);
     let content = '═══════════════════════════════════\n  极风工作室 · 运维报告\n  ' + now.toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false }) + '\n═══════════════════════════════════\n\n';
     const visitors = await db.get('stats:visitors:' + today) || 0;
     const attacks = await db.get('stats:attacks:' + today) || 0;
@@ -568,7 +570,7 @@ async function handleRoute(route, method, req, res, ctx) {
   }
 
   if (route === 'reports/send-daily' && method === 'POST') {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = shDate();
     const visitors = await db.get('stats:visitors:' + today) || 0;
     const attacks = await db.get('stats:attacks:' + today) || 0;
     const activeBans = (await db.lrange('bans:list', 0, -1)).filter(b => b.active).length;
@@ -662,7 +664,7 @@ async function handleRoute(route, method, req, res, ctx) {
 
   // Security score
   if (route === 'security/score' && method === 'GET') {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = shDate();
     const attacks = await db.get('stats:attacks:' + today) || 0;
     const visitors = await db.get('stats:visitors:' + today) || 0;
     const bans = (await db.lrange('bans:list', 0, -1)).filter(b => b.active).length;

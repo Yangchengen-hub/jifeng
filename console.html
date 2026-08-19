@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark"><meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
 <meta name="robots" content="noindex,nofollow">
 <title>控制台 · 极风工作室</title>
@@ -159,7 +159,7 @@
 
       <div class="chart-card">
         <div class="card-head"><h3>24小时访问趋势</h3><span class="card-badge" id="chartBadge">实时</span></div>
-        <canvas id="chartTraffic" height="160"></canvas>
+        <div id="chartTraffic" class="css-chart"></div>
       </div>
 
       <div class="chart-card">
@@ -176,8 +176,8 @@
         <div class="stat-card"><div class="sc-ico" style="background:rgba(255,159,10,0.15);color:#ff9f0a"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg></div><div class="sc-val" id="vDesktop">0</div><div class="sc-label">桌面端</div></div>
         <div class="stat-card"><div class="sc-ico" style="background:rgba(48,209,88,0.15);color:#30d158"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6m0 12v2M4.93 4.93l4.24 4.24m5.66 5.66l4.24 4.24M2 12h6m8 0h6"/></svg></div><div class="sc-val" id="vNew">0</div><div class="sc-label">今日新增</div></div>
       </div>
-      <div class="chart-card"><h3>设备分布</h3><canvas id="chartDevice" height="160"></canvas></div>
-      <div class="chart-card"><h3>页面排行</h3><canvas id="chartPages" height="160"></canvas></div>
+      <div class="chart-card"><h3>设备分布</h3><div id="chartDevice" class="css-chart"></div></div>
+      <div class="chart-card"><h3>页面排行</h3><div id="chartPages" class="css-chart"></div></div>
       <div class="chart-card">
         <div class="card-head"><h3>最新访客</h3><input type="text" class="search-input" id="visitorSearch" placeholder="搜索IP/设备..."></div>
         <div class="visitor-list" id="visitorTable"></div>
@@ -192,8 +192,8 @@
         <div class="stat-card"><div class="sc-ico" style="background:rgba(255,214,10,0.15);color:#ffd60a">🚫</div><div class="sc-val" id="secBanned">0</div><div class="sc-label">已封禁</div></div>
         <div class="stat-card"><div class="sc-ico" style="background:rgba(48,209,88,0.15);color:#30d158">🛡️</div><div class="sc-val" id="secRate">0%</div><div class="sc-label">拦截率</div></div>
       </div>
-      <div class="chart-card"><h3>攻击类型分布</h3><canvas id="chartAttackType" height="160"></canvas></div>
-      <div class="chart-card"><h3>7日攻击趋势</h3><canvas id="chartAttackTrend" height="160"></canvas></div>
+      <div class="chart-card"><h3>攻击类型分布</h3><div id="chartAttackType" class="css-chart"></div></div>
+      <div class="chart-card"><h3>7日攻击趋势</h3><div id="chartAttackTrend" class="css-chart"></div></div>
       <div class="chart-card">
         <div class="card-head"><h3>实时警告</h3><button class="btn-sm" id="btnBanManual">+ 封禁</button></div>
         <div class="warning-list" id="warningList"></div>
@@ -292,6 +292,17 @@
         <div class="setting-row"><div class="sr-info"><h4>设备指纹追踪</h4><p>采集浏览器指纹识别设备</p></div><div class="toggle on" data-setting="fpTrack"></div></div>
         <div class="setting-row"><div class="sr-info"><h4>每日运维报告</h4><p>每天自动发送运维日报</p></div><div class="toggle on" data-setting="dailyReport"></div></div>
         <div class="setting-row"><div class="sr-info"><h4>二次违规永久封禁</h4><p>申诉后再违规永封IP+设备</p></div><div class="toggle on" data-setting="permaban"></div></div>
+      </div>
+      <div class="form-card">
+        <h3>外观</h3>
+        <div class="setting-row">
+          <div class="sr-info"><h4>主题模式</h4><p>亮色 / 暗色 / 跟随系统</p></div>
+          <select id="themeSelect" style="padding:8px 12px;border-radius:12px;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--text);font-size:14px">
+            <option value="light">亮色</option>
+            <option value="dark">暗色</option>
+            <option value="auto">跟随系统</option>
+          </select>
+        </div>
       </div>
       <div class="form-card">
         <h3>通知设置</h3>
