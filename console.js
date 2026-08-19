@@ -321,6 +321,34 @@ function loadVisitors(){
   });
 }
 
+function getBrandIcon(v){
+  var b=(v.brand||'').toLowerCase();
+  var os=(v.os||'').toLowerCase();
+  var ua=(v.ua||'').toLowerCase();
+  if(b.includes('xiaomi')||b.includes('redmi')||b.includes('poco'))return 'MI';
+  if(b.includes('huawei')||b.includes('honor'))return 'HW';
+  if(b.includes('oppo')||b.includes('oneplus')||b.includes('realme'))return 'OP';
+  if(b.includes('vivo')||b.includes('iqoo'))return 'V';
+  if(b.includes('samsung'))return 'S';
+  if(b.includes('apple'))return '';
+  if(b.includes('lenovo'))return 'Le';
+  if(b.includes('motorola'))return 'M';
+  if(b.includes('google'))return 'G';
+  if(b.includes('asus'))return 'AS';
+  if(b.includes('sony'))return 'So';
+  if(b.includes('meizu'))return 'MZ';
+  if(b.includes('zte')||b.includes('nubia'))return 'Z';
+  if(b.includes('nokia'))return 'NK';
+  if(b.includes('htc'))return 'H';
+  if(b.includes('tecno')||b.includes('infinix'))return 'T';
+  if(os.includes('windows'))return 'W';
+  if(os.includes('mac'))return '';
+  if(os.includes('linux'))return 'L';
+  if(os.includes('android'))return 'A';
+  if(os.includes('ios'))return '';
+  return (v.browser?v.browser.charAt(0).toUpperCase():'?');
+}
+
 function renderDevices(list){
   var search=($('#visitorSearch')||{}).value||'';
   var filtered=list;
@@ -335,8 +363,8 @@ function renderDevices(list){
     var banTag=v.banned?'<span class="vi-tag" style="background:rgba(255,69,58,0.15);color:var(--red)">⛔ 已封禁</span>':'';
     var lastSeenStr=fmtTime(v.lastSeen);
     html+='<div class="device-card" data-idx="'+idx+'">'+
-      '<div class="dc-header" onclick="toggleDevice('+idx+')">'+
-        '<div class="dc-avatar">'+esc(avatar)+'</div>'+
+      '<div class="dc-header" data-action="toggle" data-idx="'+idx+'">'+
+        '<div class="dc-avatar brand-avatar" data-brand="'+esc((v.brand||'').toLowerCase())+'" data-os="'+esc((v.os||'').toLowerCase())+'">'+getBrandIcon(v)+'</div>'+
         '<div class="dc-info">'+
           '<div class="dc-name">'+esc(deviceName)+' '+banTag+'</div>'+
           '<div class="dc-meta">'+esc(v.browser||'')+(v.androidVer?' · Android '+esc(v.androidVer):'')+(v.kernel?' · 内核'+esc(v.kernel):'')+'</div>'+
@@ -352,14 +380,22 @@ function renderDevices(list){
 }
 
 window.toggleDevice=function(idx){
-  var cards=document.querySelectorAll('.device-card');
-  var card=cards[idx];
+  var card=document.querySelector('.device-card[data-idx="'+idx+'"]');
   if(!card)return;
   var body=card.querySelector('.dc-body');
   if(!body)return;
   body.classList.toggle('open');
   card.classList.toggle('open');
-}
+};
+// Event delegation for device cards
+document.addEventListener('click',function(e){
+  var h=e.target.closest('[data-action="toggle"]');
+  if(h){e.preventDefault();window.toggleDevice(h.getAttribute('data-idx'));return}
+  var b=e.target.closest('[data-action="ban"]');
+  if(b){e.preventDefault();e.stopPropagation();banIP(b.getAttribute('data-ip'),b.getAttribute('data-fid'),'管理员手动封禁');return}
+  var u=e.target.closest('[data-action="unban"]');
+  if(u){e.preventDefault();e.stopPropagation();unbanIP(u.getAttribute('data-ip'),u.getAttribute('data-fid'));return}
+});
 
 function renderDeviceProfile(v){
   v=v||{};
@@ -408,9 +444,9 @@ function renderDeviceProfile(v){
   // Actions
   h+='<div class="dc-actions">';
   if(v.banned){
-    h+='<button class="dc-btn unban" onclick="event.stopPropagation();unbanIP(\''+esc(v.ip)+'\',\''+esc(v.fid||'')+'\')">解封</button>';
+    h+='<button class="dc-btn unban" data-action="unban" data-ip="'+esc(v.ip||'')+'" data-fid="'+esc(v.fid||'')+'">解封</button>';
   }else{
-    h+='<button class="dc-btn ban" onclick="event.stopPropagation();banIP(\''+esc(v.ip)+'\',\''+esc(v.fid||'')+'\',\'管理员手动封禁\')">封禁</button>';
+    h+='<button class="dc-btn ban" data-action="ban" data-ip="'+esc(v.ip||'')+'" data-fid="'+esc(v.fid||'')+'">封禁</button>';
   }
   h+='</div>';
   return h;
