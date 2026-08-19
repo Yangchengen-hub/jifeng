@@ -5,6 +5,7 @@ const db = require('../../lib/db');
 const auth = require('../../lib/auth');
 const email = require('../../lib/email');
 const wa = require('../../lib/webauthn');
+const crypto = require('crypto');
 const enc = require('../../lib/crypto');
 const { setSecurityHeaders } = require('../../lib/api');
 
@@ -618,7 +619,7 @@ async function handleRoute(route, method, req, res, ctx) {
   if (route === 'auth/app/qr' && method === 'POST') {
     const sessionId = crypto.randomBytes(16).toString('hex');
     const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-    await db.set('applogin:' + sessionId, { code, status: 'pending', createdAt: Date.now(), ip }, 300000);
+    await db.set('applogin:' + sessionId, { code, status: 'pending', createdAt: Date.now(), ip }, 300);
     return j({ ok: true, sessionId, code, qr: 'jifeng://login?sid=' + sessionId + '&code=' + code });
   }
 
@@ -663,7 +664,7 @@ async function handleRoute(route, method, req, res, ctx) {
     if (!session) return j({ ok: false, error: '会话不存在' });
     session.status = 'approved';
     session.approvedAt = Date.now();
-    await db.set('applogin:' + sid, session, 60000);
+    await db.set('applogin:' + sid, session, 60);
     try { await email.securityAlert({ type: 'APP授权登录', message: 'IP: ' + (session.ip || ip), meta: { ip: session.ip || ip } }); } catch(e) {}
     return j({ ok: true });
   }
@@ -676,7 +677,7 @@ async function handleRoute(route, method, req, res, ctx) {
     const session = await db.get('applogin:' + sid);
     if (!session) return j({ ok: false, error: '会话不存在' });
     session.status = 'denied';
-    await db.set('applogin:' + sid, session, 60000);
+    await db.set('applogin:' + sid, session, 60);
     return j({ ok: true });
   }
 
