@@ -1,12 +1,12 @@
 {
-  "name": "极风控制台",
-  "short_name": "极风控制",
-  "description": "极风工作室安全管理控制台",
-  "start_url": "/console.html",
+  "name": "极风控制",
+  "short_name": "极风",
+  "description": "极风工作室安全管控中心",
+  "start_url": "/app.html",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#fdf2f0",
+  "background_color": "#fef7f5",
   "theme_color": "#ff6900",
   "icons": [
     {
@@ -22,5 +22,6 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["security", "utilities"]
+  "categories": ["security", "utilities"],
+  "prefer_related_applications": false
 }

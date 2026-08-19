@@ -80,7 +80,7 @@ exports.handler = async function(event, context) {
   try {
     // Ban check (skip for admins)
     const banned = isAdminRequest ? null : await sec.isBanned(ip, fid);
-    if (banned && !['appeals/submit','commitment/submit','commitment/check','site/status','auth/login','auth/captcha','auth/sendcode','auth/verify','auth/trust','auth/check-trust','auth/wa/status','auth/wa/reg-options','auth/wa/reg-verify','auth/wa/login-options','auth/wa/login-verify', 'content'].includes(route)) {
+    if (banned && !['appeals/submit','commitment/submit','commitment/check','site/status','auth/login','auth/captcha','auth/sendcode','auth/verify','auth/trust','auth/check-trust','auth/wa/status','auth/wa/reg-options','auth/wa/reg-verify','auth/wa/login-options','auth/wa/login-verify', 'content', 'auth/app/qr', 'auth/app/poll'].includes(route)) {
       await sec.logSecurityEvent('blocked', '已封禁IP/设备尝试访问 ' + route, { ip, fid });
       return { statusCode: 403, headers: corsHeaders(), body: JSON.stringify({ ok: false, banned: true, permanent: !!banned.permanent, error: banned.permanent ? '永久限制' : '访问受限', appealUrl: './appeal.html' }) };
     }
@@ -339,7 +339,7 @@ async function handleRoute(route, method, req, res, ctx) {
   }
 
   // Admin routes - check auth
-  const adminRoutes = ['announcement/all', 'announcement/publish', 'announcement/delete', 'stats/overview', 'stats/visitors', 'stats/devices', 'stats/security', 'logs/realtime', 'security/ban', 'security/unban', 'security/unban-ip', 'security/permanent', 'security/warnings', 'security/whitelist', 'security/whitelist/add', 'security/whitelist/remove', 'security/events', 'security/score', 'appeals', 'appeals/handle', 'reports/generate', 'reports/send-daily', 'settings', 'devices', 'devices/revoke', 'data/export', 'admin/site-mode', 'admin/report-time', 'security/rules', 'system/health', 'security/clear-bans', 'security/clear-events'];
+  const adminRoutes = ['announcement/all', 'announcement/publish', 'announcement/delete', 'stats/overview', 'stats/visitors', 'stats/devices', 'stats/security', 'logs/realtime', 'security/ban', 'security/unban', 'security/unban-ip', 'security/permanent', 'security/warnings', 'security/whitelist', 'security/whitelist/add', 'security/whitelist/remove', 'security/events', 'security/score', 'appeals', 'appeals/handle', 'reports/generate', 'reports/send-daily', 'settings', 'devices', 'devices/revoke', 'data/export', 'admin/site-mode', 'admin/report-time', 'security/rules', 'system/health', 'security/clear-bans', 'security/clear-events', 'auth/app/pending', 'auth/app/approve', 'auth/app/deny'];
   if (adminRoutes.includes(route)) {
     if (!auth.checkAdmin(req)) return j({ ok: false, error: '未授权' }, 401);
   }
@@ -611,6 +611,73 @@ async function handleRoute(route, method, req, res, ctx) {
     const activeBans = (await db.lrange('bans:list', 0, -1)).filter(b => b.active).length;
     const result = await email.dailyReport('今日访问: ' + visitors + '\n今日攻击: ' + attacks + '\n当前封禁: ' + activeBans);
     return j({ ok: result.ok, error: result.error });
+  }
+
+  // ===== APP AUTHORIZATION =====
+  // Generate QR login session
+  if (route === 'auth/app/qr' && method === 'POST') {
+    const sessionId = crypto.randomBytes(16).toString('hex');
+    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    await db.set('applogin:' + sessionId, { code, status: 'pending', createdAt: Date.now(), ip }, 300000);
+    return j({ ok: true, sessionId, code, qr: 'jifeng://login?sid=' + sessionId + '&code=' + code });
+  }
+
+  // Website polls for approval
+  if (route === 'auth/app/poll' && method === 'GET') {
+    const sid = q.get('sid');
+    if (!sid) return j({ ok: false, error: '缺少会话ID' });
+    const session = await db.get('applogin:' + sid);
+    if (!session) return j({ ok: false, error: '会话不存在或已过期' });
+    if (session.status === 'approved') {
+      const token = auth.sign({ user: 'NUOYAN', role: 'admin', trusted: true });
+      await db.del('applogin:' + sid);
+      return j({ ok: true, approved: true, token });
+    }
+    if (session.status === 'denied') {
+      await db.del('applogin:' + sid);
+      return j({ ok: true, denied: true });
+    }
+    return j({ ok: true, pending: true });
+  }
+
+  // App checks for pending login requests (requires admin auth)
+  if (route === 'auth/app/pending' && method === 'GET') {
+    if (!auth.checkAdmin(req)) return j({ ok: false, error: '未授权' }, 401);
+    const all = await db.keys('applogin:*');
+    const pending = [];
+    for (const key of all) {
+      const session = await db.get(key.replace('jf:', ''));
+      if (session && session.status === 'pending') {
+        pending.push({ sid: key.replace('jf:applogin:', ''), code: session.code, ip: session.ip, createdAt: session.createdAt });
+      }
+    }
+    return j({ ok: true, pending });
+  }
+
+  // App approves login
+  if (route === 'auth/app/approve' && method === 'POST') {
+    if (!auth.checkAdmin(req)) return j({ ok: false, error: '未授权' }, 401);
+    const { sid } = req.body;
+    if (!sid) return j({ ok: false, error: '缺少会话ID' });
+    const session = await db.get('applogin:' + sid);
+    if (!session) return j({ ok: false, error: '会话不存在' });
+    session.status = 'approved';
+    session.approvedAt = Date.now();
+    await db.set('applogin:' + sid, session, 60000);
+    try { await email.securityAlert({ type: 'APP授权登录', message: 'IP: ' + (session.ip || ip), meta: { ip: session.ip || ip } }); } catch(e) {}
+    return j({ ok: true });
+  }
+
+  // App denies login
+  if (route === 'auth/app/deny' && method === 'POST') {
+    if (!auth.checkAdmin(req)) return j({ ok: false, error: '未授权' }, 401);
+    const { sid } = req.body;
+    if (!sid) return j({ ok: false, error: '缺少会话ID' });
+    const session = await db.get('applogin:' + sid);
+    if (!session) return j({ ok: false, error: '会话不存在' });
+    session.status = 'denied';
+    await db.set('applogin:' + sid, session, 60000);
+    return j({ ok: true });
   }
 
   if (route === 'settings') {

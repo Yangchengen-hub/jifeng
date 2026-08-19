@@ -103,6 +103,21 @@
       <button class="btn-login ripple" id="btnStep3">进入控制台</button>
       <button class="btn-back" id="btnBack3">返回</button>
     </div>
+    <div class="step-panel" id="stepApp">
+      <div class="login-logo">
+        <div class="mark">📱</div>
+        <h1>APP 授权登录</h1>
+        <p>打开极风控制 APP 一键授权</p>
+      </div>
+      <div style="text-align:center;margin:20px 0">
+        <div id="qrCode" style="display:inline-block;padding:20px;background:#fff;border-radius:20px;box-shadow:0 8px 30px rgba(0,0,0,0.1)"></div>
+        <div id="qrCodeText" style="margin-top:16px;font-size:15px;font-weight:700;letter-spacing:4px;color:var(--brand);font-family:monospace"></div>
+        <p style="margin-top:10px;font-size:12px;color:var(--text-3)">请在 APP 中确认授权码</p>
+        <div id="qrStatus" style="margin-top:14px;font-size:13px;color:var(--text-3)">等待授权中...</div>
+      </div>
+      <button class="btn-login ripple" id="btnAppLogin" style="display:none">进入控制台</button>
+      <button class="btn-back" id="btnBackApp">返回</button>
+    </div>
     <div class="login-msg" id="loginMsg"></div>
   </div>
 </div>

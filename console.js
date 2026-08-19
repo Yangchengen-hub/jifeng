@@ -836,6 +836,88 @@ function loadHealth(){
   });
 }
 
+
+/* ===== APP AUTHORIZATION LOGIN ===== */
+var appPollTimer=null;
+var appSessionId=null;
+
+function startAppAuth(){
+  showStep('stepApp');
+  $('#qrStatus').textContent='正在生成授权码...';
+  $('#qrCode').innerHTML='';
+  $('#qrCodeText').textContent='';
+  $('#btnAppLogin').style.display='none';
+  api('/api/auth/app/qr',{method:'POST'}).then(function(d){
+    if(!d.ok){$('#qrStatus').textContent='生成失败，请重试';return}
+    appSessionId=d.sessionId;
+    $('#qrCodeText').textContent=d.code;
+    // Generate simple QR-like visual
+    generateQRVisual(d.sessionId+':'+d.code);
+    $('#qrStatus').textContent='等待APP授权中...';
+    pollAppAuth();
+  });
+}
+
+function generateQRVisual(data){
+  // Simple QR-like pattern (not scannable, visual only)
+  var size=21;
+  var canvas=document.createElement('canvas');
+  canvas.width=canvas.height=210;
+  var ctx=canvas.getContext('2d');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,210,210);
+  ctx.fillStyle='#000';
+  var hash=0;
+  for(var i=0;i<data.length;i++){hash=((hash<<5)-hash)+data.charCodeAt(i);hash|=0}
+  var seed=Math.abs(hash);
+  function rng(){seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff}
+  var cell=10;
+  for(var y=0;y<size;y++){
+    for(var x=0;x<size;x++){
+      // Finder patterns
+      var inFinder=(x<7&&y<7)||(x>=size-7&&y<7)||(x<7&&y>=size-7);
+      if(inFinder){
+        var fx=x<7?x:x-(size-7),fy=y<7?y:y-(size-7);
+        var border=fx===0||fx===6||fy===0||fy===6;
+        var center=fx>=2&&fx<=4&&fy>=2&&fy<=4;
+        if(border||center)ctx.fillRect(x*cell,y*cell,cell,cell);
+      }else if(rng()>0.55){
+        ctx.fillRect(x*cell,y*cell,cell,cell);
+      }
+    }
+  }
+  $('#qrCode').appendChild(canvas);
+}
+
+function pollAppAuth(){
+  if(appPollTimer)clearInterval(appPollTimer);
+  appPollTimer=setInterval(function(){
+    if(!appSessionId)return;
+    api('/api/auth/app/poll?sid='+appSessionId).then(function(d){
+      if(d.approved&&d.token){
+        clearInterval(appPollTimer);
+        token=d.token;localStorage.setItem('jf_token',token);
+        $('#qrStatus').textContent='✅ 授权成功！';
+        $('#qrStatus').style.color='var(--green)';
+        setTimeout(function(){location.reload()},800);
+      }else if(d.denied){
+        clearInterval(appPollTimer);
+        $('#qrStatus').textContent='❌ 授权被拒绝';
+        $('#qrStatus').style.color='var(--red)';
+      }
+    });
+  },2000);
+}
+
+if($('#btnAppAuth'))$('#btnAppAuth').onclick=startAppAuth;
+if($('#btnBackApp'))$('#btnBackApp').onclick=function(){
+  if(appPollTimer)clearInterval(appPollTimer);
+  appSessionId=null;
+  showStep('step0');
+};
+if($('#btnAppLogin'))$('#btnAppLogin').onclick=function(){
+  if(token){localStorage.setItem('jf_token',token);location.reload()}
+};
+
 var logCount=0;
 function startRealtime(){
   setInterval(function(){

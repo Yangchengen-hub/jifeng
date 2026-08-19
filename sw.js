@@ -1,15 +1,19 @@
-const CACHE_NAME = 'jifeng-console-v14';
+const CACHE_NAME = 'jifeng-app-v19';
 const STATIC_ASSETS = [
+  '/app.html',
   '/console.html',
   '/console.css',
   '/console.js',
+  '/index.html',
+  '/app.js',
+  '/style.css',
+  '/appeal.html',
   '/avatar.png',
   '/favicon.png',
   '/icon-192.png',
   '/icon-512.png',
   '/manifest.json'
 ];
-
 self.addEventListener('install', function(e) {
   e.waitUntil(
     caches.open(CACHE_NAME).then(function(cache) {
@@ -17,7 +21,6 @@ self.addEventListener('install', function(e) {
     }).then(function(){ return self.skipWaiting() })
   );
 });
-
 self.addEventListener('activate', function(e) {
   e.waitUntil(
     caches.keys().then(function(keys) {
@@ -25,7 +28,6 @@ self.addEventListener('activate', function(e) {
     }).then(function(){ return self.clients.claim() })
   );
 });
-
 self.addEventListener('fetch', function(e) {
   var url = new URL(e.request.url);
   if (url.pathname.startsWith('/api/')) return;
@@ -40,6 +42,30 @@ self.addEventListener('fetch', function(e) {
         return resp;
       }).catch(function(){ return cached });
       return cached || fetchPromise;
+    })
+  );
+});
+// Push notification support
+self.addEventListener('push', function(e) {
+  var data = {};
+  try { data = e.data.json() } catch(err) { data = { title: '极风控制', body: e.data ? e.data.text() : '' } }
+  e.waitUntil(
+    self.registration.showNotification(data.title || '极风控制', {
+      body: data.body || '',
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      vibrate: [200, 100, 200],
+      tag: data.tag || 'jifeng',
+      data: data
+    })
+  );
+});
+self.addEventListener('notificationclick', function(e) {
+  e.notification.close();
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window' }).then(function(clients) {
+      if (clients.length > 0) return clients[0].focus();
+      return self.clients.openWindow('/app.html');
     })
   );
 });

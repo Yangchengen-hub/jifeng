@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="极风控制">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#ff6900">
+<title>极风控制</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root,[data-theme="light"]{
+  --bg:#fef7f5;--card:rgba(255,255,255,0.78);--card-solid:#fff;--card-2:#f5ebe8;
+  --text:#1d1d1f;--text-2:#48484a;--text-3:#8e8e93;--border:rgba(0,0,0,0.06);
+  --brand:#ff6900;--brand-2:#ff9500;--grad:linear-gradient(135deg,#ff6900,#ff9500);
+  --blue:#0a84ff;--green:#30d158;--red:#ff453a;--orange:#ff9f0a;--purple:#bf5af2;
+  --radius:20px;--spring:cubic-bezier(0.34,1.56,0.64,1);--ease:cubic-bezier(0.4,0,0.2,1);
+  --blur:blur(30px) saturate(180%);
+  --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+[data-theme="dark"]{
+  --bg:#000;--card:rgba(28,28,30,0.78);--card-solid:#1c1c1e;--card-2:#2c2c2e;
+  --text:#f5f5f7;--text-2:#aeaeb2;--text-3:#636366;--border:rgba(255,255,255,0.08);
+  color-scheme:dark;
+}
+@media(prefers-color-scheme:dark){[data-theme="auto"]{
+  --bg:#000;--card:rgba(28,28,30,0.78);--card-solid:#1c1c1e;--card-2:#2c2c2e;
+  --text:#f5f5f7;--text-2:#aeaeb2;--text-3:#636366;--border:rgba(255,255,255,0.08);
+  color-scheme:dark;
+}}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','MiSans',sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.5;
+  transition:background .3s,color .3s;
+  -webkit-user-select:none;user-select:none;
+}
+input,button{font-family:inherit;color:inherit;-webkit-user-select:text;user-select:text}
+.glass{background:var(--card);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur)}
+
+/* ===== SPLASH ===== */
+.splash{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);transition:opacity .5s,transform .5s}
+.splash.hide{opacity:0;transform:scale(1.1);pointer-events:none}
+.splash-logo{width:88px;height:88px;border-radius:26px;background:var(--grad);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 40px rgba(255,105,0,0.45);animation:logoIn .8s var(--spring)}
+.splash-logo svg{width:48px;height:48px}
+.splash-text{margin-top:20px;font-size:22px;font-weight:700;letter-spacing:-.3px;animation:fadeUp .6s .2s both}
+.splash-sub{margin-top:6px;font-size:13px;color:var(--text-3);animation:fadeUp .6s .35s both}
+.splash-spinner{margin-top:32px;width:28px;height:28px;border:3px solid var(--card-2);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes logoIn{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== LOGIN ===== */
+.login-screen{position:fixed;inset:0;z-index:500;display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px;overflow-y:auto}
+.login-screen.show{display:flex}
+.login-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:0.2;animation:float 10s ease-in-out infinite}
+.orb:nth-child(1){width:300px;height:300px;background:radial-gradient(circle,#ff8da1,transparent 70%);top:-10%;left:-10%}
+.orb:nth-child(2){width:260px;height:260px;background:radial-gradient(circle,#ffb088,transparent 70%);bottom:-8%;right:-10%;animation-delay:-5s}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-30px)}}
+.login-card{position:relative;width:100%;max-width:380px;padding:36px 28px;border-radius:32px;background:var(--card);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:.5px solid var(--border);box-shadow:0 24px 80px rgba(0,0,0,0.08)}
+.bio-icon{width:72px;height:72px;border-radius:24px;background:var(--grad);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 8px 28px rgba(255,105,0,0.4);cursor:pointer;transition:transform .2s var(--spring)}
+.bio-icon:active{transform:scale(.92)}
+.bio-icon svg{width:36px;height:36px;color:#fff}
+.login-title{text-align:center;font-size:22px;font-weight:700;margin-bottom:6px}
+.login-desc{text-align:center;font-size:13px;color:var(--text-3);margin-bottom:24px;line-height:1.6}
+.bio-btn{width:100%;padding:16px;border:none;border-radius:18px;background:var(--grad);color:#fff;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(255,105,0,0.35);transition:transform .15s var(--spring);position:relative;overflow:hidden}
+.bio-btn:active{transform:scale(.97)}
+.bio-btn .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.4);transform:scale(0);animation:ripple .5s ease-out;pointer-events:none}
+@keyframes ripple{to{transform:scale(3);opacity:0}}
+.login-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--text-3);font-size:12px}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.login-input{width:100%;padding:14px 16px;border-radius:16px;border:1px solid var(--border);background:var(--card-solid);font-size:15px;margin-bottom:10px;transition:border-color .2s,box-shadow .2s}
+.login-input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(255,105,0,0.12)}
+.login-btn-alt{width:100%;padding:14px;border:1px solid var(--border);border-radius:16px;background:transparent;font-size:15px;font-weight:600;cursor:pointer;transition:background .15s}
+.login-btn-alt:active{background:var(--card-2)}
+.login-msg{margin-top:14px;text-align:center;font-size:13px;min-height:20px}
+.login-msg.error{color:var(--red)}
+.login-msg.ok{color:var(--green)}
+
+/* ===== APP MAIN ===== */
+.app{display:none;flex-direction:column;height:100%;padding-top:var(--safe-top)}
+.app.show{display:flex}
+.app-header{padding:12px 20px 8px;display:flex;align-items:center;justify-content:space-between}
+.app-header h1{font-size:28px;font-weight:800;letter-spacing:-.5px}
+.app-header .avatar{width:40px;height:40px;border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(255,105,0,0.3)}
+.app-header .avatar img{width:100%;height:100%;object-fit:cover}
+.app-content{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 100px;-webkit-overflow-scrolling:touch}
+.app-content::-webkit-scrollbar{display:none}
+
+/* Status card */
+.status-card{border-radius:var(--radius);padding:20px;margin-bottom:14px;position:relative;overflow:hidden}
+.status-card.normal{background:linear-gradient(135deg,rgba(48,209,88,0.15),rgba(10,132,255,0.1));border:1px solid rgba(48,209,88,0.2)}
+.status-card.maintenance{background:linear-gradient(135deg,rgba(255,159,10,0.15),rgba(255,149,0,0.1));border:1px solid rgba(255,159,10,0.2)}
+.status-card.shutdown{background:linear-gradient(135deg,rgba(255,69,58,0.15),rgba(255,69,58,0.05));border:1px solid rgba(255,69,58,0.2)}
+.status-dot{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;margin-bottom:8px}
+.status-dot::before{content:'';width:8px;height:8px;border-radius:50%;animation:pulse 2s infinite}
+.status-card.normal .status-dot::before{background:var(--green)}
+.status-card.maintenance .status-dot::before{background:var(--orange)}
+.status-card.shutdown .status-dot::before{background:var(--red)}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 currentColor}50%{box-shadow:0 0 0 6px transparent}}
+.status-card.normal .status-dot{color:var(--green)}
+.status-card.maintenance .status-dot{color:var(--orange)}
+.status-card.shutdown .status-dot{color:var(--red)}
+.status-title{font-size:20px;font-weight:800;margin-bottom:4px}
+.status-sub{font-size:13px;color:var(--text-3)}
+
+/* Pending approval banner */
+.approval-banner{border-radius:var(--radius);padding:16px;margin-bottom:14px;background:linear-gradient(135deg,rgba(255,105,0,0.15),rgba(191,90,242,0.1));border:1px solid rgba(255,105,0,0.25);animation:glow 2s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(255,105,0,0.2)}50%{box-shadow:0 0 20px 4px rgba(255,105,0,0.15)}}
+.approval-banner h3{font-size:15px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.approval-banner p{font-size:12px;color:var(--text-3);margin-bottom:12px}
+.approval-code{font-size:32px;font-weight:800;letter-spacing:6px;text-align:center;padding:12px;background:var(--card-solid);border-radius:14px;margin-bottom:12px;font-family:'SF Mono',Menlo,monospace;color:var(--brand)}
+.approval-actions{display:flex;gap:10px}
+.approval-actions button{flex:1;padding:12px;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;transition:transform .15s var(--spring)}
+.approval-actions button:active{transform:scale(.96)}
+.btn-approve{background:var(--green);color:#fff}
+.btn-deny{background:rgba(255,69,58,0.15);color:var(--red)}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);transition:transform .15s var(--spring)}
+.stat-box:active{transform:scale(.96)}
+.stat-ico{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.stat-ico svg{width:18px;height:18px}
+.stat-val{font-size:26px;font-weight:800;letter-spacing:-.5px;line-height:1}
+.stat-label{font-size:12px;color:var(--text-3);margin-top:4px}
+
+/* Quick actions */
+.section-title{font-size:13px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin:18px 4px 10px}
+.actions-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.action-btn{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:transform .15s var(--spring);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur)}
+.action-btn:active{transform:scale(.92)}
+.action-ico{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center}
+.action-ico svg{width:20px;height:20px}
+.action-label{font-size:11px;font-weight:600;color:var(--text-2)}
+
+/* Mode switcher */
+.mode-switch{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:6px;display:flex;gap:4px;margin-bottom:14px;backdrop-filter:var(--blur)}
+.mode-btn{flex:1;padding:12px 8px;border:none;border-radius:14px;background:transparent;font-size:13px;font-weight:600;cursor:pointer;transition:all .25s var(--spring);display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--text-2)}
+.mode-btn.active{background:var(--grad);color:#fff;box-shadow:0 4px 14px rgba(255,105,0,0.3)}
+.mode-btn .mode-emoji{font-size:20px}
+
+/* Event feed */
+.event-list{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;backdrop-filter:var(--blur);margin-bottom:14px}
+.event-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.event-item:last-child{border-bottom:none}
+.event-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.event-dot.attack{background:var(--red)}
+.event-dot.ban{background:var(--orange)}
+.event-dot.info{background:var(--blue)}
+.event-dot.visit{background:var(--green)}
+.event-dot.auth{background:var(--purple)}
+.event-msg{flex:1;font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.event-time{font-size:11px;color:var(--text-3);flex-shrink:0}
+
+/* Bottom nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;display:flex;justify-content:space-around;padding:8px 0 calc(8px + var(--safe-bottom));background:var(--card);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-top:1px solid var(--border)}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 16px;border:none;background:transparent;cursor:pointer;color:var(--text-3);transition:color .2s;position:relative}
+.nav-item.active{color:var(--brand)}
+.nav-item svg{width:24px;height:24px;transition:transform .25s var(--spring)}
+.nav-item.active svg{transform:scale(1.1)}
+.nav-item span{font-size:10px;font-weight:600}
+.nav-badge{position:absolute;top:2px;right:8px;min-width:16px;height:16px;border-radius:8px;background:var(--red);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px}
+
+/* Pages */
+.page{display:none;animation:pageIn .3s var(--ease)}
+.page.active{display:block}
+@keyframes pageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* Visitor list */
+.visitor-item{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;backdrop-filter:var(--blur);transition:transform .15s}
+.visitor-item:active{transform:scale(.98)}
+.visitor-avatar{width:44px;height:44px;border-radius:14px;overflow:hidden;background:var(--card-2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.visitor-avatar img{width:100%;height:100%;object-fit:cover}
+.visitor-info{flex:1;min-width:0}
+.visitor-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.visitor-meta{font-size:11px;color:var(--text-3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.visitor-badge{font-size:10px;padding:3px 8px;border-radius:8px;font-weight:700;flex-shrink:0}
+.vb-normal{background:rgba(48,209,88,0.15);color:var(--green)}
+.vb-warn{background:rgba(255,159,10,0.15);color:var(--orange)}
+.vb-banned{background:rgba(255,69,58,0.15);color:var(--red)}
+
+/* Settings */
+.setting-item{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;backdrop-filter:var(--blur)}
+.setting-item .si-label{font-size:14px;font-weight:600}
+.setting-item .si-sub{font-size:11px;color:var(--text-3);margin-top:2px}
+.toggle{width:50px;height:30px;border-radius:15px;background:rgba(120,128,128,0.32);position:relative;cursor:pointer;transition:background .3s;flex-shrink:0;border:none;padding:0}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .3s var(--spring);box-shadow:0 2px 6px rgba(0,0,0,0.2)}
+.toggle.on{background:var(--brand)}
+.toggle.on::after{left:23px}
+
+/* Toast */
+.toast{position:fixed;top:calc(60px + var(--safe-top));left:50%;transform:translateX(-50%) translateY(-20px);background:var(--card-solid);padding:12px 24px;border-radius:16px;font-size:14px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,0.15);z-index:2000;opacity:0;transition:all .3s var(--spring);pointer-events:none;border:1px solid var(--border)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{color:var(--green)}
+.toast.err{color:var(--red)}
+
+/* Pull to refresh */
+.ptr{text-align:center;padding:10px;color:var(--text-3);font-size:12px;display:none}
+.ptr.show{display:block}
+
+/* Biometric scanning animation */
+.bio-scan{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.6);backdrop-filter:blur(20px);display:none;align-items:center;justify-content:center;flex-direction:column}
+.bio-scan.show{display:flex}
+.bio-scan-ring{width:120px;height:120px;border-radius:50%;border:3px solid rgba(255,255,255,0.2);position:relative;display:flex;align-items:center;justify-content:center}
+.bio-scan-ring::before{content:'';position:absolute;inset:-3px;border-radius:50%;border:3px solid transparent;border-top-color:var(--brand);animation:spin 1s linear infinite}
+.bio-scan-ring svg{width:50px;height:50px;color:#fff}
+.bio-scan-text{color:#fff;margin-top:24px;font-size:16px;font-weight:600}
+.bio-scan-sub{color:rgba(255,255,255,0.6);margin-top:6px;font-size:13px}
+</style>
+</head>
+<body>
+
+<!-- Splash -->
+<div class="splash" id="splash">
+  <div class="splash-logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+  </div>
+  <div class="splash-text">极风控制</div>
+  <div class="splash-sub">安全管控中心</div>
+  <div class="splash-spinner"></div>
+</div>
+
+<!-- Login -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-bg"><div class="orb"></div><div class="orb"></div></div>
+  <div class="login-card">
+    <div class="bio-icon" id="bioIcon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/><path d="M12 7v4l2 2"/></svg>
+    </div>
+    <div class="login-title">极风控制</div>
+    <div class="login-desc">使用指纹或面容快速登录<br>安全管控尽在掌握</div>
+    <button class="bio-btn" id="btnBioLogin">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/></svg>
+      指纹/面容登录
+    </button>
+    <div class="login-divider">或使用密码</div>
+    <input class="login-input" type="text" id="loginUser" placeholder="管理员账号" value="NUOYAN" autocomplete="username">
+    <input class="login-input" type="password" id="loginPass" placeholder="密码" autocomplete="current-password">
+    <button class="login-btn-alt" id="btnPassLogin">密码登录</button>
+    <div class="login-msg" id="loginMsg"></div>
+  </div>
+</div>
+
+<!-- Biometric scanning overlay -->
+<div class="bio-scan" id="bioScan">
+  <div class="bio-scan-ring">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/></svg>
+  </div>
+  <div class="bio-scan-text">正在验证身份</div>
+  <div class="bio-scan-sub">请将手指放在指纹传感器上</div>
+</div>
+
+<!-- App -->
+<div class="app" id="app">
+  <header class="app-header">
+    <h1 id="pageTitle">概览</h1>
+    <div class="avatar"><img src="avatar.png" alt="管理员"></div>
+  </header>
+
+  <div class="app-content" id="appContent">
+    <!-- Overview page -->
+    <div class="page active" id="page-home">
+      <div class="status-card normal" id="statusCard">
+        <div class="status-dot" id="statusDot">运行中</div>
+        <div class="status-title" id="statusTitle">网站正常运行</div>
+        <div class="status-sub" id="statusSub">所有系统正常 · 实时监控中</div>
+      </div>
+
+      <div id="approvalArea"></div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-ico" style="background:rgba(10,132,255,0.15);color:var(--blue)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+          <div class="stat-val" id="statVisitors">0</div>
+          <div class="stat-label">今日访客</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-ico" style="background:rgba(255,69,58,0.15);color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="stat-val" id="statAttacks">0</div>
+          <div class="stat-label">攻击拦截</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-ico" style="background:rgba(255,159,10,0.15);color:var(--orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
+          <div class="stat-val" id="statBans">0</div>
+          <div class="stat-label">封禁中</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-ico" style="background:rgba(48,209,88,0.15);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <div class="stat-val" id="statScore">--</div>
+          <div class="stat-label">安全评分</div>
+        </div>
+      </div>
+
+      <div class="section-title">网站控制</div>
+      <div class="mode-switch">
+        <button class="mode-btn active" data-mode="normal" onclick="setMode('normal')">
+          <span class="mode-emoji">✅</span><span>正常</span>
+        </button>
+        <button class="mode-btn" data-mode="maintenance" onclick="setMode('maintenance')">
+          <span class="mode-emoji">🔧</span><span>维护</span>
+        </button>
+        <button class="mode-btn" data-mode="shutdown" onclick="setMode('shutdown')">
+          <span class="mode-emoji">🚫</span><span>关停</span>
+        </button>
+      </div>
+
+      <div class="section-title">快捷操作</div>
+      <div class="actions-grid">
+        <button class="action-btn" onclick="switchPage('visitors')">
+          <div class="action-ico" style="background:rgba(10,132,255,0.15);color:var(--blue)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+          <span class="action-label">访客</span>
+        </button>
+        <button class="action-btn" onclick="switchPage('security')">
+          <div class="action-ico" style="background:rgba(255,69,58,0.15);color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <span class="action-label">安全</span>
+        </button>
+        <button class="action-btn" onclick="refreshData()">
+          <div class="action-ico" style="background:rgba(48,209,88,0.15);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
+          <span class="action-label">刷新</span>
+        </button>
+        <button class="action-btn" onclick="openConsole()">
+          <div class="action-ico" style="background:rgba(191,90,242,0.15);color:var(--purple)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+          <span class="action-label">控制台</span>
+        </button>
+      </div>
+
+      <div class="section-title">最新动态</div>
+      <div class="event-list" id="eventList"><div style="padding:20px;text-align:center;color:var(--text-3);font-size:13px">加载中...</div></div>
+    </div>
+
+    <!-- Visitors page -->
+    <div class="page" id="page-visitors">
+      <div class="section-title" style="margin-top:0">最近访客</div>
+      <div id="visitorList"><div style="padding:20px;text-align:center;color:var(--text-3);font-size:13px">加载中...</div></div>
+    </div>
+
+    <!-- Security page -->
+    <div class="page" id="page-security">
+      <div class="section-title" style="margin-top:0">安全概览</div>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-ico" style="background:rgba(255,69,58,0.15);color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="stat-val" id="secTotal">0</div>
+          <div class="stat-label">总拦截</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-ico" style="background:rgba(255,159,10,0.15);color:var(--orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+          <div class="stat-val" id="secToday">0</div>
+          <div class="stat-label">今日</div>
+        </div>
+      </div>
+      <div class="section-title">安全事件</div>
+      <div class="event-list" id="securityEvents"><div style="padding:20px;text-align:center;color:var(--text-3);font-size:13px">加载中...</div></div>
+    </div>
+
+    <!-- Settings page -->
+    <div class="page" id="page-settings">
+      <div class="section-title" style="margin-top:0">安全策略</div>
+      <div class="setting-item"><div><div class="si-label">自动封禁</div><div class="si-sub">检测到攻击自动封禁IP</div></div><button class="toggle on" id="setAutoBan"></button></div>
+      <div class="setting-item"><div><div class="si-label">邮件告警</div><div class="si-sub">安全事件实时邮件通知</div></div><button class="toggle on" id="setEmailAlert"></button></div>
+      <div class="setting-item"><div><div class="si-label">反调试保护</div><div class="si-sub">检测DevTools并记录</div></div><button class="toggle on" id="setAntiDebug"></button></div>
+      <div class="setting-item"><div><div class="si-label">每日报告</div><div class="si-sub">每天自动发送运维日报</div></div><button class="toggle on" id="setDailyReport"></button></div>
+
+      <div class="section-title">账号</div>
+      <div class="setting-item" onclick="registerBiometric()" style="cursor:pointer">
+        <div><div class="si-label">生物识别</div><div class="si-sub">注册指纹/面容用于快速登录</div></div>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--text-3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="setting-item" onclick="logout()" style="cursor:pointer">
+        <div><div class="si-label" style="color:var(--red)">退出登录</div></div>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--red)" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </div>
+
+      <div class="section-title">关于</div>
+      <div class="setting-item"><div><div class="si-label">极风控制</div><div class="si-sub">安全管控中心 APP</div></div><div style="color:var(--green);font-size:13px;font-weight:700">在线</div></div>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-page="home" onclick="switchPage('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>首页</span>
+    </button>
+    <button class="nav-item" data-page="visitors" onclick="switchPage('visitors')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+      <span>访客</span>
+    </button>
+    <button class="nav-item" data-page="security" onclick="switchPage('security')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>安全</span>
+      <div class="nav-badge" id="navBadge" style="display:none">0</div>
+    </button>
+    <button class="nav-item" data-page="settings" onclick="switchPage('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span>设置</span>
+    </button>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var API=window.JF_API||'';
+var token=localStorage.getItem('jf_token')||'';
+var refreshTimer=null;
+var approvalTimer=null;
+
+function $(s){return document.querySelector(s)}
+function $$(s){return document.querySelectorAll(s)}
+function toast(msg,type){var t=$('#toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');setTimeout(function(){t.className='toast'},2500)}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+function api(path,opts){
+  opts=opts||{};
+  var headers={'Content-Type':'application/json'};
+  if(token)headers['Authorization']='Bearer '+token;
+  return fetch(API+'/api/'+path,{method:opts.method||'GET',headers:headers,body:opts.body?JSON.stringify(opts.body):undefined})
+    .then(function(r){return r.json()}).catch(function(){return{ok:false}});
+}
+
+// ===== SPLASH =====
+setTimeout(function(){$('#splash').classList.add('hide');checkAuth()},1500);
+
+function checkAuth(){
+  if(token){
+    api('stats/overview').then(function(d){
+      if(d.ok){showApp()}else{showLogin()}
+    });
+  }else{showLogin()}
+}
+
+function showLogin(){$('#loginScreen').classList.add('show')}
+function showApp(){$('#loginScreen').classList.remove('show');$('#app').classList.add('show');refreshData();startTimers();registerSW()}
+
+// ===== PASSWORD LOGIN =====
+$('#btnPassLogin').onclick=function(){
+  var u=$('#loginUser').value.trim(),p=$('#loginPass').value;
+  if(!u||!p){$('#loginMsg').textContent='请输入账号密码';$('#loginMsg').className='login-msg error';return}
+  $('#loginMsg').textContent='登录中...';$('#loginMsg').className='login-msg';
+  api('auth/login',{method:'POST',body:{username:u,password:p}}).then(function(d){
+    if(d.ok&&d.token){token=d.token;localStorage.setItem('jf_token',token);$('#loginMsg').textContent='登录成功';$('#loginMsg').className='login-msg ok';setTimeout(showApp,500)}
+    else{$('#loginMsg').textContent=d.error||'登录失败';$('#loginMsg').className='login-msg error'}
+  });
+};
+
+// ===== BIOMETRIC LOGIN =====
+$('#btnBioLogin').onclick=function(){doBiometricLogin()};
+$('#bioIcon').onclick=function(){doBiometricLogin()};
+
+function doBiometricLogin(){
+  if(!window.PublicKeyCredential){toast('此设备不支持生物识别','err');return}
+  $('#bioScan').classList.add('show');
+  $('#bioScan').querySelector('.bio-scan-sub').textContent='请将手指放在指纹传感器上';
+  api('auth/wa/login-options',{method:'POST'}).then(function(d){
+    if(!d.ok||!d.options){throw new Error(d.error||'无注册凭证')}
+    var opts=d.options;
+    opts.challenge=base64ToBuf(opts.challenge);
+    opts.allowCredentials=(opts.allowCredentials||[]).map(function(c){return{id:base64ToBuf(c.id),type:c.type,transports:c.transports}});
+    return navigator.credentials.get({publicKey:opts});
+  }).then(function(assertion){
+    if(!assertion)throw new Error('验证取消');
+    var authData={
+      id:bufToBase64(assertion.rawId),
+      response:{
+        authenticatorData:bufToBase64(assertion.response.authenticatorData),
+        clientDataJSON:bufToBase64(assertion.response.clientDataJSON),
+        signature:bufToBase64(assertion.response.signature)
+      },
+      type:assertion.type
+    };
+    return api('auth/wa/login-verify',{method:'POST',body:{credential:authData}});
+  }).then(function(d){
+    $('#bioScan').classList.remove('show');
+    if(d.ok&&d.token){token=d.token;localStorage.setItem('jf_token',token);toast('验证成功','ok');setTimeout(showApp,500)}
+    else{toast(d.error||'验证失败','err')}
+  }).catch(function(e){
+    $('#bioScan').classList.remove('show');
+    if(e.message&&e.message.indexOf('无注册凭证')>=0){toast('请先注册生物识别','err')}
+    else if(e.name!=='NotAllowedError'){toast('生物识别不可用，请用密码登录','err')}
+  });
+}
+
+function registerBiometric(){
+  if(!window.PublicKeyCredential){toast('此设备不支持生物识别','err');return}
+  api('auth/wa/reg-options',{method:'POST'}).then(function(d){
+    if(!d.ok)throw new Error(d.error||'注册失败');
+    var opts=d.options;
+    opts.challenge=base64ToBuf(opts.challenge);
+    opts.user.id=base64ToBuf(opts.user.id);
+    opts.excludeCredentials=(opts.excludeCredentials||[]).map(function(c){return{id:base64ToBuf(c.id),type:c.type}});
+    return navigator.credentials.create({publicKey:opts});
+  }).then(function(cred){
+    if(!cred)throw new Error('注册取消');
+    var data={
+      id:bufToBase64(cred.rawId),
+      response:{
+        attestationObject:bufToBase64(cred.response.attestationObject),
+        clientDataJSON:bufToBase64(cred.response.clientDataJSON)
+      },
+      type:cred.type
+    };
+    return api('auth/wa/reg-verify',{method:'POST',body:{credential:data}});
+  }).then(function(d){
+    if(d.ok)toast('生物识别注册成功','ok');else toast(d.error||'注册失败','err');
+  }).catch(function(e){toast(e.message||'注册失败','err')});
+}
+
+function base64ToBuf(b64){var bin=atob(b64);var buf=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);return buf.buffer}
+function bufToBase64(buf){var bin='';var bytes=new Uint8Array(buf);for(var i=0;i<bytes.length;i++)bin+=String.fromCharCode(bytes[i]);return btoa(bin)}
+
+// ===== NAVIGATION =====
+function switchPage(page){
+  $$('.page').forEach(function(p){p.classList.remove('active')});
+  $$('.nav-item').forEach(function(n){n.classList.remove('active')});
+  $('#page-'+page).classList.add('active');
+  $('.nav-item[data-page="'+page+'"]').classList.add('active');
+  var titles={home:'概览',visitors:'访客监控',security:'安全中心',settings:'设置'};
+  $('#pageTitle').textContent=titles[page]||'';
+  $('#appContent').scrollTop=0;
+  if(page==='visitors')loadVisitors();
+  if(page==='security')loadSecurity();
+}
+
+// ===== DATA =====
+function refreshData(){
+  api('stats/overview').then(function(d){
+    if(!d.ok)return;
+    var s=d.data;
+    $('#statVisitors').textContent=s.todayVisitors||0;
+    $('#statAttacks').textContent=s.todayAttacks||0;
+    $('#statBans').textContent=s.activeBans||0;
+    $('#statScore').textContent=s.securityScore||'--';
+    // Status card
+    var mode=s.siteMode||'normal';
+    var card=$('#statusCard'),dot=$('#statusDot'),title=$('#statusTitle'),sub=$('#statusSub');
+    card.className='status-card '+mode;
+    if(mode==='maintenance'){dot.textContent='维护中';title.textContent='网站维护中';sub.textContent='维护模式已启用'}
+    else if(mode==='shutdown'){dot.textContent='已关停';title.textContent='网站已关停';sub.textContent='所有访问已被拦截'}
+    else{dot.textContent='运行中';title.textContent='网站正常运行';sub.textContent='所有系统正常 · 实时监控中'}
+    // Mode buttons
+    $$('.mode-btn').forEach(function(b){b.classList.toggle('active',b.dataset.mode===mode)});
+  });
+  loadEvents();
+  checkApprovals();
+}
+
+function loadEvents(){
+  api('logs/realtime').then(function(d){
+    if(!d.ok||!d.data||!d.data.length){$('#eventList').innerHTML='<div style="padding:20px;text-align:center;color:var(--text-3);font-size:13px">暂无事件</div>';return}
+    $('#eventList').innerHTML=d.data.slice(0,15).map(function(l){
+      return '<div class="event-item"><div class="event-dot '+l.type+'"></div><div class="event-msg">'+esc(l.message)+'</div><div class="event-time">'+(l.timeStr||'')+'</div></div>';
+    }).join('');
+  });
+}
+
+function loadVisitors(){
+  api('stats/devices').then(function(d){
+    if(!d.ok||!d.data||!d.data.length){$('#visitorList').innerHTML='<div style="padding:20px;text-align:center;color:var(--text-3);font-size:13px">暂无访客</div>';return}
+    $('#visitorList').innerHTML=d.data.slice(0,30).map(function(v){
+      var badge=v.banned?'<span class="visitor-badge vb-banned">封禁</span>':(v.warnings?'<span class="visitor-badge vb-warn">警告</span>':'<span class="visitor-badge vb-normal">正常</span>');
+      var name=v.brand?v.brand+' '+v.model:(v.os||'未知设备');
+      var meta=v.browser+' · '+(v.ip||'')+' · '+v.visits+'次访问';
+      return '<div class="visitor-item"><div class="visitor-avatar">'+brandIcon(v)+'</div><div class="visitor-info"><div class="visitor-name">'+esc(name)+'</div><div class="visitor-meta">'+esc(meta)+'</div></div>'+badge+'</div>';
+    }).join('');
+  });
+}
+
+function loadSecurity(){
+  api('stats/security').then(function(d){
+    if(!d.ok)return;
+    var s=d.data;
+    $('#secTotal').textContent=s.totalAttacks||0;
+    $('#secToday').textContent=s.todayAttacks||0;
+  });
+  api('security/events').then(function(d){
+    if(!d.ok||!d.data||!d.data.length){$('#securityEvents').innerHTML='<div style="padding:20px;text-align:center;color:var(--text-3);font-size:13px">暂无事件</div>';return}
+    $('#securityEvents').innerHTML=d.data.slice(0,30).map(function(l){
+      return '<div class="event-item"><div class="event-dot '+(l.type||'info')+'"></div><div class="event-msg">'+esc(l.message||l.type||'')+'</div><div class="event-time">'+(l.timeStr||'')+'</div></div>';
+    }).join('');
+    var count=d.data.length;
+    if(count>0){$('#navBadge').style.display='flex';$('#navBadge').textContent=count>99?'99+':count}
+  });
+}
+
+function brandIcon(v){
+  var b=(v.brand||'').toLowerCase(),os=(v.os||'').toLowerCase();
+  var svg=function(p){return '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">'+p+'</svg>'};
+  if(b.includes('xiaomi')||b.includes('redmi'))return svg('<rect x="2" y="2" width="20" height="20" rx="4" fill="#FF6900"/><text x="12" y="16.5" text-anchor="middle" fill="#fff" font-size="11" font-weight="800">MI</text>');
+  if(b.includes('huawei'))return svg('<path d="M12 2C8 2 4 5 4 10c0 4 3 7 8 12 5-5 8-8 8-12 0-5-4-8-8-8z" fill="#CF0A2C"/>');
+  if(b.includes('samsung'))return svg('<ellipse cx="12" cy="12" rx="11" ry="5" fill="none" stroke="#1428A0" stroke-width="2"/>');
+  if(b.includes('apple')||os.includes('ios'))return svg('<path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>');
+  if(os.includes('windows'))return svg('<path d="M3 5.5L10.5 4.5V11.5H3V5.5M11.5 4.3L21 3V11.5H11.5V4.3M3 12.5H10.5V19.5L3 18.5V12.5M11.5 12.5H21V21L11.5 19.7V12.5Z" fill="#0078D4"/>');
+  if(os.includes('android'))return svg('<path d="M17.5 10.5a1 1 0 110 2 1 1 0 010-2zm-11 0a1 1 0 110 2 1 1 0 010-2zM12 2a1 1 0 011 1v1.07A5 5 0 0117.5 9v1h-11V9A5 5 0 0111 4.07V3a1 1 0 011-1z" fill="#3DDC84"/>');
+  return svg('<circle cx="12" cy="12" r="10" fill="var(--text-3)"/>');
+}
+
+// ===== SITE MODE =====
+function setMode(mode){
+  api('admin/site-mode',{method:'POST',body:{mode:mode}}).then(function(d){
+    if(d.ok){toast(mode==='normal'?'已恢复正常':mode==='maintenance'?'已进入维护模式':'已关停网站','ok');refreshData()}
+    else toast(d.error||'操作失败','err');
+  });
+}
+
+// ===== APPROVALS =====
+function checkApprovals(){
+  api('auth/app/pending').then(function(d){
+    if(!d.ok||!d.pending||!d.pending.length){$('#approvalArea').innerHTML='';return}
+    var area=$('#approvalArea');
+    area.innerHTML=d.pending.map(function(p){
+      return '<div class="approval-banner"><h3>🔐 登录授权请求</h3><p>IP: '+esc(p.ip||'未知')+' · 请确认是否为本人操作</p><div class="approval-code">'+esc(p.code)+'</div><div class="approval-actions"><button class="btn-deny" onclick="denyLogin(\''+p.sid+'\')">拒绝</button><button class="btn-approve" onclick="approveLogin(\''+p.sid+'\')">一键授权</button></div></div>';
+    }).join('');
+  });
+}
+
+function approveLogin(sid){
+  api('auth/app/approve',{method:'POST',body:{sid:sid}}).then(function(d){
+    if(d.ok){toast('已授权登录','ok');checkApprovals()}else toast(d.error||'授权失败','err');
+  });
+}
+function denyLogin(sid){
+  api('auth/app/deny',{method:'POST',body:{sid:sid}}).then(function(d){
+    if(d.ok){toast('已拒绝','ok');checkApprovals()}else toast(d.error||'操作失败','err');
+  });
+}
+
+// ===== SETTINGS TOGGLES =====
+$$('.toggle').forEach(function(t){
+  t.onclick=function(){
+    t.classList.toggle('on');
+    var key=t.id.replace('set','').replace(/^[A-Z]/,function(c){return c.toLowerCase()});
+    var map={autoBan:'autoBan',emailAlert:'emailAlert',antiDebug:'antiDebug',dailyReport:'dailyReport'};
+    var setting=map[t.id];
+    if(setting)api('settings',{method:'POST',body:{key:setting,value:t.classList.contains('on')}});
+  };
+});
+
+function openConsole(){window.location.href='console.html'}
+function logout(){token='';localStorage.removeItem('jf_token');$('#app').classList.remove('show');showLogin()}
+
+// ===== TIMERS =====
+function startTimers(){
+  if(refreshTimer)clearInterval(refreshTimer);
+  refreshTimer=setInterval(function(){
+    if($('#page-home').classList.contains('active'))refreshData();
+    if($('#page-visitors').classList.contains('active'))loadVisitors();
+    if($('#page-security').classList.contains('active'))loadSecurity();
+  },5000);
+  if(approvalTimer)clearInterval(approvalTimer);
+  approvalTimer=setInterval(checkApprovals,3000);
+}
+
+// ===== SERVICE WORKER =====
+function registerSW(){if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){})}
+
+// Ripple effect
+document.addEventListener('click',function(e){
+  var btn=e.target.closest('.bio-btn');
+  if(!btn)return;
+  var r=document.createElement('span');r.className='ripple';
+  var rect=btn.getBoundingClientRect();
+  var size=Math.max(rect.width,rect.height);
+  r.style.width=r.style.height=size+'px';
+  r.style.left=(e.clientX-rect.left-size/2)+'px';
+  r.style.top=(e.clientY-rect.top-size/2)+'px';
+  btn.appendChild(r);
+  setTimeout(function(){r.remove()},500);
+});
+</script>
+</body>
+</html>
