@@ -241,7 +241,7 @@ function renderLineChart(id,labels,datasets){
   var st=(W-pad*2)/(labels.length-1||1);
   var gridLines='';for(var i=0;i<=4;i++){var y=pad+(H-pad*2)*i/4;gridLines+='<line x1="'+pad+'" y1="'+y+'" x2="'+(W-pad)+'" y2="'+y+'" stroke="rgba(128,128,128,0.1)" stroke-width="1"/>'}
   var yLabels='';for(var i=0;i<=4;i++){var y=pad+(H-pad*2)*i/4;yLabels+='<text x="'+(pad-6)+'" y="'+(y+3)+'" text-anchor="end" fill="#999" font-size="9">'+Math.round(max*(1-i/4))+'</text>'}
-  var xLabels='';labels.forEach(function(l,i){if(i%Math.ceil(labels.length/8)===0)xLabels+='<text x="'+(pad+i*st)+'" y="'+(H-8)+'" text-anchor="middle" fill="#999" font-size="9">'+l+'</text>'});
+  var xLabels='';var step=Math.ceil(labels.length/8);labels.forEach(function(l,i){if(i%step===0||i===labels.length-1)xLabels+='<text x="'+(pad+i*st)+'" y="'+(H-8)+'" text-anchor="middle" fill="#999" font-size="9">'+l+'</text>'});
   var paths='';datasets.forEach(function(ds){
     var pts='';ds.data.forEach(function(v,i){var x=pad+i*st,y=pad+(H-pad*2)*(1-v/max);pts+=(i===0?'M':'L')+x+','+y+' '});
     var area=pts+'L'+(pad+(ds.data.length-1)*st)+','+(H-pad)+' L'+pad+','+(H-pad)+' Z';
