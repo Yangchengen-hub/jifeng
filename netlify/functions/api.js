@@ -436,10 +436,22 @@ async function handleRoute(route, method, req, res, ctx) {
       if (v.actions && v.actions.length) {
         v.actions.forEach(function(a) { g.actions.push(a); });
       }
-      // Keep latest device info
-      if (v.brand) g.brand = v.brand;
-      if (v.model) g.model = v.model;
-      if (v.browser) g.browser = v.browser;
+      // Re-detect device info from UA for accuracy
+      if (v.ua) {
+        var dev = sec.getDeviceDetail(v.ua);
+        if (dev.brand) g.brand = dev.brand;
+        if (dev.model) g.model = dev.model;
+        if (dev.kernel) g.kernel = dev.kernel;
+        if (dev.androidVer) g.androidVer = dev.androidVer;
+        if (dev.iosVer) g.iosVer = dev.iosVer;
+        var br = sec.getBrowser(v.ua);
+        if (br) g.browser = br + ' / ' + sec.getOS(v.ua);
+        if (!g.os || g.os === 'Android' || g.os === 'iOS') g.os = sec.getOS(v.ua);
+      } else {
+        if (v.brand) g.brand = v.brand;
+        if (v.model) g.model = v.model;
+        if (v.browser) g.browser = v.browser;
+      }
     });
     var devices = Object.values(groups).sort(function(a,b){return b.lastSeen - a.lastSeen});
     // Check ban status for each
