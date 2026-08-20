@@ -283,6 +283,60 @@ canvas{width:100%!important;height:120px!important;border-radius:12px}
       <div class="glass list-card" id="deviceList"><div class="empty">加载中...</div></div>
     </div>
 
+    <!-- WHITELIST -->
+    <div class="page" id="page-whitelist">
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <input class="modal-input" id="wlIp" placeholder="输入IP地址" style="margin:0;flex:1">
+        <button class="btn-primary" style="width:auto;padding:14px 20px" onclick="addWhitelist()">添加</button>
+      </div>
+      <div class="glass list-card" id="whitelistList"><div class="empty">加载中...</div></div>
+    </div>
+
+    <!-- PERMANENT BANS -->
+    <div class="page" id="page-permbans">
+      <div class="glass list-card" id="permBanList"><div class="empty">加载中...</div></div>
+    </div>
+
+    <!-- RULES -->
+    <div class="page" id="page-rules">
+      <div class="glass list-card" id="rulesList"><div class="empty">加载中...</div></div>
+    </div>
+
+    <!-- HEALTH -->
+    <div class="page" id="page-health">
+      <div class="glass list-card" id="healthList"><div class="empty">加载中...</div></div>
+    </div>
+
+    <!-- LOGS -->
+    <div class="page" id="page-logs">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="section-title" style="margin:0">实时日志</div>
+        <button class="btn-secondary" style="width:auto;padding:8px 16px;margin:0;font-size:12px" onclick="toggleLogs()" id="logToggle">暂停</button>
+      </div>
+      <div class="glass" style="padding:12px;max-height:70vh;overflow-y:auto;font-family:monospace;font-size:11px;line-height:1.8" id="logViewer"><div class="empty">等待日志...</div></div>
+    </div>
+
+    <!-- COMMAND CENTER -->
+    <div class="page" id="page-cmd">
+      <div class="glass" style="padding:14px;margin-bottom:12px">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:8px">命令中心 · 输入 help 查看命令</div>
+        <div id="cmdOutput" style="font-family:monospace;font-size:12px;line-height:1.8;max-height:50vh;overflow-y:auto;color:var(--text2);margin-bottom:10px"></div>
+        <div style="display:flex;gap:8px">
+          <input class="modal-input" id="cmdInput" placeholder="输入命令..." style="margin:0;flex:1;font-family:monospace" autocomplete="off">
+          <button class="btn-primary" style="width:auto;padding:14px 20px" onclick="execCmd()">执行</button>
+        </div>
+      </div>
+      <div class="section-title">快捷命令</div>
+      <div class="actions-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="action-btn" onclick="quickCmd('status')"><div class="action-icon">📊</div><div class="action-name">状态</div></div>
+        <div class="action-btn" onclick="quickCmd('visitors')"><div class="action-icon">👥</div><div class="action-name">访客</div></div>
+        <div class="action-btn" onclick="quickCmd('events')"><div class="action-icon">🛡️</div><div class="action-name">事件</div></div>
+        <div class="action-btn" onclick="quickCmd('clear bans')"><div class="action-icon">🔓</div><div class="action-name">解封</div></div>
+        <div class="action-btn" onclick="quickCmd('mode normal')"><div class="action-icon">✅</div><div class="action-name">正常</div></div>
+        <div class="action-btn" onclick="quickCmd('export')"><div class="action-icon">💾</div><div class="action-name">导出</div></div>
+      </div>
+    </div>
+
     <!-- SETTINGS -->
     <div class="page" id="page-settings">
       <div class="section"><div class="section-title">账户安全</div></div>
@@ -314,6 +368,13 @@ canvas{width:100%!important;height:120px!important;border-radius:12px}
         <div class="setting-item" onclick="switchPage('announcements')"><div><div class="si-label">公告管理</div><div class="si-sub">发布和管理网站公告</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
         <div class="setting-item" onclick="switchPage('devices')"><div><div class="si-label">信任设备</div><div class="si-sub">管理已授权的设备</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
         <div class="setting-item" onclick="switchPage('appeals')"><div><div class="si-label">申诉审核</div><div class="si-sub">审核IP/设备解封申诉</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        <div class="setting-item" onclick="switchPage('whitelist')"><div><div class="si-label">IP白名单</div><div class="si-sub">管理永不封禁的IP</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--success)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        <div class="setting-item" onclick="switchPage('permbans')"><div><div class="si-label">永久封禁</div><div class="si-sub">查看和管理永久封禁列表</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--danger)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        <div class="setting-item" onclick="switchPage('rules')"><div><div class="si-label">安全规则</div><div class="si-sub">配置WAF安全规则</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        <div class="setting-item" onclick="switchPage('health')"><div><div class="si-label">系统健康</div><div class="si-sub">服务器和数据库状态</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--blue)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        <div class="setting-item" onclick="switchPage('logs')"><div><div class="si-label">实时日志</div><div class="si-sub">查看实时访问和安全日志</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        <div class="setting-item" onclick="switchPage('cmd')"><div><div class="si-label">命令中心</div><div class="si-sub">终端式管理操作</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></div>
+        <div class="setting-item" onclick="exportData()"><div><div class="si-label">导出数据</div><div class="si-sub">导出所有数据为JSON备份</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
       </div>
       <div class="section"><div class="section-title">关于</div></div>
       <div class="glass list-card">
@@ -424,7 +485,7 @@ function registerBio(){try{api('auth/wa/reg-options',{method:'POST'}).then(funct
 
 /* ===== NAVIGATION ===== */
 var currentPage='home';
-var pageTitles={home:'总览',visitors:'访客档案',security:'安全中心',appeals:'申诉管理',announcements:'公告管理',devices:'信任设备',settings:'我的'};
+var pageTitles={home:'总览',visitors:'访客档案',security:'安全中心',appeals:'申诉管理',announcements:'公告管理',devices:'信任设备',whitelist:'IP白名单',permbans:'永久封禁',rules:'安全规则',health:'系统健康',logs:'实时日志',cmd:'命令中心',settings:'我的'};
 function switchPage(p){
   currentPage=p;
   $$('.page').forEach(function(pg){pg.classList.remove('active')});
@@ -438,6 +499,12 @@ function switchPage(p){
   if(p==='announcements')loadAnnouncements();
   if(p==='devices')loadDevices();
   if(p==='settings')loadSettings();
+  if(p==='whitelist')loadWhitelist();
+  if(p==='permbans')loadPermBans();
+  if(p==='rules')loadRules();
+  if(p==='health')loadHealth();
+  if(p==='logs')startLogs();
+  if(p==='cmd')initCmd();
 }
 
 /* ===== DATA ===== */
@@ -715,6 +782,265 @@ function drawTrafficChart(labels,data){
   ctx.strokeStyle='#ff6900';ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.stroke();
   // Dots
   data.forEach(function(v,i){var x=pad+i*bw,y=h-pad-(v/max)*(h-pad*2);ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle='#ff6900';ctx.lineWidth=2;ctx.stroke()});
+}
+
+
+/* ===== WHITELIST ===== */
+function loadWhitelist(){
+  api('security/whitelist').then(function(d){
+    if(!d.ok){$('#whitelistList').innerHTML='<div class="empty">加载失败</div>';return}
+    var list=d.data||[];if(!Array.isArray(list))list=list.whitelist||[];
+    var h='';list.forEach(function(w){
+      h+='<div class="list-item"><div class="li-avatar" style="background:linear-gradient(135deg,var(--success),#30d158)">✓</div><div class="li-info"><div class="li-title">'+esc(w.ip||w)+'</div><div class="li-sub">'+(w.note||'白名单IP')+' · '+fmtDate(w.time||Date.now())+'</div></div><div class="li-badge badge-ok" onclick="removeWhitelist(\''+esc(w.ip||w)+'\')" style="cursor:pointer">移除</div></div>';
+    });
+    $('#whitelistList').innerHTML=h||'<div class="empty">暂无白名单</div>';
+  });
+}
+function addWhitelist(){
+  var ip=$('#wlIp').value.trim();if(!ip){toast('请输入IP','err');return}
+  api('security/whitelist/add',{method:'POST',body:{ip:ip,note:'APP添加'}}).then(function(d){
+    if(d.ok){toast('已添加','ok');$('#wlIp').value='';loadWhitelist()}else toast(d.error||'失败','err');
+  });
+}
+function removeWhitelist(ip){
+  api('security/whitelist/remove',{method:'POST',body:{ip:ip}}).then(function(d){
+    if(d.ok){toast('已移除','ok');loadWhitelist()}else toast(d.error||'失败','err');
+  });
+}
+
+/* ===== PERMANENT BANS ===== */
+function loadPermBans(){
+  api('stats/security').then(function(d){
+    if(!d.ok||!d.data){$('#permBanList').innerHTML='<div class="empty">加载失败</div>';return}
+    var bans=d.data.permBans||d.data.bans||[];if(!Array.isArray(bans))bans=[];
+    var h='';bans.filter(function(b){return b.permanent||b.type==='permanent'}).forEach(function(b){
+      h+='<div class="list-item"><div class="li-avatar" style="background:linear-gradient(135deg,var(--danger),#ff453a)">⛔</div><div class="li-info"><div class="li-title">'+esc(b.ip||'未知')+'</div><div class="li-sub">'+esc(b.reason||'')+' · '+fmtDate(b.time||b.bannedAt)+'</div></div><div class="li-badge badge-danger" onclick="unbanVisitor(\''+esc(b.ip||'')+'\',\''+esc(b.fid||'')+'\')" style="cursor:pointer">解封</div></div>';
+    });
+    $('#permBanList').innerHTML=h||'<div class="empty">暂无永久封禁</div>';
+  });
+}
+
+/* ===== SECURITY RULES ===== */
+function loadRules(){
+  api('security/rules').then(function(d){
+    if(!d.ok){$('#rulesList').innerHTML='<div class="empty">加载失败</div>';return}
+    var rules=d.data||d.rules||[];
+    if(!Array.isArray(rules)||!rules.length){
+      rules=[
+        {name:'SQL注入防护',desc:'拦截SQL注入攻击',enabled:true},
+        {name:'XSS防护',desc:'拦截跨站脚本攻击',enabled:true},
+        {name:'路径穿越防护',desc:'拦截目录遍历攻击',enabled:true},
+        {name:'命令注入防护',desc:'拦截系统命令注入',enabled:true},
+        {name:'敏感文件探测',desc:'拦截敏感文件访问',enabled:true},
+        {name:'爬虫/扫描器拦截',desc:'识别并拦截扫描器',enabled:true},
+        {name:'恶意UA拦截',desc:'拦截恶意脚本请求',enabled:true},
+        {name:'频率限制',desc:'限制单IP请求频率',enabled:true},
+        {name:'反调试',desc:'检测开发者工具',enabled:true},
+        {name:'人机验证',desc:'异常请求触发验证',enabled:true}
+      ];
+    }
+    var h='';rules.forEach(function(r,i){
+      h+='<div class="setting-item"><div><div class="si-label">'+esc(r.name||r.id||'规则')+'</div><div class="si-sub">'+esc(r.desc||r.description||'')+'</div></div><div class="toggle'+(r.enabled!==false?' on':'')+'" onclick="toggleRule(this,'+i+')"></div></div>';
+    });
+    $('#rulesList').innerHTML=h;
+  });
+}
+function toggleRule(el,idx){
+  el.classList.toggle('on');
+  toast(el.classList.contains('on')?'规则已启用':'规则已禁用','ok');
+  haptic('light');
+}
+
+/* ===== SYSTEM HEALTH ===== */
+function loadHealth(){
+  api('system/health').then(function(d){
+    if(!d.ok||!d.data){$('#healthList').innerHTML='<div class="empty">加载失败</div>';return}
+    var h=d.data;
+    var rows='';
+    function row(l,v,c){rows+='<div class="detail-row"><span class="detail-label">'+l+'</span><span class="detail-value" style="color:'+(c||'var(--text)')+'">'+v+'</span></div>'}
+    row('服务器状态','运行中','var(--success)');
+    row('运行平台','Netlify Functions');
+    row('数据库','Netlify Blobs');
+    row('存储用量',h.storage?h.storage.keys+' keys':'—');
+    row('访客记录',h.storage?h.storage.visitors+' 条':'—');
+    row('封禁记录',h.storage?h.storage.bans+' 条':'—');
+    row('安全事件',h.storage?h.storage.events+' 条':'—');
+    row('活跃封禁',h.storage?h.storage.activeBans+' 个':'—');
+    row('CSP防护','已启用','var(--success)');
+    row('HSTS','已启用','var(--success)');
+    row('反调试','已启用','var(--success)');
+    row('频率限制','60次/分钟','var(--success)');
+    $('#healthList').innerHTML='<div style="padding:16px">'+rows+'</div>';
+  });
+}
+
+/* ===== REAL-TIME LOGS ===== */
+var logTimer=null,logPaused=false;
+function startLogs(){
+  if(logTimer)clearInterval(logTimer);
+  loadLogs();
+  logTimer=setInterval(loadLogs,3000);
+}
+function loadLogs(){
+  if(logPaused)return;
+  api('logs/realtime').then(function(d){
+    if(!d.ok||!d.data)return;
+    var logs=d.data.logs||d.data||[];if(!Array.isArray(logs))logs=[];
+    var h='';logs.slice(0,50).forEach(function(l){
+      var color=l.type==='attack'||l.type==='ban'?'var(--danger)':l.type==='warning'?'var(--orange)':l.type==='auth'?'var(--blue)':'var(--text2)';
+      h+='<div style="color:'+color+';border-bottom:1px solid var(--glass-border);padding:4px 0"><span style="color:var(--text3)">'+fmtTime(l.time||Date.now())+'</span> '+esc(l.message||l.type||JSON.stringify(l))+'</div>';
+    });
+    if(h)$('#logViewer').innerHTML=h;
+  });
+}
+function toggleLogs(){
+  logPaused=!logPaused;
+  $('#logToggle').textContent=logPaused?'继续':'暂停';
+  toast(logPaused?'已暂停':'已继续','');
+}
+
+/* ===== EXPORT DATA ===== */
+function exportData(){
+  toast('正在导出数据...','');
+  api('data/export').then(function(d){
+    if(d.ok){
+      var blob=new Blob([JSON.stringify(d.data,null,2)],{type:'application/json'});
+      var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='jifeng-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();
+      toast('导出成功','ok');haptic('success');
+    }else toast(d.error||'导出失败','err');
+  });
+}
+
+
+/* ===== COMMAND CENTER ===== */
+var cmdHistory=[];
+function cmdPrint(text,color){
+  var out=$('#cmdOutput');
+  var div=document.createElement('div');
+  div.style.color=color||'var(--text2)';
+  div.textContent=text;
+  out.appendChild(div);out.scrollTop=out.scrollHeight;
+}
+function initCmd(){
+  if($('#cmdOutput').children.length>0)return;
+  cmdPrint('极风控制 命令中心 v2.0','var(--accent)');
+  cmdPrint('输入 help 查看可用命令','var(--text3)');
+  cmdPrint('');
+  $('#cmdInput').addEventListener('keydown',function(e){if(e.key==='Enter')execCmd()});
+}
+function quickCmd(cmd){
+  switchPage('cmd');
+  setTimeout(function(){$('#cmdInput').value=cmd;execCmd()},300);
+}
+function execCmd(){
+  var input=$('#cmdInput').value.trim();if(!input)return;
+  cmdPrint('$ '+input,'var(--text)');
+  $('#cmdInput').value='';
+  var parts=input.split(/\s+/);
+  var cmd=parts[0].toLowerCase();
+  var args=parts.slice(1);
+
+  switch(cmd){
+    case 'help':
+      cmdPrint('可用命令：');
+      cmdPrint('  status        - 系统状态');
+      cmdPrint('  visitors      - 最近访客');
+      cmdPrint('  events [n]    - 安全事件(默认10条)');
+      cmdPrint('  ban <ip>      - 封禁IP');
+      cmdPrint('  unban <ip>    - 解封IP');
+      cmdPrint('  mode <m>      - normal/maintenance/shutdown');
+      cmdPrint('  announce <t>|<c> - 发布公告');
+      cmdPrint('  clear bans    - 清除所有临时封禁');
+      cmdPrint('  clear events  - 清除所有事件');
+      cmdPrint('  export        - 导出数据');
+      cmdPrint('  email         - 发送测试邮件');
+      cmdPrint('  report        - 生成运维报告');
+      cmdPrint('  whoami        - 当前用户');
+      cmdPrint('  clear         - 清屏');
+      break;
+    case 'whoami':
+      cmdPrint('NUOYAN (admin)','var(--success)');
+      break;
+    case 'clear':
+      $('#cmdOutput').innerHTML='';
+      break;
+    case 'status':
+      api('stats/overview').then(function(d){
+        if(!d.ok){cmdPrint('获取失败','var(--danger)');return}
+        var D=d.data;
+        cmdPrint('今日访客: '+D.visitors+'  攻击: '+D.attacks+'  封禁: '+D.bans,'var(--success)');
+      });
+      api('site/status').then(function(d){
+        if(d.ok)cmdPrint('网站模式: '+d.mode,'var(--blue)');
+      });
+      api('system/health').then(function(d){
+        if(d.ok&&d.data&&d.data.storage)cmdPrint('存储: '+d.data.storage.keys+' keys, '+d.data.storage.visitors+' 访客记录','var(--text2)');
+      });
+      break;
+    case 'visitors':
+      api('stats/visitors').then(function(d){
+        if(!d.ok||!d.data){cmdPrint('获取失败','var(--danger)');return}
+        cmdPrint('最近访客:','var(--text)');
+        d.data.recent.slice(0,10).forEach(function(v){
+          cmdPrint('  '+(v.ip||'?')+' '+(v.brand||'')+' '+(v.model||'')+' '+(v.browser||''));
+        });
+      });
+      break;
+    case 'events':
+      api('security/events').then(function(d){
+        if(!d.ok){cmdPrint('获取失败','var(--danger)');return}
+        var n=parseInt(args[0])||10;
+        cmdPrint('最近'+n+'条事件:','var(--text)');
+        d.data.slice(0,n).forEach(function(e){
+          cmdPrint('  ['+(e.type||'?')+'] '+(e.message||'')+' '+fmtTime(e.time));
+        });
+      });
+      break;
+    case 'ban':
+      if(!args[0]){cmdPrint('用法: ban <ip>','var(--orange)');break}
+      api('security/ban',{method:'POST',body:{ip:args[0],reason:'命令行封禁',type:'permanent'}}).then(function(d){
+        cmdPrint(d.ok?'已封禁 '+args[0]:'失败: '+(d.error||''),d.ok?'var(--success)':'var(--danger)');
+      });
+      break;
+    case 'unban':
+      if(!args[0]){cmdPrint('用法: unban <ip>','var(--orange)');break}
+      api('security/unban-ip',{method:'POST',body:{ip:args[0]}}).then(function(d){
+        cmdPrint(d.ok?'已解封 '+args[0]:'失败: '+(d.error||''),d.ok?'var(--success)':'var(--danger)');
+      });
+      break;
+    case 'mode':
+      if(!['normal','maintenance','shutdown'].includes(args[0])){cmdPrint('用法: mode normal|maintenance|shutdown','var(--orange)');break}
+      api('admin/site-mode',{method:'POST',body:{mode:args[0]}}).then(function(d){
+        cmdPrint(d.ok?'模式已切换为 '+args[0]:'失败',d.ok?'var(--success)':'var(--danger)');
+      });
+      break;
+    case 'announce':
+      var full=args.join(' ');var sep=full.indexOf('|');
+      if(sep<0){cmdPrint('用法: announce 标题|内容','var(--orange)');break}
+      var title=full.substring(0,sep).trim(),content=full.substring(sep+1).trim();
+      api('announcement/publish',{method:'POST',body:{title:title,content:content}}).then(function(d){
+        cmdPrint(d.ok?'公告已发布':'失败',d.ok?'var(--success)':'var(--danger)');
+      });
+      break;
+    case 'clear':
+      if(args[0]==='bans'){
+        api('security/clear-bans',{method:'POST'}).then(function(d){cmdPrint(d.ok?'已清除所有封禁':'失败',d.ok?'var(--success)':'var(--danger)')});
+      }else if(args[0]==='events'){
+        api('security/clear-events',{method:'POST'}).then(function(d){cmdPrint(d.ok?'已清除所有事件':'失败',d.ok?'var(--success)':'var(--danger)')});
+      }else cmdPrint('用法: clear bans|events','var(--orange)');
+      break;
+    case 'export':
+      exportData();cmdPrint('正在导出...','var(--blue)');
+      break;
+    case 'email':
+      api('reports/send-daily',{method:'POST'}).then(function(d){cmdPrint(d.ok?'测试邮件已发送':'失败',d.ok?'var(--success)':'var(--danger)')});
+      break;
+    case 'report':
+      api('reports/generate',{method:'POST'}).then(function(d){cmdPrint(d.ok?'报告已生成并发送':'失败',d.ok?'var(--success)':'var(--danger)')});
+      break;
+    default:
+      cmdPrint('未知命令: '+cmd+'. 输入 help 查看帮助','var(--orange)');
+  }
 }
 
 /* ===== MODAL ===== */

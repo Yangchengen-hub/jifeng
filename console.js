@@ -1,5 +1,5 @@
 (function(){
-var API=window.JF_API||'https://jifeng-studio.netlify.app';
+var API=window.JF_API||'https://jf-ctrl.netlify.app';
 var $=function(s,p){return(p||document).querySelector(s)};
 var $$=function(s,p){return Array.prototype.slice.call((p||document).querySelectorAll(s))};
 
