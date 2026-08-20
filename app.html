@@ -9,37 +9,31 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#f5f0ed;--bg2:#ede6e1;--card:rgba(255,255,255,0.55);--card-solid:rgba(255,255,255,0.85);
+  --bg:#f5f0ed;--bg2:#ede6e1;--card:rgba(255,255,255,0.55);--card-solid:rgba(255,255,255,0.88);
   --text:#1a1a1a;--text2:#666;--text3:#999;--accent:#ff6900;--accent2:#ff8533;
-  --danger:#ff3b30;--success:#34c759;--blue:#007aff;--purple:#af52de;
-  --glass-border:rgba(255,255,255,0.6);--glass-shadow:0 8px 32px rgba(0,0,0,0.08);
-  --radius:20px;--radius-sm:14px;
+  --danger:#ff3b30;--success:#34c759;--blue:#007aff;--purple:#af52de;--orange:#ff9500;
+  --glass-border:rgba(255,255,255,0.6);--glass-shadow:0 8px 32px rgba(0,0,0,0.07);
+  --radius:20px;
 }
 @media(prefers-color-scheme:dark){
   :root{
-    --bg:#0a0a0c;--bg2:#141418;--card:rgba(28,28,32,0.55);--card-solid:rgba(28,28,32,0.85);
+    --bg:#0a0a0c;--bg2:#141418;--card:rgba(28,28,32,0.55);--card-solid:rgba(28,28,32,0.88);
     --text:#f5f5f7;--text2:#98989d;--text3:#636366;
     --glass-border:rgba(255,255,255,0.1);--glass-shadow:0 8px 32px rgba(0,0,0,0.3);
   }
 }
 html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue',sans-serif;background:var(--bg);color:var(--text)}
 body{background:linear-gradient(135deg,var(--bg) 0%,var(--bg2) 100%)}
-
-/* ===== SPLASH ===== */
 #splash{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#ff6900,#ff8533 50%,#ffb088);transition:opacity .6s ease,transform .6s ease}
 #splash.hide{opacity:0;transform:scale(1.05);pointer-events:none}
 .splash-logo{width:80px;height:80px;border-radius:22px;background:rgba(255,255,255,0.25);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.15);animation:splashPop .8s cubic-bezier(.34,1.56,.64,1)}
 .splash-text{margin-top:20px;color:#fff;font-size:22px;font-weight:700;letter-spacing:2px;animation:splashFade .6s ease .3s both}
-.splash-sub{margin-top:6px;color:rgba(255,255,255,0.8);font-size:13px;animation:splashFade .6s ease .4s both}
 @keyframes splashPop{0%{transform:scale(0) rotate(-10deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
 @keyframes splashFade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-/* ===== LOGIN ===== */
-#loginScreen{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;
-  background:linear-gradient(160deg,#ff6900 0%,#ff8533 30%,#f5f0ed 70%);transition:opacity .4s ease}
+#loginScreen{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:linear-gradient(160deg,#ff6900 0%,#ff8533 30%,var(--bg) 70%);transition:opacity .4s ease}
 #loginScreen.show{display:flex}
-.login-card{width:100%;max-width:380px;background:var(--card);backdrop-filter:blur(40px) saturate(1.4);-webkit-backdrop-filter:blur(40px) saturate(1.4);
-  border:1px solid var(--glass-border);border-radius:28px;padding:32px 24px;box-shadow:var(--glass-shadow);animation:cardIn .5s cubic-bezier(.34,1.2,.64,1)}
+.login-card{width:100%;max-width:380px;background:var(--card);backdrop-filter:blur(40px) saturate(1.4);-webkit-backdrop-filter:blur(40px) saturate(1.4);border:1px solid var(--glass-border);border-radius:28px;padding:32px 24px;box-shadow:var(--glass-shadow);animation:cardIn .5s cubic-bezier(.34,1.2,.64,1)}
 @keyframes cardIn{from{opacity:0;transform:translateY(30px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
 .login-step{display:none;animation:stepIn .4s cubic-bezier(.34,1.2,.64,1)}
 .login-step.active{display:block}
@@ -50,11 +44,13 @@ body{background:linear-gradient(135deg,var(--bg) 0%,var(--bg2) 100%)}
 .login-input{width:100%;padding:15px 18px;border-radius:16px;border:1.5px solid var(--glass-border);background:rgba(255,255,255,0.4);font-size:16px;color:var(--text);outline:none;transition:all .25s ease;margin-bottom:12px;backdrop-filter:blur(10px)}
 .login-input:focus{border-color:var(--accent);background:rgba(255,255,255,0.7);box-shadow:0 0 0 4px rgba(255,105,0,0.1)}
 .btn-primary{width:100%;padding:16px;border:none;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s ease;box-shadow:0 4px 16px rgba(255,105,0,0.3)}
-.btn-primary:active{transform:scale(.97);box-shadow:0 2px 8px rgba(255,105,0,0.2)}
+.btn-primary:active{transform:scale(.97)}
+.btn-primary:disabled{opacity:.5}
 .btn-secondary{width:100%;padding:14px;border:1.5px solid var(--glass-border);border-radius:16px;background:transparent;color:var(--text2);font-size:14px;cursor:pointer;transition:all .2s ease;margin-top:8px}
-.btn-secondary:active{transform:scale(.97);background:rgba(255,255,255,0.3)}
-.btn-secondary:disabled{opacity:.4;cursor:not-allowed}
-.login-msg{margin-top:12px;text-align:center;font-size:13px;min-height:20px;transition:all .2s}
+.btn-secondary:active{transform:scale(.97)}
+.btn-secondary:disabled{opacity:.4}
+.btn-danger{background:rgba(255,59,48,0.1);color:var(--danger);border-color:rgba(255,59,48,0.2)}
+.login-msg{margin-top:12px;text-align:center;font-size:13px;min-height:20px}
 .login-msg.error{color:var(--danger)}
 .login-msg.ok{color:var(--success)}
 .step-dots{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px}
@@ -62,519 +58,572 @@ body{background:linear-gradient(135deg,var(--bg) 0%,var(--bg2) 100%)}
 .sd.active{background:var(--accent);opacity:1;width:24px;border-radius:4px}
 .sd.done{background:var(--success);opacity:1}
 
-/* ===== APP ===== */
 #app{display:none;height:100%;flex-direction:column;padding-top:env(safe-area-inset-top)}
 #app.show{display:flex}
 .app-header{padding:12px 20px 8px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.app-title{font-size:22px;font-weight:700}
+.app-title{font-size:22px;font-weight:700;transition:all .2s}
 .app-header-right{display:flex;align-items:center;gap:10px}
 .status-dot{width:8px;height:8px;border-radius:50%;background:var(--success);box-shadow:0 0 8px var(--success);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.header-btn{width:36px;height:36px;border-radius:12px;background:var(--card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
+.header-btn:active{transform:scale(.9)}
 
 .app-content{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 100px;-webkit-overflow-scrolling:touch}
 .app-content::-webkit-scrollbar{display:none}
-
-/* Glass cards */
-.glass{background:var(--card);backdrop-filter:blur(30px) saturate(1.3);-webkit-backdrop-filter:blur(30px) saturate(1.3);
-  border:1px solid var(--glass-border);border-radius:var(--radius);box-shadow:var(--glass-shadow)}
-
-/* Stats grid */
+.glass{background:var(--card);backdrop-filter:blur(30px) saturate(1.3);-webkit-backdrop-filter:blur(30px) saturate(1.3);border:1px solid var(--glass-border);border-radius:var(--radius);box-shadow:var(--glass-shadow)}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-.stat-card{padding:18px;transition:transform .2s ease}
+.stat-card{padding:18px;transition:transform .2s}
 .stat-card:active{transform:scale(.97)}
 .stat-val{font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .stat-label{font-size:12px;color:var(--text2);margin-top:4px}
-
-/* Section */
+.stat-sub{font-size:11px;color:var(--text3);margin-top:2px}
 .section{margin-bottom:16px}
-.section-title{font-size:13px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin:0 4px 8px}
-
-/* Mode switcher */
+.section-title{font-size:13px;font-weight:600;color:var(--text3);letter-spacing:1px;margin:0 4px 8px;display:flex;justify-content:space-between;align-items:center}
+.section-title .see-all{font-size:12px;color:var(--accent);font-weight:500}
 .mode-card{padding:16px;margin-bottom:16px}
 .mode-label{font-size:14px;font-weight:600;margin-bottom:12px}
 .mode-btns{display:flex;gap:8px}
-.mode-btn{flex:1;padding:12px 8px;border:1.5px solid var(--glass-border);border-radius:14px;background:transparent;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:all .25s ease;text-align:center}
+.mode-btn{flex:1;padding:12px 8px;border:1.5px solid var(--glass-border);border-radius:14px;background:transparent;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:all .25s;text-align:center}
 .mode-btn.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(255,105,0,0.3)}
 .mode-btn:active{transform:scale(.96)}
-
-/* Quick actions */
 .actions-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
-.action-btn{padding:14px 6px;border-radius:16px;text-align:center;cursor:pointer;transition:all .2s ease;background:var(--card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border)}
+.action-btn{padding:14px 6px;border-radius:16px;text-align:center;cursor:pointer;transition:all .2s;background:var(--card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border)}
 .action-btn:active{transform:scale(.92)}
 .action-icon{font-size:22px;margin-bottom:4px}
 .action-name{font-size:10px;color:var(--text2)}
-
-/* List items */
 .list-card{overflow:hidden}
-.list-item{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--glass-border);transition:background .15s}
+.list-item{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--glass-border);transition:background .15s;cursor:pointer}
 .list-item:last-child{border-bottom:none}
 .list-item:active{background:rgba(255,105,0,0.06)}
-.li-avatar{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.li-avatar{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;overflow:hidden}
+.li-avatar img{width:100%;height:100%;object-fit:contain}
 .li-info{flex:1;min-width:0}
 .li-title{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .li-sub{font-size:11px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .li-badge{font-size:10px;padding:3px 8px;border-radius:8px;font-weight:600;flex-shrink:0}
 .badge-danger{background:rgba(255,59,48,0.12);color:var(--danger)}
-.badge-warn{background:rgba(255,149,0,0.12);color:#ff9500}
+.badge-warn{background:rgba(255,149,0,0.12);color:var(--orange)}
 .badge-ok{background:rgba(52,199,89,0.12);color:var(--success)}
 .badge-info{background:rgba(0,122,255,0.12);color:var(--blue)}
-
-/* Bottom nav */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;padding:8px 16px calc(8px + env(safe-area-inset-bottom));
-  background:var(--card-solid);backdrop-filter:blur(40px) saturate(1.4);-webkit-backdrop-filter:blur(40px) saturate(1.4);
-  border-top:1px solid var(--glass-border)}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:6px 0;cursor:pointer;transition:all .2s ease;color:var(--text3)}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;padding:8px 16px calc(8px + env(safe-area-inset-bottom));background:var(--card-solid);backdrop-filter:blur(40px) saturate(1.4);-webkit-backdrop-filter:blur(40px) saturate(1.4);border-top:1px solid var(--glass-border)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:6px 0;cursor:pointer;transition:all .2s;color:var(--text3)}
 .nav-item.active{color:var(--accent)}
 .nav-item:active{transform:scale(.9)}
 .nav-icon{font-size:22px;margin-bottom:2px;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
 .nav-item.active .nav-icon{transform:translateY(-2px) scale(1.1)}
 .nav-label{font-size:10px;font-weight:500}
-
-/* Pages */
 .page{display:none;animation:pageIn .35s cubic-bezier(.34,1.1,.64,1)}
 .page.active{display:block}
 @keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-
-/* Settings */
 .setting-item{padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--glass-border);cursor:pointer;transition:background .15s}
 .setting-item:last-child{border-bottom:none}
 .setting-item:active{background:rgba(255,105,0,0.06)}
 .si-label{font-size:15px;font-weight:500}
 .si-sub{font-size:12px;color:var(--text3);margin-top:2px}
-.toggle{width:50px;height:30px;border-radius:15px;background:var(--text3);opacity:.4;position:relative;cursor:pointer;transition:all .3s ease;flex-shrink:0}
+.toggle{width:50px;height:30px;border-radius:15px;background:var(--text3);opacity:.4;position:relative;cursor:pointer;transition:all .3s;flex-shrink:0}
 .toggle.on{background:var(--success);opacity:1}
 .toggle::after{content:'';position:absolute;top:2px;left:2px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.15);transition:all .3s cubic-bezier(.34,1.56,.64,1)}
 .toggle.on::after{left:22px}
-
-/* Toast */
-#toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);z-index:200;padding:12px 24px;border-radius:14px;background:rgba(0,0,0,0.8);color:#fff;font-size:14px;opacity:0;transition:all .3s cubic-bezier(.34,1.2,.64,1);pointer-events:none;backdrop-filter:blur(20px);white-space:nowrap}
+#toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);z-index:200;padding:12px 24px;border-radius:14px;background:rgba(0,0,0,0.8);color:#fff;font-size:14px;opacity:0;transition:all .3s cubic-bezier(.34,1.2,.64,1);pointer-events:none;backdrop-filter:blur(20px);white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #toast.ok{background:rgba(52,199,89,0.9)}
 #toast.err{background:rgba(255,59,48,0.9)}
-
-/* Modal */
-.modal-overlay{position:fixed;inset:0;z-index:150;background:rgba(0,0,0,0.3);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center;animation:fadeIn .25s ease}
+.modal-overlay{position:fixed;inset:0;z-index:150;background:rgba(0,0,0,0.3);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center;animation:fadeIn .25s}
 .modal-overlay.show{display:flex}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal{width:100%;max-width:420px;background:var(--card-solid);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);border-radius:24px 24px 0 0;padding:24px 20px calc(24px + env(safe-area-inset-bottom));animation:modalUp .35s cubic-bezier(.34,1.2,.64,1)}
+.modal{width:100%;max-width:420px;background:var(--card-solid);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);border-radius:24px 24px 0 0;padding:24px 20px calc(24px + env(safe-area-inset-bottom));animation:modalUp .35s cubic-bezier(.34,1.2,.64,1);max-height:85vh;overflow-y:auto}
 @keyframes modalUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .modal-title{font-size:18px;font-weight:700;margin-bottom:16px}
 .modal-input{width:100%;padding:14px 16px;border-radius:14px;border:1.5px solid var(--glass-border);background:rgba(255,255,255,0.3);font-size:15px;color:var(--text);outline:none;margin-bottom:12px;transition:border-color .2s}
 .modal-input:focus{border-color:var(--accent)}
-.modal textarea.modal-input{min-height:80px;resize:vertical}
-
-/* Security event */
+textarea.modal-input{min-height:80px;resize:vertical;font-family:inherit}
 .event-item{padding:12px 16px;display:flex;gap:10px;align-items:flex-start;border-bottom:1px solid var(--glass-border)}
 .event-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
-.event-text{font-size:13px;flex:1}
+.event-text{font-size:13px;flex:1;word-break:break-all}
 .event-time{font-size:11px;color:var(--text3);margin-top:2px}
-
-/* Pull refresh */
+.empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:14px}
+.chart-card{padding:16px;margin-bottom:16px}
+.chart-title{font-size:14px;font-weight:600;margin-bottom:12px}
+canvas{width:100%!important;height:120px!important;border-radius:12px}
+.score-ring{width:100px;height:100px;margin:0 auto 12px;position:relative}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring .score-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800}
+.score-grade{text-align:center;font-size:14px;color:var(--text2);margin-bottom:4px}
+.detail-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--glass-border);font-size:13px}
+.detail-row:last-child{border-bottom:none}
+.detail-label{color:var(--text3)}
+.detail-value{font-weight:500;text-align:right;max-width:60%;word-break:break-all}
+.tab-bar{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:4px}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab-btn{padding:8px 16px;border-radius:12px;border:1.5px solid var(--glass-border);background:transparent;color:var(--text2);font-size:13px;white-space:nowrap;cursor:pointer;transition:all .2s;flex-shrink:0}
+.tab-btn.active{background:var(--accent);color:#fff;border-color:transparent}
 .pull-indicator{text-align:center;padding:8px;font-size:12px;color:var(--text3);height:0;overflow:hidden;transition:height .2s}
 .pull-indicator.show{height:36px}
-
-/* Bio icon */
-.bio-circle{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,rgba(255,105,0,0.15),rgba(255,133,51,0.1));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;cursor:pointer;transition:all .2s}
-.bio-circle:active{transform:scale(.92)}
-.bio-circle svg{color:var(--accent)}
-
-/* Empty state */
-.empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:14px}
+.approval-card{padding:14px;margin-bottom:10px;background:linear-gradient(135deg,rgba(175,82,222,0.08),rgba(0,122,255,0.08));border:1px solid var(--glass-border);border-radius:16px}
+.approval-title{font-size:14px;font-weight:600;margin-bottom:4px}
+.approval-sub{font-size:12px;color:var(--text3);margin-bottom:10px}
+.approval-btns{display:flex;gap:8px}
+.approval-btns button{flex:1;padding:10px;border-radius:12px;border:none;font-size:13px;font-weight:600;cursor:pointer}
+.btn-approve{background:var(--success);color:#fff}
+.btn-deny{background:rgba(255,59,48,0.1);color:var(--danger)}
 </style>
 </head>
 <body>
 
-<!-- Splash -->
-<div id="splash">
-  <div class="splash-logo">JF</div>
-  <div class="splash-text">极风控制</div>
-  <div class="splash-sub">安全管控中心</div>
-</div>
+<div id="splash"><div class="splash-logo">JF</div><div class="splash-text">极风控制</div></div>
 
-<!-- Login -->
-<div id="loginScreen">
-  <div class="login-card">
-    <!-- Step 1: Password -->
-    <div class="login-step active" id="lstep1">
-      <div class="login-mark">JF</div>
-      <div class="login-title">极风控制</div>
-      <div class="login-desc">请输入管理员账号密码</div>
-      <input class="login-input" type="text" id="loginUser" placeholder="管理员账号" value="NUOYAN" autocomplete="username">
-      <input class="login-input" type="password" id="loginPass" placeholder="密码" autocomplete="current-password">
-      <button class="btn-primary" id="btnStep1Next">下一步</button>
-      <div class="login-msg" id="loginMsg1"></div>
-    </div>
-    <!-- Step 2: Email code -->
-    <div class="login-step" id="lstep2">
-      <div class="step-dots"><div class="sd done"></div><div class="sd active"></div></div>
-      <div class="login-title">邮箱验证</div>
-      <div class="login-desc">验证码已发送至管理员邮箱<br>请输入6位验证码</div>
-      <input class="login-input" type="text" id="loginCode" placeholder="000000" maxlength="6" inputmode="numeric" style="text-align:center;font-size:24px;font-weight:800;letter-spacing:10px">
-      <button class="btn-primary" id="btnStep2Next">验证并登录</button>
-      <button class="btn-secondary" id="btnResendCode">重新发送 <span id="resendTimer"></span></button>
-      <button class="btn-secondary" id="btnBack1">返回</button>
-      <div class="login-msg" id="loginMsg2"></div>
-    </div>
+<div id="loginScreen"><div class="login-card">
+  <div class="login-step active" id="lstep1">
+    <div class="login-mark">JF</div>
+    <div class="login-title">极风控制</div>
+    <div class="login-desc">请输入管理员账号密码</div>
+    <input class="login-input" type="text" id="loginUser" placeholder="管理员账号" value="NUOYAN" autocomplete="username">
+    <input class="login-input" type="password" id="loginPass" placeholder="密码" autocomplete="current-password">
+    <button class="btn-primary" id="btnStep1Next">下一步</button>
+    <div class="login-msg" id="loginMsg1"></div>
   </div>
-</div>
+  <div class="login-step" id="lstep2">
+    <div class="step-dots"><div class="sd done"></div><div class="sd active"></div></div>
+    <div class="login-title">邮箱验证</div>
+    <div class="login-desc">验证码已发送至管理员邮箱<br>请输入6位验证码</div>
+    <input class="login-input" type="text" id="loginCode" placeholder="000000" maxlength="6" inputmode="numeric" style="text-align:center;font-size:24px;font-weight:800;letter-spacing:10px">
+    <button class="btn-primary" id="btnStep2Next">验证并登录</button>
+    <button class="btn-secondary" id="btnResendCode">重新发送 <span id="resendTimer"></span></button>
+    <button class="btn-secondary" id="btnBack1">返回</button>
+    <div class="login-msg" id="loginMsg2"></div>
+  </div>
+</div></div>
 
-<!-- App -->
 <div id="app">
   <div class="app-header">
     <div class="app-title" id="pageTitle">总览</div>
-    <div class="app-header-right">
+    <div style="display:flex;gap:8px">
+      <div class="header-btn" onclick="showApprovals()" title="授权请求"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 2L4 6v6c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V6l-8-4z"/><polyline points="9 12 11 14 15 10"/></svg></div>
       <div class="status-dot" id="statusDot"></div>
     </div>
   </div>
-
   <div class="app-content" id="appContent">
-    <!-- Home -->
+    <!-- HOME -->
     <div class="page active" id="page-home">
       <div class="pull-indicator" id="pullHint">下拉刷新...</div>
       <div class="stats-grid">
-        <div class="glass stat-card"><div class="stat-val" id="stVisitors">0</div><div class="stat-label">今日访客</div></div>
-        <div class="glass stat-card"><div class="stat-val" id="stAttacks">0</div><div class="stat-label">攻击拦截</div></div>
-        <div class="glass stat-card"><div class="stat-val" id="stBanned">0</div><div class="stat-label">封禁中</div></div>
-        <div class="glass stat-card"><div class="stat-val" id="stOnline">0</div><div class="stat-label">在线</div></div>
+        <div class="glass stat-card"><div class="stat-val" id="stVisitors">0</div><div class="stat-label">今日访客</div><div class="stat-sub" id="stVisitorTrend"></div></div>
+        <div class="glass stat-card"><div class="stat-val" id="stAttacks">0</div><div class="stat-label">攻击拦截</div><div class="stat-sub">实时监控中</div></div>
+        <div class="glass stat-card"><div class="stat-val" id="stBanned">0</div><div class="stat-label">封禁中</div><div class="stat-sub" id="stPermBans"></div></div>
+        <div class="glass stat-card"><div class="stat-val" id="stScore">—</div><div class="stat-label">安全评分</div><div class="stat-sub" id="stGrade"></div></div>
       </div>
-
-      <div class="section"><div class="section-title">网站状态</div></div>
+      <div class="glass chart-card">
+        <div class="chart-title">24小时流量</div>
+        <canvas id="trafficChart"></canvas>
+      </div>
       <div class="glass mode-card">
-        <div class="mode-label">运行模式</div>
+        <div class="mode-label">网站运行模式</div>
         <div class="mode-btns">
-          <button class="mode-btn active" data-mode="normal" onclick="setMode('normal')">正常</button>
-          <button class="mode-btn" data-mode="maintenance" onclick="setMode('maintenance')">维护</button>
+          <button class="mode-btn active" data-mode="normal" onclick="setMode('normal')">正常运行</button>
+          <button class="mode-btn" data-mode="maintenance" onclick="setMode('maintenance')">维护中</button>
           <button class="mode-btn" data-mode="shutdown" onclick="setMode('shutdown')">关停</button>
         </div>
       </div>
-
       <div class="section"><div class="section-title">快捷操作</div></div>
       <div class="actions-grid">
         <div class="action-btn" onclick="switchPage('visitors')"><div class="action-icon">👥</div><div class="action-name">访客</div></div>
         <div class="action-btn" onclick="switchPage('security')"><div class="action-icon">🛡️</div><div class="action-name">安全</div></div>
         <div class="action-btn" onclick="showQuickAnnounce()"><div class="action-icon">📢</div><div class="action-name">公告</div></div>
-        <div class="action-btn" onclick="refreshData()"><div class="action-icon">🔄</div><div class="action-name">刷新</div></div>
+        <div class="action-btn" onclick="switchPage('appeals')"><div class="action-icon">📋</div><div class="action-name">申诉</div></div>
         <div class="action-btn" onclick="clearAllBans()"><div class="action-icon">🔓</div><div class="action-name">解封</div></div>
-        <div class="action-btn" onclick="sendTestEmail()"><div class="action-icon">📧</div><div class="action-name">测试</div></div>
+        <div class="action-btn" onclick="sendTestEmail()"><div class="action-icon">📧</div><div class="action-name">测试邮件</div></div>
+        <div class="action-btn" onclick="generateReport()"><div class="action-icon">📊</div><div class="action-name">报告</div></div>
         <div class="action-btn" onclick="switchPage('settings')"><div class="action-icon">⚙️</div><div class="action-name">设置</div></div>
-        <div class="action-btn" onclick="openConsole()"><div class="action-icon">🌐</div><div class="action-name">网页版</div></div>
       </div>
-
-      <div class="section"><div class="section-title">最近访客</div></div>
+      <div class="section"><div class="section-title">最近访客 <span class="see-all" onclick="switchPage('visitors')">查看全部</span></div></div>
       <div class="glass list-card" id="recentVisitors"><div class="empty">加载中...</div></div>
+      <div class="section" style="margin-top:16px"><div class="section-title">最新安全事件</div></div>
+      <div class="glass list-card" id="recentEvents"><div class="empty">加载中...</div></div>
     </div>
 
-    <!-- Visitors -->
+    <!-- VISITORS -->
     <div class="page" id="page-visitors">
-      <div class="section"><div class="section-title">访客档案</div></div>
+      <div class="tab-bar" id="visitorTabs">
+        <div class="tab-btn active" data-tab="all" onclick="setVisitorTab('all')">全部</div>
+        <div class="tab-btn" data-tab="banned" onclick="setVisitorTab('banned')">已封禁</div>
+        <div class="tab-btn" data-tab="warning" onclick="setVisitorTab('warning')">警告</div>
+      </div>
       <div class="glass list-card" id="visitorList"><div class="empty">加载中...</div></div>
     </div>
 
-    <!-- Security -->
+    <!-- SECURITY -->
     <div class="page" id="page-security">
-      <div class="section"><div class="section-title">安全事件</div></div>
+      <div class="tab-bar">
+        <div class="tab-btn active" data-tab="all" onclick="setSecTab('all')">全部</div>
+        <div class="tab-btn" data-tab="attack" onclick="setSecTab('attack')">攻击</div>
+        <div class="tab-btn" data-tab="ban" onclick="setSecTab('ban')">封禁</div>
+        <div class="tab-btn" data-tab="auth" onclick="setSecTab('auth')">登录</div>
+      </div>
       <div class="glass list-card" id="securityEvents"><div class="empty">加载中...</div></div>
+      <div class="section" style="margin-top:16px"><div class="section-title">安全操作</div></div>
+      <div class="glass list-card">
+        <div class="setting-item" onclick="clearAllBans()"><div><div class="si-label">一键解封</div><div class="si-sub">解除所有临时封禁</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--success)" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg></div>
+        <div class="setting-item" onclick="clearEvents()"><div><div class="si-label">清空事件日志</div><div class="si-sub">清除所有安全事件记录</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></div>
+      </div>
     </div>
 
-    <!-- Settings -->
+    <!-- APPEALS -->
+    <div class="page" id="page-appeals">
+      <div class="glass list-card" id="appealsList"><div class="empty">加载中...</div></div>
+    </div>
+
+    <!-- ANNOUNCEMENTS -->
+    <div class="page" id="page-announcements">
+      <button class="btn-primary" onclick="showQuickAnnounce()" style="margin-bottom:16px">+ 发布新公告</button>
+      <div class="glass list-card" id="announcementList"><div class="empty">加载中...</div></div>
+    </div>
+
+    <!-- DEVICES -->
+    <div class="page" id="page-devices">
+      <div class="glass list-card" id="deviceList"><div class="empty">加载中...</div></div>
+    </div>
+
+    <!-- SETTINGS -->
     <div class="page" id="page-settings">
-      <div class="section"><div class="section-title">账户</div></div>
+      <div class="section"><div class="section-title">账户安全</div></div>
       <div class="glass list-card">
         <div class="setting-item" onclick="bioSettingClick()">
           <div><div class="si-label" id="bioLabel">生物识别</div><div class="si-sub" id="bioSub">指纹/面容快速登录</div></div>
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
-        <div class="setting-item" onclick="logout()">
-          <div><div class="si-label" style="color:var(--danger)">退出登录</div></div>
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--danger)" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        </div>
+        <div class="setting-item" onclick="logout()"><div><div class="si-label" style="color:var(--danger)">退出登录</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--danger)" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
       </div>
-      <div class="section"><div class="section-title">通知</div></div>
+      <div class="section"><div class="section-title">通知设置</div></div>
       <div class="glass list-card">
-        <div class="setting-item"><div><div class="si-label">邮件告警</div></div><div class="toggle on" data-key="emailAlert" onclick="toggleSetting(this)"></div></div>
-        <div class="setting-item"><div><div class="si-label">每日报告</div></div><div class="toggle on" data-key="dailyReport" onclick="toggleSetting(this)"></div></div>
+        <div class="setting-item"><div><div class="si-label">邮件告警</div><div class="si-sub">安全事件实时邮件通知</div></div><div class="toggle on" data-key="emailAlert" onclick="toggleSetting(this)"></div></div>
+        <div class="setting-item"><div><div class="si-label">每日运维报告</div><div class="si-sub">每天定时发送运维报告</div></div><div class="toggle on" data-key="dailyReport" onclick="toggleSetting(this)"></div></div>
+        <div class="setting-item" onclick="setReportTime()"><div><div class="si-label">报告发送时间</div><div class="si-sub" id="reportTimeLabel">09:00</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text3)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
       </div>
-      <div class="section"><div class="section-title">安全</div></div>
+      <div class="section"><div class="section-title">安全策略</div></div>
       <div class="glass list-card">
-        <div class="setting-item"><div><div class="si-label">自动封禁</div></div><div class="toggle on" data-key="autoBan" onclick="toggleSetting(this)"></div></div>
-        <div class="setting-item"><div><div class="si-label">反调试</div></div><div class="toggle on" data-key="antiDebug" onclick="toggleSetting(this)"></div></div>
+        <div class="setting-item"><div><div class="si-label">自动封禁</div><div class="si-sub">3次警告后自动封禁</div></div><div class="toggle on" data-key="autoBan" onclick="toggleSetting(this)"></div></div>
+        <div class="setting-item"><div><div class="si-label">反调试保护</div><div class="si-sub">检测开发者工具</div></div><div class="toggle on" data-key="antiDebug" onclick="toggleSetting(this)"></div></div>
+        <div class="setting-item"><div><div class="si-label">人机验证</div><div class="si-sub">异常请求触发验证</div></div><div class="toggle on" data-key="captcha" onclick="toggleSetting(this)"></div></div>
+      </div>
+      <div class="section"><div class="section-title">维护消息</div></div>
+      <div class="glass list-card">
+        <div class="setting-item" onclick="editMaintMsg()"><div><div class="si-label">维护提示语</div><div class="si-sub" id="maintMsgLabel">自定义维护中显示的消息</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+      </div>
+      <div class="section"><div class="section-title">管理</div></div>
+      <div class="glass list-card">
+        <div class="setting-item" onclick="switchPage('announcements')"><div><div class="si-label">公告管理</div><div class="si-sub">发布和管理网站公告</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        <div class="setting-item" onclick="switchPage('devices')"><div><div class="si-label">信任设备</div><div class="si-sub">管理已授权的设备</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        <div class="setting-item" onclick="switchPage('appeals')"><div><div class="si-label">申诉审核</div><div class="si-sub">审核IP/设备解封申诉</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
       </div>
       <div class="section"><div class="section-title">关于</div></div>
       <div class="glass list-card">
-        <div class="setting-item"><div><div class="si-label">极风控制 APP</div><div class="si-sub">HyperOS 4 Liquid Glass</div></div></div>
+        <div class="setting-item"><div><div class="si-label">极风控制</div><div class="si-sub">HyperOS 4 Liquid Glass</div></div></div>
       </div>
     </div>
   </div>
 
-  <!-- Bottom Nav -->
   <div class="bottom-nav">
     <div class="nav-item active" data-page="home" onclick="switchPage('home')"><div class="nav-icon">🏠</div><div class="nav-label">总览</div></div>
     <div class="nav-item" data-page="visitors" onclick="switchPage('visitors')"><div class="nav-icon">👥</div><div class="nav-label">访客</div></div>
     <div class="nav-item" data-page="security" onclick="switchPage('security')"><div class="nav-icon">🛡️</div><div class="nav-label">安全</div></div>
-    <div class="nav-item" data-page="settings" onclick="switchPage('settings')"><div class="nav-icon">⚙️</div><div class="nav-label">设置</div></div>
+    <div class="nav-item" data-page="settings" onclick="switchPage('settings')"><div class="nav-icon">⚙️</div><div class="nav-label">我的</div></div>
   </div>
 </div>
 
-<!-- Toast -->
 <div id="toast"></div>
-
-<!-- Modal -->
 <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <div class="modal-title" id="modalTitle">标题</div>
-    <div id="modalBody"></div>
-    <button class="btn-primary" id="modalConfirm" style="margin-top:8px">确定</button>
-    <button class="btn-secondary" onclick="closeModal()">取消</button>
-  </div>
+  <div class="modal"><div class="modal-title" id="modalTitle">标题</div><div id="modalBody"></div><button class="btn-primary" id="modalConfirm" style="margin-top:8px">确定</button><button class="btn-secondary" onclick="closeModal()">取消</button></div>
 </div>
 
 <script>
 var API=window.JF_API||'';
 var token=loadToken();
-var refreshTimer=null;
+var refreshTimer=null,approvalTimer=null;
 var bioSupported=false,bioRegistered=false;
+var visitorTab='all',secTab='all';
+var settingsCache={};
 
 function $(s){return document.querySelector(s)}
 function $$(s){return document.querySelectorAll(s)}
-
-function toast(msg,type){
-  var t=$('#toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');
-  clearTimeout(t._timer);t._timer=setTimeout(function(){t.className='toast'},2500);
-}
-function haptic(p){
-  try{
-    if(navigator.vibrate)navigator.vibrate(p==='heavy'?[30]:p==='success'?[10,50,10]:10);
-  }catch(e){}
-}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function fmtTime(ts){var d=new Date(ts);return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0')+':'+d.getSeconds().toString().padStart(2,'0')}
-function fmtDate(ts){var d=new Date(ts);return (d.getMonth()+1)+'/'+d.getDate()+' '+fmtTime(ts)}
+function toast(msg,type){var t=$('#toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');clearTimeout(t._t);t._t=setTimeout(function(){t.className='toast'},2500)}
+function haptic(p){try{if(navigator.vibrate)navigator.vibrate(p==='heavy'?[30]:p==='success'?[10,50,10]:10)}catch(e){}}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function fmtTime(ts){var d=new Date(+ts||Date.now());return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0')+':'+d.getSeconds().toString().padStart(2,'0')}
+function fmtDate(ts){var d=new Date(+ts||Date.now());return(d.getMonth()+1)+'/'+d.getDate()+' '+fmtTime(ts)}
+function fmtNum(n){n=+n||0;return n>=10000?(n/10000).toFixed(1)+'w':n>=1000?(n/1000).toFixed(1)+'k':n}
 
 function api(path,opts){
   opts=opts||{};
   var h={'Content-Type':'application/json'};
   if(token)h['Authorization']='Bearer '+token;
   return fetch(API+'/api/'+path,{method:opts.method||'GET',headers:h,body:opts.body?JSON.stringify(opts.body):undefined})
-    .then(function(r){return r.json()}).catch(function(){return{ok:false,error:'网络错误'}});
+    .then(function(r){return r.json()}).catch(function(){return{ok:false,error:'网络连接失败，请检查网络'}});
 }
 
-// ===== TOKEN STORAGE (encrypted with device binding) =====
-function saveToken(t){
-  try{
-    token=t;
-    var did=localStorage.getItem('jf_did');
-    if(!did){did=(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36));localStorage.setItem('jf_did',did)}
-    var enc='';for(var i=0;i<t.length;i++)enc+=String.fromCharCode(t.charCodeAt(i)^did.charCodeAt(i%did.length));
-    localStorage.setItem('jf_tk',btoa(enc));
-  }catch(e){token=t;localStorage.setItem('jf_tk',t)}
-}
-function loadToken(){
-  try{
-    var enc=localStorage.getItem('jf_tk');if(!enc)return '';
-    var did=localStorage.getItem('jf_did')||'';
-    if(enc.indexOf('=')>=0||enc.length>100){try{var raw=atob(enc),dec='';for(var i=0;i<raw.length;i++)dec+=String.fromCharCode(raw.charCodeAt(i)^did.charCodeAt(i%did.length));return dec}catch(e){return enc}}
-    return enc;
-  }catch(e){return localStorage.getItem('jf_tk')||''}
-}
+function saveToken(t){try{token=t;var did=localStorage.getItem('jf_did');if(!did){did=(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36));localStorage.setItem('jf_did',did)}var enc='';for(var i=0;i<t.length;i++)enc+=String.fromCharCode(t.charCodeAt(i)^did.charCodeAt(i%did.length));localStorage.setItem('jf_tk',btoa(enc))}catch(e){token=t;localStorage.setItem('jf_tk',t)}}
+function loadToken(){try{var enc=localStorage.getItem('jf_tk');if(!enc)return'';var did=localStorage.getItem('jf_did')||'';try{var raw=atob(enc),dec='';for(var i=0;i<raw.length;i++)dec+=String.fromCharCode(raw.charCodeAt(i)^did.charCodeAt(i%did.length));return dec}catch(e){return enc}}catch(e){return''}}
 
-// ===== INIT =====
 setTimeout(function(){
   $('#splash').classList.add('hide');
   if(token){
-    api('stats/overview').then(function(d){
-      if(d.ok){showApp()}else{token='';localStorage.removeItem('jf_tk');showLogin()}
-    });
+    api('stats/overview').then(function(d){if(d.ok)showApp();else{token='';localStorage.removeItem('jf_tk');showLogin()}});
   }else showLogin();
-},1200);
+},1000);
 
 function showLogin(){$('#loginScreen').classList.add('show')}
-function showApp(){$('#loginScreen').classList.remove('show');$('#app').classList.add('show');refreshData();startTimers();detectBio();registerSW()}
+function showApp(){$('#loginScreen').classList.remove('show');$('#app').classList.add('show');detectBio();refreshData();startTimers();registerSW();loadApprovals()}
 
-// ===== LOGIN FLOW =====
-function showStep(id){
-  $$('.login-step').forEach(function(s){s.classList.remove('active')});
-  $('#'+id).classList.add('active');
-}
+/* ===== LOGIN ===== */
+function showStep(id){$$('.login-step').forEach(function(s){s.classList.remove('active')});$('#'+id).classList.add('active')}
+function msg1(t,c){var e=$('#loginMsg1');e.textContent=t;e.className='login-msg'+(c?' '+c:'')}
+function msg2(t,c){var e=$('#loginMsg2');e.textContent=t;e.className='login-msg'+(c?' '+c:'')}
 
 $('#btnStep1Next').onclick=function(){
   var u=$('#loginUser').value.trim(),p=$('#loginPass').value;
   if(!u||!p){msg1('请输入账号和密码','error');return}
-  msg1('验证中...','');
+  var btn=this;btn.disabled=true;msg1('正在验证...','');
   api('auth/login',{method:'POST',body:{username:u,password:p}}).then(function(d){
-    if(d.ok){
-      haptic('light');msg1('','');
-      showStep('lstep2');sendCode();
-    }else{haptic('heavy');msg1(d.error||'账号或密码错误','error')}
-  });
+    btn.disabled=false;
+    if(d.ok){haptic('light');msg1('','');showStep('lstep2');sendCode()}
+    else{haptic('heavy');msg1(d.error||'账号或密码错误','error')}
+  }).catch(function(){btn.disabled=false;msg1('网络错误，请重试','error')});
 };
 $('#loginPass').addEventListener('keydown',function(e){if(e.key==='Enter')$('#btnStep1Next').click()});
 
-function msg1(t,c){var e=$('#loginMsg1');e.textContent=t;e.className='login-msg'+(c?' '+c:'')}
-function msg2(t,c){var e=$('#loginMsg2');e.textContent=t;e.className='login-msg'+(c?' '+c:'')}
-
 var codeTimer=null;
 function sendCode(){
+  msg2('正在发送验证码...','');
   api('auth/sendcode',{method:'POST'}).then(function(d){
-    if(d.ok){msg2('验证码已发送','ok');startCodeTimer()}
-    else msg2(d.error||'发送失败','error');
+    if(d.ok){msg2('验证码已发送至管理员邮箱','ok');startCodeTimer()}
+    else msg2(d.error||'发送失败，请重试','error');
   });
 }
-function startCodeTimer(){
-  var s=60;var btn=$('#btnResendCode');btn.disabled=true;
-  $('#resendTimer').textContent='('+s+'s)';
-  clearInterval(codeTimer);
-  codeTimer=setInterval(function(){s--;$('#resendTimer').textContent='('+s+'s)';if(s<=0){clearInterval(codeTimer);btn.disabled=false;$('#resendTimer').textContent=''}},1000);
-}
+function startCodeTimer(){var s=60,btn=$('#btnResendCode');btn.disabled=true;$('#resendTimer').textContent='('+s+'s)';clearInterval(codeTimer);codeTimer=setInterval(function(){s--;$('#resendTimer').textContent='('+s+'s)';if(s<=0){clearInterval(codeTimer);btn.disabled=false;$('#resendTimer').textContent=''}},1000)}
 $('#btnResendCode').onclick=function(){if(!this.disabled)sendCode()};
 $('#btnBack1').onclick=function(){clearInterval(codeTimer);showStep('lstep1')};
 
 $('#btnStep2Next').onclick=function(){
   var code=$('#loginCode').value.trim();
   if(code.length!==6){msg2('请输入6位验证码','error');return}
-  msg2('验证中...','');
+  var btn=this;btn.disabled=true;msg2('正在验证...','');
   api('auth/verify',{method:'POST',body:{code:code}}).then(function(d){
-    if(d.ok&&d.token){
-      haptic('success');saveToken(d.token);
-      // Auto trust device
-      api('auth/trust',{method:'POST',body:{deviceName:'极风APP',fp:localStorage.getItem('jf_did')||''}});
-      msg2('登录成功','ok');
-      setTimeout(showApp,400);
-    }else{haptic('heavy');msg2(d.error||'验证码错误','error')}
-  });
+    btn.disabled=false;
+    if(d.ok&&d.token){haptic('success');saveToken(d.token);api('auth/trust',{method:'POST',body:{deviceName:'极风APP',fp:localStorage.getItem('jf_did')||''}});msg2('登录成功','ok');setTimeout(showApp,400)}
+    else{haptic('heavy');msg2(d.error||'验证码错误','error')}
+  }).catch(function(){btn.disabled=false;msg2('网络错误，请重试','error')});
 };
 $('#loginCode').addEventListener('keydown',function(e){if(e.key==='Enter')$('#btnStep2Next').click()});
 
-// ===== BIOMETRIC (in settings only) =====
-function detectBio(){
-  if(!window.PublicKeyCredential)return;
-  PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(ok){
-    bioSupported=ok;
-    return api('auth/wa/status');
-  }).then(function(d){
-    if(d&&d.ok)bioRegistered=d.registered;
-    updateBioUI();
-  }).catch(function(){});
-}
-function updateBioUI(){
-  var l=$('#bioLabel'),s=$('#bioSub');if(!l)return;
-  if(!bioSupported){l.textContent='生物识别';s.textContent='设备不支持'}
-  else if(bioRegistered){l.textContent='生物识别 ✓';s.textContent='已注册，点击重新注册'}
-  else{l.textContent='生物识别';s.textContent='点击注册指纹/面容'}
-}
-function bioSettingClick(){
-  if(!bioSupported){toast('设备不支持生物识别','err');return}
-  if(bioRegistered){if(confirm('已注册生物识别，重新注册？'))registerBio()}
-  else registerBio();
-}
+/* ===== BIOMETRIC ===== */
+function detectBio(){if(!window.PublicKeyCredential)return;PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(ok){bioSupported=ok;return api('auth/wa/status')}).then(function(d){if(d&&d.ok)bioRegistered=d.registered;updateBioUI()}).catch(function(){})}
+function updateBioUI(){var l=$('#bioLabel'),s=$('#bioSub');if(!l)return;if(!bioSupported){l.textContent='生物识别';s.textContent='设备不支持'}else if(bioRegistered){l.textContent='生物识别 ✓';s.textContent='已注册，点击重新注册'}else{l.textContent='生物识别';s.textContent='点击注册指纹/面容'}}
+function bioSettingClick(){if(!bioSupported){toast('设备不支持生物识别','err');return}if(bioRegistered){if(confirm('已注册生物识别，重新注册？'))registerBio()}else registerBio()}
 function b64ToBuf(s){var b=atob(s.replace(/-/g,'+').replace(/_/g,'/'));var a=new Uint8Array(b.length);for(var i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a.buffer}
 function bufToB64(b){var bytes=new Uint8Array(b);var s='';for(var i=0;i<bytes.byteLength;i++)s+=String.fromCharCode(bytes[i]);return btoa(s)}
-function registerBio(){
-  try{
-    api('auth/wa/reg-options',{method:'POST'}).then(function(d){
-      if(!d.ok)throw new Error(d.error||'注册失败');
-      var o=d.options;o.challenge=b64ToBuf(o.challenge);o.user.id=b64ToBuf(o.user.id);
-      o.excludeCredentials=(o.excludeCredentials||[]).map(function(c){try{return{id:b64ToBuf(c.id),type:c.type}}catch(e){return null}}).filter(Boolean);
-      return navigator.credentials.create({publicKey:o});
-    }).then(function(cred){
-      if(!cred)return;
-      var data={id:bufToB64(cred.rawId),response:{attestationObject:bufToB64(cred.response.attestationObject),clientDataJSON:bufToB64(cred.response.clientDataJSON)},type:cred.type};
-      return api('auth/wa/reg-verify',{method:'POST',body:{credential:data}});
-    }).then(function(d){
-      if(d&&d.ok){bioRegistered=true;updateBioUI();toast('生物识别注册成功','ok');haptic('success')}
-    }).catch(function(e){if(e.name!=='NotAllowedError')toast(e.message||'注册失败','err')});
-  }catch(e){toast('生物识别不可用','err')}
-}
+function registerBio(){try{api('auth/wa/reg-options',{method:'POST'}).then(function(d){if(!d.ok)throw new Error(d.error||'注册失败');var o=d.options;o.challenge=b64ToBuf(o.challenge);o.user.id=b64ToBuf(o.user.id);o.excludeCredentials=(o.excludeCredentials||[]).map(function(c){try{return{id:b64ToBuf(c.id),type:c.type}}catch(e){return null}}).filter(Boolean);return navigator.credentials.create({publicKey:o})}).then(function(cred){if(!cred)return;var data={id:bufToB64(cred.rawId),response:{attestationObject:bufToB64(cred.response.attestationObject),clientDataJSON:bufToB64(cred.response.clientDataJSON)},type:cred.type};return api('auth/wa/reg-verify',{method:'POST',body:{credential:data}})}).then(function(d){if(d&&d.ok){bioRegistered=true;updateBioUI();toast('生物识别注册成功','ok');haptic('success')}}).catch(function(e){if(e.name!=='NotAllowedError')toast(e.message||'注册失败','err')})}catch(e){toast('生物识别不可用','err')}}
 
-// ===== PAGE NAVIGATION =====
+/* ===== NAVIGATION ===== */
 var currentPage='home';
+var pageTitles={home:'总览',visitors:'访客档案',security:'安全中心',appeals:'申诉管理',announcements:'公告管理',devices:'信任设备',settings:'我的'};
 function switchPage(p){
   currentPage=p;
   $$('.page').forEach(function(pg){pg.classList.remove('active')});
-  $('#page-'+p).classList.add('active');
+  var el=$('#page-'+p);if(el)el.classList.add('active');
   $$('.nav-item').forEach(function(n){n.classList.toggle('active',n.dataset.page===p)});
-  var titles={home:'总览',visitors:'访客档案',security:'安全中心',settings:'设置'};
-  $('#pageTitle').textContent=titles[p]||'极风控制';
+  $('#pageTitle').textContent=pageTitles[p]||'极风控制';
   $('#appContent').scrollTop=0;
   if(p==='visitors')loadVisitors();
   if(p==='security')loadSecurity();
+  if(p==='appeals')loadAppeals();
+  if(p==='announcements')loadAnnouncements();
+  if(p==='devices')loadDevices();
+  if(p==='settings')loadSettings();
 }
 
-// ===== DATA LOADING =====
+/* ===== DATA ===== */
 function refreshData(){
   api('stats/overview').then(function(d){
     if(!d.ok||!d.data)return;
     var D=d.data;
-    $('#stVisitors').textContent=D.visitors||0;
-    $('#stAttacks').textContent=D.attacks||0;
-    $('#stBanned').textContent=D.bans||0;
-    $('#stOnline').textContent=D.online||'—';
+    $('#stVisitors').textContent=fmtNum(D.visitors);
+    $('#stAttacks').textContent=fmtNum(D.attacks);
+    $('#stBanned').textContent=fmtNum(D.bans);
+    $('#stPermBans').textContent=(D.permBans||0)+' 永久';
+    if(D.visitorTrend>0)$('#stVisitorTrend').textContent='↑ '+D.visitorTrend+'% 较昨日';
+    else if(D.visitorTrend<0)$('#stVisitorTrend').textContent='↓ '+Math.abs(D.visitorTrend)+'% 较昨日';
+    else $('#stVisitorTrend').textContent='今日数据';
+    drawTrafficChart(D.trafficLabels||[],(D.trafficData&&D.trafficData[0]&&D.trafficData[0].data)||[]);
   });
-  api('site/status').then(function(d){
-    if(!d.ok)return;
-    var mode=d.mode||'normal';
-    var dot=$('#statusDot');
-    dot.style.background=mode==='normal'?'var(--success)':mode==='maintenance'?'#ff9500':'var(--danger)';
-    dot.style.boxShadow='0 0 8px '+dot.style.background;
-    $$('.mode-btn').forEach(function(b){b.classList.toggle('active',b.dataset.mode===mode)});
+  api('security/score').then(function(d){
+    if(d.ok&&d.data){$('#stScore').textContent=d.data.score;$('#stGrade').textContent='评级 '+d.data.grade}
   });
+  api('site/status').then(function(d){if(d.ok){$$('.mode-btn').forEach(function(b){b.classList.toggle('active',b.dataset.mode===(d.mode||'normal'))});var dot=$('#statusDot');dot.style.background=d.mode==='normal'?'var(--success)':d.mode==='maintenance'?'var(--orange)':'var(--danger)';dot.style.boxShadow='0 0 8px '+dot.style.background}});
   api('stats/visitors').then(function(d){
     if(!d.ok||!d.data||!d.data.recent)return;
-    var h='';
-    d.data.recent.slice(0,5).forEach(function(v){
-      var badge=v.banned?'<span class="li-badge badge-danger">封禁</span>':v.warning?'<span class="li-badge badge-warn">警告</span>':'<span class="li-badge badge-ok">正常</span>';
-      var name=v.model||v.device||v.ip||'未知';
-      if(v.brand)name=v.brand+' '+name;
-      h+='<div class="list-item"><div class="li-avatar">'+(v.brandIcon||'📱')+'</div><div class="li-info"><div class="li-title">'+esc(name)+'</div><div class="li-sub">'+esc(v.browser||'')+' · '+fmtTime(v.time||v.ts||Date.now())+'</div></div>'+badge+'</div>';
-    });
+    var h='';d.data.recent.slice(0,5).forEach(function(v){h+=renderVisitorItem(v)});
     $('#recentVisitors').innerHTML=h||'<div class="empty">暂无访客</div>';
   });
+  api('security/events').then(function(d){
+    if(!d.ok||!d.data)return;
+    var h='';d.data.slice(0,5).forEach(function(e){h+=renderEventItem(e)});
+    $('#recentEvents').innerHTML=h||'<div class="empty">暂无事件</div>';
+  });
+}
+
+function brandIcon(v){
+  if(v.brandIcon)return v.brandIcon;
+  var b=(v.brand||'').toLowerCase();
+  if(/huawei|honor|华为|荣耀/.test(b))return'📱';if(/xiaomi|redmi|mi |小米|红米/.test(b))return'📱';if(/oppo|realme|oneplus/.test(b))return'📱';if(/vivo|iqoo/.test(b))return'📱';if(/samsung/.test(b))return'📱';if(/apple|iphone|ipad/.test(b))return'📱';if(/lenovo|legion|拯救者/.test(b))return'💻';
+  return /mobile|android|iphone/i.test(v.os||v.ua||'')?'📱':'💻';
+}
+function renderVisitorItem(v){
+  var badge=v.banned?'<span class="li-badge badge-danger">封禁</span>':v.warning?'<span class="li-badge badge-warn">警告</span>':'<span class="li-badge badge-ok">正常</span>';
+  var name=v.model||v.device||v.ip||'未知';if(v.brand)name=v.brand+' '+name;
+  return'<div class="list-item" onclick="visitorDetail(\''+esc(v.fid||v.ip||'')+'\')"><div class="li-avatar">'+brandIcon(v)+'</div><div class="li-info"><div class="li-title">'+esc(name)+'</div><div class="li-sub">'+esc(v.browser||'')+' · '+esc(v.ip||'')+' · '+fmtTime(v.time||v.ts)+'</div></div>'+badge+'</div>';
+}
+function renderEventItem(e){
+  var colors={attack:'var(--danger)',ban:'var(--danger)',blocked:'var(--danger)',warning:'var(--orange)',login:'var(--blue)',auth:'var(--blue)',unban:'var(--success)',info:'var(--text3)'};
+  return'<div class="event-item"><div class="event-dot" style="background:'+(colors[e.type]||'var(--text3)')+'"></div><div class="event-text">'+esc(e.message||e.type||'')+'<div class="event-time">'+fmtDate(e.time||e.ts)+'</div></div></div>';
 }
 
 function loadVisitors(){
   api('stats/visitors').then(function(d){
     if(!d.ok||!d.data||!d.data.recent){$('#visitorList').innerHTML='<div class="empty">暂无数据</div>';return}
-    var h='';
-    d.data.recent.forEach(function(v){
-      var badge=v.banned?'<span class="li-badge badge-danger">封禁</span>':v.warning?'<span class="li-badge badge-warn">警告</span>':'<span class="li-badge badge-ok">正常</span>';
-      var name=v.model||v.device||v.ip||'未知';
-      if(v.brand)name=v.brand+' '+name;
-      var ip=v.ip||'';
-      h+='<div class="list-item" onclick="visitorAction(\''+esc(v.fid||ip)+'\',\''+esc(ip)+'\')"><div class="li-avatar">'+(v.brandIcon||'📱')+'</div><div class="li-info"><div class="li-title">'+esc(name)+'</div><div class="li-sub">'+esc(v.browser||'')+' · '+esc(v.os||'')+' · '+fmtDate(v.time||v.ts||Date.now())+'</div></div>'+badge+'</div>';
-    });
+    var list=d.data.recent;
+    if(visitorTab==='banned')list=list.filter(function(v){return v.banned});
+    if(visitorTab==='warning')list=list.filter(function(v){return v.warning&&!v.banned});
+    var h='';list.forEach(function(v){h+=renderVisitorItem(v)});
     $('#visitorList').innerHTML=h||'<div class="empty">暂无访客</div>';
   });
 }
+function setVisitorTab(t){visitorTab=t;$$('#visitorTabs .tab-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab===t)});loadVisitors()}
 
-function visitorAction(fid,ip){
-  showModal('访客操作','<div style="margin-bottom:12px;color:var(--text2);font-size:14px">IP: '+esc(ip||'未知')+'<br>设备: '+esc(fid||'未知')+'</div>',function(){
+function visitorDetail(fid){
+  api('stats/visitors').then(function(d){
+    if(!d.ok||!d.data)return;
+    var v=d.data.recent.find(function(x){return(x.fid||x.ip)===fid});
+    if(!v){toast('未找到访客信息','err');return}
+    var name=v.model||v.device||v.ip||'未知';if(v.brand)name=v.brand+' '+name;
+    var rows='';
+    function row(l,val){rows+='<div class="detail-row"><span class="detail-label">'+l+'</span><span class="detail-value">'+esc(val||'—')+'</span></div>'}
+    row('IP地址',v.ip);row('设备指纹',v.fid);row('品牌',v.brand);row('型号',v.model);
+    row('系统',v.os);row('浏览器',v.browser);row('内核',v.kernel);row('安卓版本',v.androidVer);
+    row('屏幕',v.screen);row('GPU',v.gpu);row('网络',v.network);row('主题',v.colorScheme);
+    row('首次访问',fmtDate(v.firstSeen||v.time));row('最后访问',fmtDate(v.time||v.ts));
+    row('访问次数',v.visits||1);
+    var actions='<button class="btn-primary" onclick="banVisitor(\''+esc(v.ip||'')+'\',\''+esc(v.fid||'')+'\')" style="background:var(--danger);margin-top:12px">封禁此设备</button>';
+    if(v.banned)actions='<button class="btn-primary" onclick="unbanVisitor(\''+esc(v.ip||'')+'\',\''+esc(v.fid||'')+'\')" style="background:var(--success);margin-top:12px">解封此设备</button>';
+    showModal(name,'<div style="margin-bottom:12px">'+rows+'</div>'+actions,function(){closeModal()},'关闭');
+  });
+}
+function banVisitor(ip,fid){
+  closeModal();
+  showModal('确认封禁','<div style="color:var(--text2);font-size:14px;margin-bottom:12px">确定封禁此设备？封禁后将无法访问网站。</div>',function(){
     api('security/ban',{method:'POST',body:{ip:ip,fid:fid,reason:'APP手动封禁',type:'permanent'}}).then(function(d){
       if(d.ok){toast('已封禁','ok');haptic('success');loadVisitors();refreshData()}else toast(d.error||'封禁失败','err');
       closeModal();
     });
-  },'封禁此设备');
+  },'确认封禁');
+}
+function unbanVisitor(ip,fid){
+  closeModal();
+  api('security/unban-ip',{method:'POST',body:{ip:ip,fid:fid}}).then(function(d){
+    if(d.ok){toast('已解封','ok');loadVisitors();refreshData()}else toast(d.error||'解封失败','err');
+  });
 }
 
 function loadSecurity(){
   api('security/events').then(function(d){
     if(!d.ok||!d.data){$('#securityEvents').innerHTML='<div class="empty">暂无事件</div>';return}
-    var evts=d.data;if(!Array.isArray(evts))evts=[];
-    var colors={attack:'var(--danger)',ban:'var(--danger)',warning:'#ff9500',login:'var(--blue)',auth:'var(--blue)',info:'var(--text3)',unban:'var(--success)'};
-    var h='';
-    evts.slice(0,50).forEach(function(e){
-      h+='<div class="event-item"><div class="event-dot" style="background:'+(colors[e.type]||'var(--text3)')+'"></div><div class="event-text">'+esc(e.message||e.type||'')+'<div class="event-time">'+fmtDate(e.time||e.ts||Date.now())+'</div></div></div>';
-    });
+    var list=d.data;
+    if(secTab!=='all')list=list.filter(function(e){return e.type===secTab||(secTab==='attack'&&(e.type==='attack'||e.type==='warning'||e.type==='blocked'))});
+    var h='';list.slice(0,100).forEach(function(e){h+=renderEventItem(e)});
     $('#securityEvents').innerHTML=h||'<div class="empty">暂无安全事件</div>';
   });
 }
+function setSecTab(t){secTab=t;$$('#page-security .tab-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab===t)});loadSecurity()}
 
-// ===== ACTIONS =====
-function setMode(mode){
-  api('admin/site-mode',{method:'POST',body:{mode:mode}}).then(function(d){
-    if(d.ok){toast('已切换到'+(mode==='normal'?'正常':mode==='maintenance'?'维护':'关停')+'模式','ok');haptic('light');refreshData()}
-    else toast(d.error||'操作失败','err');
+function loadAppeals(){
+  api('appeals').then(function(d){
+    if(!d.ok||!d.data){$('#appealsList').innerHTML='<div class="empty">暂无申诉</div>';return}
+    var list=Array.isArray(d.data)?d.data:(d.data.appeals||[]);
+    var h='';list.forEach(function(a){
+      var status=a.status==='approved'?'<span class="li-badge badge-ok">已通过</span>':a.status==='denied'?'<span class="li-badge badge-danger">已拒绝</span>':'<span class="li-badge badge-warn">待审核</span>';
+      h+='<div class="list-item" onclick="appealDetail(\''+esc(a.id)+'\')"><div class="li-avatar">📋</div><div class="li-info"><div class="li-title">'+esc(a.ip||a.name||'未知')+'</div><div class="li-sub">'+esc(a.reason||'')+' · '+fmtDate(a.time||a.createdAt)+'</div></div>'+status+'</div>';
+    });
+    $('#appealsList').innerHTML=h||'<div class="empty">暂无申诉</div>';
+  });
+}
+function appealDetail(id){
+  api('appeals').then(function(d){
+    var list=Array.isArray(d.data)?d.data:(d.data&&d.data.appeals)||[];
+    var a=list.find(function(x){return x.id===id});if(!a)return;
+    var rows='';function row(l,v){rows+='<div class="detail-row"><span class="detail-label">'+l+'</span><span class="detail-value">'+esc(v||'—')+'</span></div>'}
+    row('IP',a.ip);row('原因',a.reason);row('提交时间',fmtDate(a.time||a.createdAt));
+    var btns='';
+    if(a.status!=='approved'&&a.status!=='denied'){
+      btns='<div style="display:flex;gap:8px;margin-top:12px"><button class="btn-primary" style="flex:1;background:var(--success)" onclick="handleAppeal(\''+esc(id)+'\',\'approve\')">通过</button><button class="btn-primary" style="flex:1;background:var(--danger)" onclick="handleAppeal(\''+esc(id)+'\',\'deny\')">拒绝</button></div>';
+    }
+    showModal('申诉详情','<div>'+rows+'</div>'+btns,function(){closeModal()},'关闭');
+  });
+}
+function handleAppeal(id,action){
+  api('appeals/handle',{method:'POST',body:{id:id,action:action}}).then(function(d){
+    if(d.ok){toast(action==='approve'?'已通过':'已拒绝','ok');closeModal();loadAppeals()}else toast(d.error||'操作失败','err');
   });
 }
 
+function loadAnnouncements(){
+  api('announcement/all').then(function(d){
+    if(!d.ok||!d.data){$('#announcementList').innerHTML='<div class="empty">暂无公告</div>';return}
+    var h='';d.data.forEach(function(a){
+      h+='<div class="list-item" onclick="announcementActions(\''+esc(a.id)+'\')"><div class="li-avatar">📢</div><div class="li-info"><div class="li-title">'+esc(a.title)+'</div><div class="li-sub">'+fmtDate(a.time)+'</div></div><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>';
+    });
+    $('#announcementList').innerHTML=h||'<div class="empty">暂无公告</div>';
+  });
+}
+function announcementActions(id){
+  showModal('公告操作','<div style="color:var(--text2);font-size:14px">选择操作</div>',function(){
+    api('announcement/delete',{method:'POST',body:{id:id}}).then(function(d){
+      if(d.ok){toast('已删除','ok');closeModal();loadAnnouncements()}else toast(d.error||'失败','err');
+    });
+  },'删除此公告');
+}
+
+function loadDevices(){
+  api('devices').then(function(d){
+    if(!d.ok||!d.data){$('#deviceList').innerHTML='<div class="empty">暂无信任设备</div>';return}
+    var list=Array.isArray(d.data)?d.data:(d.data.devices||[]);
+    var h='';list.forEach(function(dev){
+      h+='<div class="list-item"><div class="li-avatar">🔑</div><div class="li-info"><div class="li-title">'+esc(dev.name||'未知设备')+'</div><div class="li-sub">'+esc(dev.ip||'')+' · '+fmtDate(dev.lastUsed||dev.createdAt)+'</div></div><div class="li-badge badge-info" onclick="revokeDevice(\''+esc(dev.id)+'\')" style="cursor:pointer">撤销</div></div>';
+    });
+    $('#deviceList').innerHTML=h||'<div class="empty">暂无信任设备</div>';
+  });
+}
+function revokeDevice(id){
+  api('devices/revoke',{method:'POST',body:{id:id}}).then(function(d){
+    if(d.ok){toast('已撤销','ok');loadDevices()}else toast(d.error||'失败','err');
+  });
+}
+
+function loadSettings(){
+  api('settings').then(function(d){
+    if(!d.ok||!d.data)return;
+    settingsCache=d.data;
+    $$('.toggle').forEach(function(t){var key=t.dataset.key;if(key&&d.data[key]!==undefined)t.classList.toggle('on',!!d.data[key])});
+    if(d.data.reportTime)$('#reportTimeLabel').textContent=d.data.reportTime;
+    if(d.data.maintenanceMsg)$('#maintMsgLabel').textContent=d.data.maintenanceMsg.substring(0,30);
+  });
+}
+
+/* ===== ACTIONS ===== */
+function setMode(mode){
+  $$('.mode-btn').forEach(function(b){b.classList.toggle('active',b.dataset.mode===mode)});
+  api('admin/site-mode',{method:'POST',body:{mode:mode}}).then(function(d){
+    if(d.ok){toast('已切换到'+(mode==='normal'?'正常运行':mode==='maintenance'?'维护中':'关停')+'模式','ok');haptic('light');refreshData()}
+    else{toast(d.error||'操作失败','err');refreshData()}
+  });
+}
 function showQuickAnnounce(){
   showModal('发布公告','<input class="modal-input" id="maTitle" placeholder="公告标题"><textarea class="modal-input" id="maContent" placeholder="公告内容"></textarea>',function(){
     var title=$('#maTitle').value.trim(),content=$('#maContent').value.trim();
@@ -584,80 +633,109 @@ function showQuickAnnounce(){
     });
   },'发布');
 }
-
 function clearAllBans(){
   showModal('一键解封','<div style="color:var(--text2);font-size:14px">确定解除所有临时封禁？</div>',function(){
-    api('security/clear-bans',{method:'POST'}).then(function(d){
-      if(d.ok){toast('已解封','ok');refreshData()}else toast(d.error||'失败','err');
-      closeModal();
-    });
+    api('security/clear-bans',{method:'POST'}).then(function(d){if(d.ok){toast('已解封','ok');refreshData()}else toast(d.error||'失败','err');closeModal()});
   },'确认解封');
 }
-
+function clearEvents(){
+  showModal('清空日志','<div style="color:var(--text2);font-size:14px">确定清空所有安全事件？此操作不可恢复。</div>',function(){
+    api('security/clear-events',{method:'POST'}).then(function(d){if(d.ok){toast('已清空','ok');closeModal();loadSecurity()}else toast(d.error||'失败','err')});
+  },'确认清空');
+}
 function sendTestEmail(){
-  api('reports/send-daily',{method:'POST'}).then(function(d){
-    if(d.ok)toast('测试邮件已发送','ok');else toast(d.error||'发送失败','err');
+  toast('正在发送测试邮件...','');
+  api('reports/send-daily',{method:'POST'}).then(function(d){if(d.ok)toast('邮件已发送','ok');else toast(d.error||'发送失败','err')});
+}
+function generateReport(){
+  toast('正在生成报告...','');
+  api('reports/generate',{method:'POST'}).then(function(d){
+    if(d.ok){toast('报告已生成并发送','ok');haptic('success')}else toast(d.error||'生成失败','err');
   });
 }
-
-function openConsole(){window.open(API+'/console.html','_blank')}
-
-function logout(){
-  token='';localStorage.removeItem('jf_tk');localStorage.removeItem('jf_device_token');
-  $('#app').classList.remove('show');showLogin();showStep('lstep1');
+function setReportTime(){
+  var cur=settingsCache.reportTime||'09:00';
+  showModal('报告时间','<input class="modal-input" type="time" id="reportTimeInput" value="'+cur+'">',function(){
+    var t=$('#reportTimeInput').value;
+    if(!t)return;
+    api('admin/report-time',{method:'POST',body:{time:t}}).then(function(d){if(d.ok){toast('已设置','ok');$('#reportTimeLabel').textContent=t;settingsCache.reportTime=t;closeModal()}else toast(d.error||'失败','err')});
+  },'保存');
 }
-
+function editMaintMsg(){
+  var cur=settingsCache.maintenanceMsg||'网站正在维护中，请稍后再访。';
+  showModal('维护消息','<textarea class="modal-input" id="maintInput" placeholder="维护提示语">'+esc(cur)+'</textarea>',function(){
+    var msg=$('#maintInput').value.trim();
+    api('admin/site-mode',{method:'POST',body:{mode:'maintenance',msg:msg}}).then(function(d){if(d.ok){toast('已更新','ok');$('#maintMsgLabel').textContent=msg.substring(0,30);settingsCache.maintenanceMsg=msg;closeModal()}else toast(d.error||'失败','err')});
+  },'保存');
+}
 function toggleSetting(el){
-  var key=el.dataset.key;
-  var on=!el.classList.contains('on');
+  var key=el.dataset.key;var on=!el.classList.contains('on');
   el.classList.toggle('on');
   var body={};body[key]=on;
-  api('settings',{method:'POST',body:body}).then(function(d){
-    if(!d.ok){el.classList.toggle('on');toast('设置失败','err')}
-    else{toast(on?'已开启':'已关闭','ok');haptic('light')}
+  api('settings',{method:'POST',body:body}).then(function(d){if(!d.ok){el.classList.toggle('on');toast('设置失败','err')}else{toast(on?'已开启':'已关闭','ok');haptic('light')}});
+}
+function logout(){token='';localStorage.removeItem('jf_tk');$('#app').classList.remove('show');showLogin();showStep('lstep1')}
+
+/* ===== APP AUTHORIZATION ===== */
+function loadApprovals(){
+  api('auth/app/pending').then(function(d){
+    if(!d.ok||!d.data)return;
+    var list=Array.isArray(d.data)?d.data:(d.data.sessions||[]);
+    if(list.length>0)showApprovalNotification(list[0]);
   });
 }
+function showApprovalNotification(s){
+  var html='<div class="approval-card"><div class="approval-title">网页端登录请求</div><div class="approval-sub">IP: '+esc(s.ip||'未知')+' · '+fmtDate(s.time||Date.now())+'</div><div class="approval-btns"><button class="btn-approve" onclick="approveLogin(\''+esc(s.code)+'\')">批准</button><button class="btn-deny" onclick="denyLogin(\''+esc(s.code)+'\')">拒绝</button></div></div>';
+  showModal('授权请求',html,function(){closeModal()},'关闭');
+}
+function showApprovals(){loadApprovals();toast('检查授权请求中...','')}
+function approveLogin(code){api('auth/app/approve',{method:'POST',body:{code:code}}).then(function(d){if(d.ok){toast('已授权','ok');closeModal()}else toast(d.error||'失败','err')})}
+function denyLogin(code){api('auth/app/deny',{method:'POST',body:{code:code}}).then(function(d){if(d.ok){toast('已拒绝','ok');closeModal()}else toast(d.error||'失败','err')})}
 
-// ===== MODAL =====
+/* ===== CHART ===== */
+function drawTrafficChart(labels,data){
+  var canvas=$('#trafficChart');if(!canvas)return;
+  var ctx=canvas.getContext('2d');
+  var dpr=window.devicePixelRatio||1;
+  var w=canvas.offsetWidth,h=120;
+  canvas.width=w*dpr;canvas.height=h*dpr;ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,w,h);
+  if(!data||!data.length){ctx.fillStyle='#999';ctx.font='13px sans-serif';ctx.textAlign='center';ctx.fillText('暂无数据',w/2,h/2);return}
+  var max=Math.max.apply(null,data.concat([1]));
+  var pad=10,bw=(w-pad*2)/(data.length-1||1);
+  // Area gradient
+  var grad=ctx.createLinearGradient(0,0,0,h);
+  grad.addColorStop(0,'rgba(255,105,0,0.25)');grad.addColorStop(1,'rgba(255,105,0,0)');
+  ctx.beginPath();ctx.moveTo(pad,h-pad);
+  data.forEach(function(v,i){var x=pad+i*bw,y=h-pad-(v/max)*(h-pad*2);if(i===0)ctx.lineTo(x,y);else ctx.lineTo(x,y)});
+  ctx.lineTo(pad+(data.length-1)*bw,h-pad);ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+  // Line
+  ctx.beginPath();
+  data.forEach(function(v,i){var x=pad+i*bw,y=h-pad-(v/max)*(h-pad*2);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});
+  ctx.strokeStyle='#ff6900';ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.stroke();
+  // Dots
+  data.forEach(function(v,i){var x=pad+i*bw,y=h-pad-(v/max)*(h-pad*2);ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle='#ff6900';ctx.lineWidth=2;ctx.stroke()});
+}
+
+/* ===== MODAL ===== */
 function showModal(title,body,onConfirm,btnText){
-  $('#modalTitle').textContent=title;
-  $('#modalBody').innerHTML=body;
+  $('#modalTitle').textContent=title;$('#modalBody').innerHTML=body;
   $('#modalConfirm').textContent=btnText||'确定';
   $('#modalConfirm').onclick=onConfirm||closeModal;
+  $('#modalConfirm').style.display=btnText===null?'none':'block';
   $('#modalOverlay').classList.add('show');
 }
 function closeModal(){$('#modalOverlay').classList.remove('show')}
 
-// ===== TIMERS =====
-function startTimers(){
-  clearInterval(refreshTimer);
-  refreshTimer=setInterval(refreshData,5000);
-}
-
-// ===== PULL TO REFRESH =====
+/* ===== TIMERS / PULL REFRESH / SW ===== */
+function startTimers(){clearInterval(refreshTimer);refreshTimer=setInterval(function(){if(currentPage==='home')refreshData();if(currentPage==='visitors')loadVisitors();if(currentPage==='security')loadSecurity()},5000);clearInterval(approvalTimer);approvalTimer=setInterval(loadApprovals,10000)}
 var touchStartY=0,pulling=false;
-$('#appContent').addEventListener('touchstart',function(e){
-  if(this.scrollTop<=0){touchStartY=e.touches[0].clientY;pulling=true}
-},{passive:true});
-$('#appContent').addEventListener('touchmove',function(e){
-  if(!pulling)return;
-  var diff=e.touches[0].clientY-touchStartY;
-  if(diff>60){$('#pullHint').classList.add('show');this.style.transform='translateY('+Math.min(diff*0.3,60)+'px)';this.style.transition='transform .1s'}
-},{passive:true});
-$('#appContent').addEventListener('touchend',function(){
-  if(!pulling)return;pulling=false;
-  this.style.transform='';this.style.transition='transform .3s ease';
-  if($('#pullHint').classList.contains('show')){$('#pullHint').classList.remove('show');refreshData();toast('已刷新','ok')}
-});
-
-// ===== ONLINE/OFFLINE =====
+$('#appContent').addEventListener('touchstart',function(e){if(this.scrollTop<=0){touchStartY=e.touches[0].clientY;pulling=true}},{passive:true});
+$('#appContent').addEventListener('touchmove',function(e){if(!pulling)return;var diff=e.touches[0].clientY-touchStartY;if(diff>60){$('#pullHint').classList.add('show');this.style.transform='translateY('+Math.min(diff*0.3,60)+'px)';this.style.transition='transform .1s'}},{passive:true});
+$('#appContent').addEventListener('touchend',function(){if(!pulling)return;pulling=false;this.style.transform='';this.style.transition='transform .3s';if($('#pullHint').classList.contains('show')){$('#pullHint').classList.remove('show');refreshData();toast('已刷新','ok')}});
 window.addEventListener('online',function(){toast('网络已连接','ok')});
 window.addEventListener('offline',function(){toast('网络已断开','err')});
-
-// ===== SERVICE WORKER =====
-function registerSW(){
-  if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){})}
-}
+function registerSW(){if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(function(){})}
 </script>
 </body>
 </html>
