@@ -1,1150 +1,663 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="auto">
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="极风控制">
-<meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#ff6900">
 <title>极风控制</title>
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="favicon.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="/manifest.json">
 <style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root,[data-theme="light"]{
-  --bg:#fef7f5;--card:rgba(255,255,255,0.78);--card-solid:#fff;--card-2:#f5ebe8;
-  --text:#1d1d1f;--text-2:#48484a;--text-3:#8e8e93;--border:rgba(0,0,0,0.06);
-  --brand:#ff6900;--brand-2:#ff9500;--grad:linear-gradient(135deg,#ff6900,#ff9500);
-  --blue:#0a84ff;--green:#30d158;--red:#ff453a;--orange:#ff9f0a;--purple:#bf5af2;
-  --radius:20px;--spring:cubic-bezier(0.34,1.56,0.64,1);--ease:cubic-bezier(0.4,0,0.2,1);
-  --blur:blur(30px) saturate(180%);
-  --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
-  color-scheme:light;
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#f5f0ed;--bg2:#ede6e1;--card:rgba(255,255,255,0.55);--card-solid:rgba(255,255,255,0.85);
+  --text:#1a1a1a;--text2:#666;--text3:#999;--accent:#ff6900;--accent2:#ff8533;
+  --danger:#ff3b30;--success:#34c759;--blue:#007aff;--purple:#af52de;
+  --glass-border:rgba(255,255,255,0.6);--glass-shadow:0 8px 32px rgba(0,0,0,0.08);
+  --radius:20px;--radius-sm:14px;
 }
-[data-theme="dark"]{
-  --bg:#000;--card:rgba(28,28,30,0.78);--card-solid:#1c1c1e;--card-2:#2c2c2e;
-  --text:#f5f5f7;--text-2:#aeaeb2;--text-3:#636366;--border:rgba(255,255,255,0.08);
-  color-scheme:dark;
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#0a0a0c;--bg2:#141418;--card:rgba(28,28,32,0.55);--card-solid:rgba(28,28,32,0.85);
+    --text:#f5f5f7;--text2:#98989d;--text3:#636366;
+    --glass-border:rgba(255,255,255,0.1);--glass-shadow:0 8px 32px rgba(0,0,0,0.3);
+  }
 }
-@media(prefers-color-scheme:dark){[data-theme="auto"]{
-  --bg:#000;--card:rgba(28,28,30,0.78);--card-solid:#1c1c1e;--card-2:#2c2c2e;
-  --text:#f5f5f7;--text-2:#aeaeb2;--text-3:#636366;--border:rgba(255,255,255,0.08);
-  color-scheme:dark;
-}}
-html,body{height:100%;overflow:hidden}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','MiSans',sans-serif;
-  background:var(--bg);color:var(--text);line-height:1.5;
-  transition:background .3s,color .3s;
-  -webkit-user-select:none;user-select:none;
-}
-input,button{font-family:inherit;color:inherit;-webkit-user-select:text;user-select:text}
-.glass{background:var(--card);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur)}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue',sans-serif;background:var(--bg);color:var(--text)}
+body{background:linear-gradient(135deg,var(--bg) 0%,var(--bg2) 100%)}
 
 /* ===== SPLASH ===== */
-.splash{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);transition:opacity .5s,transform .5s}
-.splash.hide{opacity:0;transform:scale(1.1);pointer-events:none}
-.splash-logo{width:88px;height:88px;border-radius:26px;background:var(--grad);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 40px rgba(255,105,0,0.45);animation:logoIn .8s var(--spring)}
-.splash-logo svg{width:48px;height:48px}
-.splash-text{margin-top:20px;font-size:22px;font-weight:700;letter-spacing:-.3px;animation:fadeUp .6s .2s both}
-.splash-sub{margin-top:6px;font-size:13px;color:var(--text-3);animation:fadeUp .6s .35s both}
-.splash-spinner{margin-top:32px;width:28px;height:28px;border:3px solid var(--card-2);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes logoIn{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@keyframes spin{to{transform:rotate(360deg)}}
+#splash{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#ff6900,#ff8533 50%,#ffb088);transition:opacity .6s ease,transform .6s ease}
+#splash.hide{opacity:0;transform:scale(1.05);pointer-events:none}
+.splash-logo{width:80px;height:80px;border-radius:22px;background:rgba(255,255,255,0.25);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.15);animation:splashPop .8s cubic-bezier(.34,1.56,.64,1)}
+.splash-text{margin-top:20px;color:#fff;font-size:22px;font-weight:700;letter-spacing:2px;animation:splashFade .6s ease .3s both}
+.splash-sub{margin-top:6px;color:rgba(255,255,255,0.8);font-size:13px;animation:splashFade .6s ease .4s both}
+@keyframes splashPop{0%{transform:scale(0) rotate(-10deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes splashFade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
 /* ===== LOGIN ===== */
-.login-screen{position:fixed;inset:0;z-index:500;display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px;overflow-y:auto}
-.login-screen.show{display:flex}
-.login-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:0.2;animation:float 10s ease-in-out infinite}
-.orb:nth-child(1){width:300px;height:300px;background:radial-gradient(circle,#ff8da1,transparent 70%);top:-10%;left:-10%}
-.orb:nth-child(2){width:260px;height:260px;background:radial-gradient(circle,#ffb088,transparent 70%);bottom:-8%;right:-10%;animation-delay:-5s}
-@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-30px)}}
-.login-card{position:relative;width:100%;max-width:380px;padding:36px 28px;border-radius:32px;background:var(--card);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:.5px solid var(--border);box-shadow:0 24px 80px rgba(0,0,0,0.08)}
-.bio-icon{width:72px;height:72px;border-radius:24px;background:var(--grad);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 8px 28px rgba(255,105,0,0.4);cursor:pointer;transition:transform .2s var(--spring)}
-.bio-icon:active{transform:scale(.92)}
-.bio-icon svg{width:36px;height:36px;color:#fff}
-.login-title{text-align:center;font-size:22px;font-weight:700;margin-bottom:6px}
-.login-desc{text-align:center;font-size:13px;color:var(--text-3);margin-bottom:24px;line-height:1.6}
-.bio-btn{width:100%;padding:16px;border:none;border-radius:18px;background:var(--grad);color:#fff;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(255,105,0,0.35);transition:transform .15s var(--spring);position:relative;overflow:hidden}
-.bio-btn:active{transform:scale(.97)}
-.bio-btn .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.4);transform:scale(0);animation:ripple .5s ease-out;pointer-events:none}
-@keyframes ripple{to{transform:scale(3);opacity:0}}
-.login-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--text-3);font-size:12px}
-.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border)}
-.login-input{width:100%;padding:14px 16px;border-radius:16px;border:1px solid var(--border);background:var(--card-solid);font-size:15px;margin-bottom:10px;transition:border-color .2s,box-shadow .2s}
-.login-input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(255,105,0,0.12)}
-.login-btn-alt{width:100%;padding:14px;border:1px solid var(--border);border-radius:16px;background:transparent;font-size:15px;font-weight:600;cursor:pointer;transition:background .15s}
-.login-btn-alt:active{background:var(--card-2)}
-.login-msg{margin-top:14px;text-align:center;font-size:13px;min-height:20px}
-.login-step{display:none;animation:stepSlide .35s var(--spring)}
+#loginScreen{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;
+  background:linear-gradient(160deg,#ff6900 0%,#ff8533 30%,#f5f0ed 70%);transition:opacity .4s ease}
+#loginScreen.show{display:flex}
+.login-card{width:100%;max-width:380px;background:var(--card);backdrop-filter:blur(40px) saturate(1.4);-webkit-backdrop-filter:blur(40px) saturate(1.4);
+  border:1px solid var(--glass-border);border-radius:28px;padding:32px 24px;box-shadow:var(--glass-shadow);animation:cardIn .5s cubic-bezier(.34,1.2,.64,1)}
+@keyframes cardIn{from{opacity:0;transform:translateY(30px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.login-step{display:none;animation:stepIn .4s cubic-bezier(.34,1.2,.64,1)}
 .login-step.active{display:block}
-@keyframes stepSlide{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
-.login-msg.error{color:var(--red)}
-.login-msg.ok{color:var(--green)}
+@keyframes stepIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+.login-mark{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:800;margin:0 auto 16px;box-shadow:0 6px 20px rgba(255,105,0,0.35)}
+.login-title{text-align:center;font-size:24px;font-weight:700;margin-bottom:6px}
+.login-desc{text-align:center;font-size:13px;color:var(--text2);margin-bottom:24px;line-height:1.6}
+.login-input{width:100%;padding:15px 18px;border-radius:16px;border:1.5px solid var(--glass-border);background:rgba(255,255,255,0.4);font-size:16px;color:var(--text);outline:none;transition:all .25s ease;margin-bottom:12px;backdrop-filter:blur(10px)}
+.login-input:focus{border-color:var(--accent);background:rgba(255,255,255,0.7);box-shadow:0 0 0 4px rgba(255,105,0,0.1)}
+.btn-primary{width:100%;padding:16px;border:none;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s ease;box-shadow:0 4px 16px rgba(255,105,0,0.3)}
+.btn-primary:active{transform:scale(.97);box-shadow:0 2px 8px rgba(255,105,0,0.2)}
+.btn-secondary{width:100%;padding:14px;border:1.5px solid var(--glass-border);border-radius:16px;background:transparent;color:var(--text2);font-size:14px;cursor:pointer;transition:all .2s ease;margin-top:8px}
+.btn-secondary:active{transform:scale(.97);background:rgba(255,255,255,0.3)}
+.btn-secondary:disabled{opacity:.4;cursor:not-allowed}
+.login-msg{margin-top:12px;text-align:center;font-size:13px;min-height:20px;transition:all .2s}
+.login-msg.error{color:var(--danger)}
+.login-msg.ok{color:var(--success)}
+.step-dots{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px}
+.sd{width:8px;height:8px;border-radius:50%;background:var(--text3);opacity:.3;transition:all .3s}
+.sd.active{background:var(--accent);opacity:1;width:24px;border-radius:4px}
+.sd.done{background:var(--success);opacity:1}
 
-/* ===== APP MAIN ===== */
-.app{display:none;flex-direction:column;height:100%;padding-top:var(--safe-top)}
-.app.show{display:flex}
-.app-header{padding:12px 20px 8px;display:flex;align-items:center;justify-content:space-between}
-.app-header h1{font-size:28px;font-weight:800;letter-spacing:-.5px}
-.app-header .avatar{width:40px;height:40px;border-radius:14px;overflow:hidden;box-shadow:0 4px 14px rgba(255,105,0,0.3)}
-.app-header .avatar img{width:100%;height:100%;object-fit:cover}
+/* ===== APP ===== */
+#app{display:none;height:100%;flex-direction:column;padding-top:env(safe-area-inset-top)}
+#app.show{display:flex}
+.app-header{padding:12px 20px 8px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.app-title{font-size:22px;font-weight:700}
+.app-header-right{display:flex;align-items:center;gap:10px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--success);box-shadow:0 0 8px var(--success);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
 .app-content{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 100px;-webkit-overflow-scrolling:touch}
 .app-content::-webkit-scrollbar{display:none}
 
-/* Status card */
-.status-card{border-radius:var(--radius);padding:20px;margin-bottom:14px;position:relative;overflow:hidden}
-.status-card.normal{background:linear-gradient(135deg,rgba(48,209,88,0.15),rgba(10,132,255,0.1));border:1px solid rgba(48,209,88,0.2)}
-.status-card.maintenance{background:linear-gradient(135deg,rgba(255,159,10,0.15),rgba(255,149,0,0.1));border:1px solid rgba(255,159,10,0.2)}
-.status-card.shutdown{background:linear-gradient(135deg,rgba(255,69,58,0.15),rgba(255,69,58,0.05));border:1px solid rgba(255,69,58,0.2)}
-.status-dot{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;margin-bottom:8px}
-.status-dot::before{content:'';width:8px;height:8px;border-radius:50%;animation:pulse 2s infinite}
-.status-card.normal .status-dot::before{background:var(--green)}
-.status-card.maintenance .status-dot::before{background:var(--orange)}
-.status-card.shutdown .status-dot::before{background:var(--red)}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 currentColor}50%{box-shadow:0 0 0 6px transparent}}
-.status-card.normal .status-dot{color:var(--green)}
-.status-card.maintenance .status-dot{color:var(--orange)}
-.status-card.shutdown .status-dot{color:var(--red)}
-.status-title{font-size:20px;font-weight:800;margin-bottom:4px}
-.status-sub{font-size:13px;color:var(--text-3)}
-
-/* Pending approval banner */
-.approval-banner{border-radius:var(--radius);padding:16px;margin-bottom:14px;background:linear-gradient(135deg,rgba(255,105,0,0.15),rgba(191,90,242,0.1));border:1px solid rgba(255,105,0,0.25);animation:glow 2s ease-in-out infinite}
-@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(255,105,0,0.2)}50%{box-shadow:0 0 20px 4px rgba(255,105,0,0.15)}}
-.approval-banner h3{font-size:15px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px}
-.approval-banner p{font-size:12px;color:var(--text-3);margin-bottom:12px}
-.approval-code{font-size:32px;font-weight:800;letter-spacing:6px;text-align:center;padding:12px;background:var(--card-solid);border-radius:14px;margin-bottom:12px;font-family:'SF Mono',Menlo,monospace;color:var(--brand)}
-.approval-actions{display:flex;gap:10px}
-.approval-actions button{flex:1;padding:12px;border:none;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;transition:transform .15s var(--spring)}
-.approval-actions button:active{transform:scale(.96)}
-.btn-approve{background:var(--green);color:#fff}
-.btn-deny{background:rgba(255,69,58,0.15);color:var(--red)}
+/* Glass cards */
+.glass{background:var(--card);backdrop-filter:blur(30px) saturate(1.3);-webkit-backdrop-filter:blur(30px) saturate(1.3);
+  border:1px solid var(--glass-border);border-radius:var(--radius);box-shadow:var(--glass-shadow)}
 
 /* Stats grid */
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.stat-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);transition:transform .15s var(--spring)}
-.stat-box:active{transform:scale(.96)}
-.stat-ico{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
-.stat-ico svg{width:18px;height:18px}
-.stat-val{font-size:26px;font-weight:800;letter-spacing:-.5px;line-height:1}
-.stat-label{font-size:12px;color:var(--text-3);margin-top:4px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.stat-card{padding:18px;transition:transform .2s ease}
+.stat-card:active{transform:scale(.97)}
+.stat-val{font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:12px;color:var(--text2);margin-top:4px}
 
-/* Quick actions */
-.section-title{font-size:13px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin:18px 4px 10px}
-.actions-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
-.action-btn{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:transform .15s var(--spring);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur)}
-.action-btn:active{transform:scale(.92)}
-.action-ico{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center}
-.action-ico svg{width:20px;height:20px}
-.action-label{font-size:11px;font-weight:600;color:var(--text-2)}
+/* Section */
+.section{margin-bottom:16px}
+.section-title{font-size:13px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin:0 4px 8px}
 
 /* Mode switcher */
-.mode-switch{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:6px;display:flex;gap:4px;margin-bottom:14px;backdrop-filter:var(--blur)}
-.mode-btn{flex:1;padding:12px 8px;border:none;border-radius:14px;background:transparent;font-size:13px;font-weight:600;cursor:pointer;transition:all .25s var(--spring);display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--text-2)}
-.mode-btn.active{background:var(--grad);color:#fff;box-shadow:0 4px 14px rgba(255,105,0,0.3)}
-.mode-btn .mode-emoji{font-size:20px}
+.mode-card{padding:16px;margin-bottom:16px}
+.mode-label{font-size:14px;font-weight:600;margin-bottom:12px}
+.mode-btns{display:flex;gap:8px}
+.mode-btn{flex:1;padding:12px 8px;border:1.5px solid var(--glass-border);border-radius:14px;background:transparent;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:all .25s ease;text-align:center}
+.mode-btn.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(255,105,0,0.3)}
+.mode-btn:active{transform:scale(.96)}
 
-/* Event feed */
-.event-list{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;backdrop-filter:var(--blur);margin-bottom:14px}
-.event-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border)}
-.event-item:last-child{border-bottom:none}
-.event-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.event-dot.attack{background:var(--red)}
-.event-dot.ban{background:var(--orange)}
-.event-dot.info{background:var(--blue)}
-.event-dot.visit{background:var(--green)}
-.event-dot.auth{background:var(--purple)}
-.event-msg{flex:1;font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.event-time{font-size:11px;color:var(--text-3);flex-shrink:0}
+/* Quick actions */
+.actions-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.action-btn{padding:14px 6px;border-radius:16px;text-align:center;cursor:pointer;transition:all .2s ease;background:var(--card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border)}
+.action-btn:active{transform:scale(.92)}
+.action-icon{font-size:22px;margin-bottom:4px}
+.action-name{font-size:10px;color:var(--text2)}
+
+/* List items */
+.list-card{overflow:hidden}
+.list-item{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--glass-border);transition:background .15s}
+.list-item:last-child{border-bottom:none}
+.list-item:active{background:rgba(255,105,0,0.06)}
+.li-avatar{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.li-info{flex:1;min-width:0}
+.li-title{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li-sub{font-size:11px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li-badge{font-size:10px;padding:3px 8px;border-radius:8px;font-weight:600;flex-shrink:0}
+.badge-danger{background:rgba(255,59,48,0.12);color:var(--danger)}
+.badge-warn{background:rgba(255,149,0,0.12);color:#ff9500}
+.badge-ok{background:rgba(52,199,89,0.12);color:var(--success)}
+.badge-info{background:rgba(0,122,255,0.12);color:var(--blue)}
 
 /* Bottom nav */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;display:flex;justify-content:space-around;padding:8px 0 calc(8px + var(--safe-bottom));background:var(--card);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-top:1px solid var(--border)}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 16px;border:none;background:transparent;cursor:pointer;color:var(--text-3);transition:color .2s;position:relative}
-.nav-item.active{color:var(--brand)}
-.nav-item svg{width:24px;height:24px;transition:transform .25s var(--spring)}
-.nav-item.active svg{transform:scale(1.1)}
-.nav-item span{font-size:10px;font-weight:600}
-.nav-badge{position:absolute;top:2px;right:8px;min-width:16px;height:16px;border-radius:8px;background:var(--red);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;padding:8px 16px calc(8px + env(safe-area-inset-bottom));
+  background:var(--card-solid);backdrop-filter:blur(40px) saturate(1.4);-webkit-backdrop-filter:blur(40px) saturate(1.4);
+  border-top:1px solid var(--glass-border)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:6px 0;cursor:pointer;transition:all .2s ease;color:var(--text3)}
+.nav-item.active{color:var(--accent)}
+.nav-item:active{transform:scale(.9)}
+.nav-icon{font-size:22px;margin-bottom:2px;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.nav-item.active .nav-icon{transform:translateY(-2px) scale(1.1)}
+.nav-label{font-size:10px;font-weight:500}
 
 /* Pages */
-.page{display:none;animation:pageIn .3s var(--ease)}
+.page{display:none;animation:pageIn .35s cubic-bezier(.34,1.1,.64,1)}
 .page.active{display:block}
-@keyframes pageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-
-/* Visitor list */
-.visitor-item{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;backdrop-filter:var(--blur);transition:transform .15s}
-.visitor-item:active{transform:scale(.98)}
-.visitor-avatar{width:44px;height:44px;border-radius:14px;overflow:hidden;background:var(--card-2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.visitor-avatar img{width:100%;height:100%;object-fit:cover}
-.visitor-info{flex:1;min-width:0}
-.visitor-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.visitor-meta{font-size:11px;color:var(--text-3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.visitor-badge{font-size:10px;padding:3px 8px;border-radius:8px;font-weight:700;flex-shrink:0}
-.vb-normal{background:rgba(48,209,88,0.15);color:var(--green)}
-.vb-warn{background:rgba(255,159,10,0.15);color:var(--orange)}
-.vb-banned{background:rgba(255,69,58,0.15);color:var(--red)}
+@keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
 /* Settings */
-.setting-item{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;backdrop-filter:var(--blur)}
-.setting-item .si-label{font-size:14px;font-weight:600}
-.setting-item .si-sub{font-size:11px;color:var(--text-3);margin-top:2px}
-.toggle{width:50px;height:30px;border-radius:15px;background:rgba(120,128,128,0.32);position:relative;cursor:pointer;transition:background .3s;flex-shrink:0;border:none;padding:0}
-.toggle::after{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .3s var(--spring);box-shadow:0 2px 6px rgba(0,0,0,0.2)}
-.toggle.on{background:var(--brand)}
-.toggle.on::after{left:23px}
+.setting-item{padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--glass-border);cursor:pointer;transition:background .15s}
+.setting-item:last-child{border-bottom:none}
+.setting-item:active{background:rgba(255,105,0,0.06)}
+.si-label{font-size:15px;font-weight:500}
+.si-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.toggle{width:50px;height:30px;border-radius:15px;background:var(--text3);opacity:.4;position:relative;cursor:pointer;transition:all .3s ease;flex-shrink:0}
+.toggle.on{background:var(--success);opacity:1}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.15);transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+.toggle.on::after{left:22px}
 
 /* Toast */
-.toast{position:fixed;top:calc(60px + var(--safe-top));left:50%;transform:translateX(-50%) translateY(-20px);background:var(--card-solid);padding:12px 24px;border-radius:16px;font-size:14px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,0.15);z-index:2000;opacity:0;transition:all .3s var(--spring);pointer-events:none;border:1px solid var(--border)}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast.ok{color:var(--green)}
-.toast.err{color:var(--red)}
+#toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);z-index:200;padding:12px 24px;border-radius:14px;background:rgba(0,0,0,0.8);color:#fff;font-size:14px;opacity:0;transition:all .3s cubic-bezier(.34,1.2,.64,1);pointer-events:none;backdrop-filter:blur(20px);white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.ok{background:rgba(52,199,89,0.9)}
+#toast.err{background:rgba(255,59,48,0.9)}
 
-/* Pull to refresh */
-.ptr{text-align:center;padding:10px;color:var(--text-3);font-size:12px;display:none}
-.ptr.show{display:block}
+/* Modal */
+.modal-overlay{position:fixed;inset:0;z-index:150;background:rgba(0,0,0,0.3);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:flex-end;justify-content:center;animation:fadeIn .25s ease}
+.modal-overlay.show{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{width:100%;max-width:420px;background:var(--card-solid);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);border-radius:24px 24px 0 0;padding:24px 20px calc(24px + env(safe-area-inset-bottom));animation:modalUp .35s cubic-bezier(.34,1.2,.64,1)}
+@keyframes modalUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-title{font-size:18px;font-weight:700;margin-bottom:16px}
+.modal-input{width:100%;padding:14px 16px;border-radius:14px;border:1.5px solid var(--glass-border);background:rgba(255,255,255,0.3);font-size:15px;color:var(--text);outline:none;margin-bottom:12px;transition:border-color .2s}
+.modal-input:focus{border-color:var(--accent)}
+.modal textarea.modal-input{min-height:80px;resize:vertical}
 
-/* Biometric scanning animation */
-.bio-scan{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.6);backdrop-filter:blur(20px);display:none;align-items:center;justify-content:center;flex-direction:column}
-.bio-scan.show{display:flex}
-.bio-scan-ring{width:120px;height:120px;border-radius:50%;border:3px solid rgba(255,255,255,0.2);position:relative;display:flex;align-items:center;justify-content:center}
-.bio-scan-ring::before{content:'';position:absolute;inset:-3px;border-radius:50%;border:3px solid transparent;border-top-color:var(--brand);animation:spin 1s linear infinite}
-.bio-scan-ring svg{width:50px;height:50px;color:#fff}
-.bio-scan-text{color:#fff;margin-top:24px;font-size:16px;font-weight:600}
-.bio-scan-sub{color:rgba(255,255,255,0.6);margin-top:6px;font-size:13px}
+/* Security event */
+.event-item{padding:12px 16px;display:flex;gap:10px;align-items:flex-start;border-bottom:1px solid var(--glass-border)}
+.event-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.event-text{font-size:13px;flex:1}
+.event-time{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* Pull refresh */
+.pull-indicator{text-align:center;padding:8px;font-size:12px;color:var(--text3);height:0;overflow:hidden;transition:height .2s}
+.pull-indicator.show{height:36px}
+
+/* Bio icon */
+.bio-circle{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,rgba(255,105,0,0.15),rgba(255,133,51,0.1));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;cursor:pointer;transition:all .2s}
+.bio-circle:active{transform:scale(.92)}
+.bio-circle svg{color:var(--accent)}
+
+/* Empty state */
+.empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:14px}
 </style>
 </head>
 <body>
 
 <!-- Splash -->
-<div class="splash" id="splash">
-  <div class="splash-logo">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-  </div>
+<div id="splash">
+  <div class="splash-logo">JF</div>
   <div class="splash-text">极风控制</div>
   <div class="splash-sub">安全管控中心</div>
-  <div class="splash-spinner"></div>
 </div>
 
 <!-- Login -->
-<div class="login-screen" id="loginScreen">
-  <div class="login-bg"><div class="orb"></div><div class="orb"></div></div>
-  <div class="login-card" id="loginCard">
+<div id="loginScreen">
+  <div class="login-card">
     <!-- Step 1: Password -->
     <div class="login-step active" id="lstep1">
-      <div class="login-logo" style="margin-bottom:20px">
-        <div class="mark" style="margin:0 auto 14px">JF</div>
-        <div class="login-title">极风控制</div>
-        <div class="login-desc">请输入管理员账号密码</div>
-      </div>
+      <div class="login-mark">JF</div>
+      <div class="login-title">极风控制</div>
+      <div class="login-desc">请输入管理员账号密码</div>
       <input class="login-input" type="text" id="loginUser" placeholder="管理员账号" value="NUOYAN" autocomplete="username">
       <input class="login-input" type="password" id="loginPass" placeholder="密码" autocomplete="current-password">
-      <button class="bio-btn" id="btnStep1Next">下一步</button>
+      <button class="btn-primary" id="btnStep1Next">下一步</button>
       <div class="login-msg" id="loginMsg1"></div>
     </div>
-
-    <!-- Step 2: Email verification -->
+    <!-- Step 2: Email code -->
     <div class="login-step" id="lstep2">
-      <div class="login-logo" style="margin-bottom:20px">
-        <div class="step-indicator"><div class="step-dot done"></div><div class="step-line done"></div><div class="step-dot active"></div></div>
-        <div class="login-title" style="margin-top:16px">邮箱验证</div>
-        <div class="login-desc">验证码已发送至管理员邮箱<br>请输入6位验证码</div>
-      </div>
-      <input class="login-input" type="text" id="loginCode" placeholder="6位验证码" maxlength="6" style="letter-spacing:8px;text-align:center;font-size:22px;font-weight:800">
-      <button class="bio-btn" id="btnStep2Next">验证并登录</button>
-      <button class="login-btn-alt" id="btnResendCode" style="margin-top:10px">重新发送 <span id="resendTimer"></span></button>
-      <button class="login-btn-alt" id="btnBack1" style="margin-top:8px">返回</button>
+      <div class="step-dots"><div class="sd done"></div><div class="sd active"></div></div>
+      <div class="login-title">邮箱验证</div>
+      <div class="login-desc">验证码已发送至管理员邮箱<br>请输入6位验证码</div>
+      <input class="login-input" type="text" id="loginCode" placeholder="000000" maxlength="6" inputmode="numeric" style="text-align:center;font-size:24px;font-weight:800;letter-spacing:10px">
+      <button class="btn-primary" id="btnStep2Next">验证并登录</button>
+      <button class="btn-secondary" id="btnResendCode">重新发送 <span id="resendTimer"></span></button>
+      <button class="btn-secondary" id="btnBack1">返回</button>
       <div class="login-msg" id="loginMsg2"></div>
     </div>
-
-    <!-- Step 3: Biometric registration -->
-    <div class="login-step" id="lstep3">
-      <div class="login-logo" style="margin-bottom:20px">
-        <div class="step-indicator"><div class="step-dot done"></div><div class="step-line done"></div><div class="step-dot done"></div><div class="step-line done"></div><div class="step-dot active"></div></div>
-        <div class="login-title" style="margin-top:16px">设置生物识别</div>
-        <div class="login-desc" id="bioDetectDesc">正在检测设备生物识别能力...</div>
-      </div>
-      <div id="bioRegisterArea" style="display:none">
-        <div class="bio-icon" id="btnRegisterBio" style="margin:0 auto 16px">
-          <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/></svg>
-        </div>
-        <div style="text-align:center;font-size:13px;color:var(--text-3);margin-bottom:16px" id="bioTypeText"></div>
-        <button class="bio-btn" id="btnDoRegisterBio">注册生物识别</button>
-      </div>
-      <button class="login-btn-alt" id="btnSkipBio" style="margin-top:10px">跳过，直接进入</button>
-      <div class="login-msg" id="loginMsg3"></div>
-    </div>
-
-    <!-- Biometric login (returning users) -->
-    <div class="login-step" id="lstepBio">
-      <div class="login-logo" style="margin-bottom:20px">
-        <div class="bio-icon" id="btnBioLogin" style="margin:0 auto 16px;cursor:pointer">
-          <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/></svg>
-        </div>
-        <div class="login-title">指纹/面容登录</div>
-        <div class="login-desc" id="bioLoginDesc">验证身份以进入控制台</div>
-      </div>
-      <button class="bio-btn" id="btnBioLogin2">点击开始验证</button>
-      <div class="login-divider">或使用密码</div>
-      <button class="login-btn-alt" id="btnUsePassword">账号密码登录</button>
-      <div class="login-msg" id="loginMsgBio"></div>
-    </div>
   </div>
-</div>
-
-<!-- Biometric scanning overlay -->
-<div class="bio-scan" id="bioScan">
-  <div class="bio-scan-ring">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/></svg>
-  </div>
-  <div class="bio-scan-text">正在验证身份</div>
-  <div class="bio-scan-sub">请将手指放在指纹传感器上</div>
 </div>
 
 <!-- App -->
-<div class="app" id="app">
-  <header class="app-header">
-    <h1 id="pageTitle">概览</h1>
-    <div class="avatar"><img src="avatar.png" alt="管理员"></div>
-  </header>
-
-  <div class="app-content" id="appContent">
-    <!-- Overview page -->
-    <div class="page active" id="page-home">
-      <div class="status-card normal" id="statusCard">
-        <div class="status-dot" id="statusDot">运行中</div>
-        <div class="status-title" id="statusTitle">网站正常运行</div>
-        <div class="status-sub" id="statusSub">所有系统正常 · 实时监控中</div>
-      </div>
-
-      <div id="approvalArea"></div>
-
-      <div class="stats-grid">
-        <div class="stat-box">
-          <div class="stat-ico" style="background:rgba(10,132,255,0.15);color:var(--blue)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
-          <div class="stat-val" id="statVisitors">0</div>
-          <div class="stat-label">今日访客</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-ico" style="background:rgba(255,69,58,0.15);color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-          <div class="stat-val" id="statAttacks">0</div>
-          <div class="stat-label">攻击拦截</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-ico" style="background:rgba(255,159,10,0.15);color:var(--orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
-          <div class="stat-val" id="statBans">0</div>
-          <div class="stat-label">封禁中</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-ico" style="background:rgba(48,209,88,0.15);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-          <div class="stat-val" id="statScore">--</div>
-          <div class="stat-label">安全评分</div>
-        </div>
-      </div>
-
-      <div class="section-title">网站控制</div>
-      <div class="mode-switch">
-        <button class="mode-btn active" data-mode="normal" onclick="setMode('normal')">
-          <span class="mode-emoji">✅</span><span>正常</span>
-        </button>
-        <button class="mode-btn" data-mode="maintenance" onclick="setMode('maintenance')">
-          <span class="mode-emoji">🔧</span><span>维护</span>
-        </button>
-        <button class="mode-btn" data-mode="shutdown" onclick="setMode('shutdown')">
-          <span class="mode-emoji">🚫</span><span>关停</span>
-        </button>
-      </div>
-
-      <div class="section-title">快捷操作</div>
-      <div class="actions-grid">
-        <button class="action-btn" onclick="switchPage('visitors')">
-          <div class="action-ico" style="background:rgba(10,132,255,0.15);color:var(--blue)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
-          <span class="action-label">访客</span>
-        </button>
-        <button class="action-btn" onclick="switchPage('security')">
-          <div class="action-ico" style="background:rgba(255,69,58,0.15);color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-          <span class="action-label">安全</span>
-        </button>
-        <button class="action-btn" onclick="showQuickAnnounce()">
-          <div class="action-ico" style="background:rgba(255,159,10,0.15);color:var(--orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></div>
-          <span class="action-label">公告</span>
-        </button>
-        <button class="action-btn" onclick="refreshData()">
-          <div class="action-ico" style="background:rgba(48,209,88,0.15);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
-          <span class="action-label">刷新</span>
-        </button>
-        <button class="action-btn" onclick="clearAllBans()">
-          <div class="action-ico" style="background:rgba(90,200,250,0.15);color:#5ac8fa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
-          <span class="action-label">解封</span>
-        </button>
-        <button class="action-btn" onclick="sendTestEmail()">
-          <div class="action-ico" style="background:rgba(191,90,242,0.15);color:var(--purple)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
-          <span class="action-label">测试邮件</span>
-        </button>
-        <button class="action-btn" onclick="switchPage('settings')">
-          <div class="action-ico" style="background:rgba(120,120,128,0.15);color:var(--text-2)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
-          <span class="action-label">设置</span>
-        </button>
-        <button class="action-btn" onclick="openConsole()">
-          <div class="action-ico" style="background:rgba(0,0,0,0.05);color:var(--text-3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
-          <span class="action-label">网页版</span>
-        </button>
-      </div>
-
-      <div class="section-title">最新动态</div>
-      <div class="event-list" id="eventList"><div style="padding:20px;text-align:center;color:var(--text-3);font-size:13px">加载中...</div></div>
-    </div>
-
-    <!-- Visitors page -->
-    <div class="page" id="page-visitors">
-      <div class="section-title" style="margin-top:0">最近访客</div>
-      <div id="visitorList"><div style="padding:20px;text-align:center;color:var(--text-3);font-size:13px">加载中...</div></div>
-    </div>
-
-    <!-- Security page -->
-    <div class="page" id="page-security">
-      <div class="section-title" style="margin-top:0">安全概览</div>
-      <div class="stats-grid">
-        <div class="stat-box">
-          <div class="stat-ico" style="background:rgba(255,69,58,0.15);color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-          <div class="stat-val" id="secTotal">0</div>
-          <div class="stat-label">总拦截</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-ico" style="background:rgba(255,159,10,0.15);color:var(--orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-          <div class="stat-val" id="secToday">0</div>
-          <div class="stat-label">今日</div>
-        </div>
-      </div>
-      <div class="section-title">安全事件</div>
-      <div class="event-list" id="securityEvents"><div style="padding:20px;text-align:center;color:var(--text-3);font-size:13px">加载中...</div></div>
-    </div>
-
-    <!-- Settings page -->
-    <div class="page" id="page-settings">
-      <div class="section-title" style="margin-top:0">安全策略</div>
-      <div class="setting-item"><div><div class="si-label">自动封禁</div><div class="si-sub">检测到攻击自动封禁IP</div></div><button class="toggle on" id="setAutoBan"></button></div>
-      <div class="setting-item"><div><div class="si-label">邮件告警</div><div class="si-sub">安全事件实时邮件通知</div></div><button class="toggle on" id="setEmailAlert"></button></div>
-      <div class="setting-item"><div><div class="si-label">反调试保护</div><div class="si-sub">检测DevTools并记录</div></div><button class="toggle on" id="setAntiDebug"></button></div>
-      <div class="setting-item"><div><div class="si-label">每日报告</div><div class="si-sub">每天自动发送运维日报</div></div><button class="toggle on" id="setDailyReport"></button></div>
-
-      <div class="section-title">账号</div>
-      <div class="setting-item" onclick="bioSettingClick()" style="cursor:pointer">
-        <div><div class="si-label" id="bioSettingLabel">生物识别</div><div class="si-sub" id="bioSettingSub">点击管理指纹/面容登录</div></div>
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--text-3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </div>
-      <div class="setting-item" onclick="logout()" style="cursor:pointer">
-        <div><div class="si-label" style="color:var(--red)">退出登录</div></div>
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--red)" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      </div>
-
-      <div class="section-title">关于</div>
-      <div class="setting-item"><div><div class="si-label">极风控制</div><div class="si-sub">安全管控中心 APP</div></div><div style="color:var(--green);font-size:13px;font-weight:700">在线</div></div>
+<div id="app">
+  <div class="app-header">
+    <div class="app-title" id="pageTitle">总览</div>
+    <div class="app-header-right">
+      <div class="status-dot" id="statusDot"></div>
     </div>
   </div>
 
-  <!-- Bottom nav -->
-  <nav class="bottom-nav">
-    <button class="nav-item active" data-page="home" onclick="switchPage('home')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      <span>首页</span>
-    </button>
-    <button class="nav-item" data-page="visitors" onclick="switchPage('visitors')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
-      <span>访客</span>
-    </button>
-    <button class="nav-item" data-page="security" onclick="switchPage('security')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      <span>安全</span>
-      <div class="nav-badge" id="navBadge" style="display:none">0</div>
-    </button>
-    <button class="nav-item" data-page="settings" onclick="switchPage('settings')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      <span>设置</span>
-    </button>
-  </nav>
+  <div class="app-content" id="appContent">
+    <!-- Home -->
+    <div class="page active" id="page-home">
+      <div class="pull-indicator" id="pullHint">下拉刷新...</div>
+      <div class="stats-grid">
+        <div class="glass stat-card"><div class="stat-val" id="stVisitors">0</div><div class="stat-label">今日访客</div></div>
+        <div class="glass stat-card"><div class="stat-val" id="stAttacks">0</div><div class="stat-label">攻击拦截</div></div>
+        <div class="glass stat-card"><div class="stat-val" id="stBanned">0</div><div class="stat-label">封禁中</div></div>
+        <div class="glass stat-card"><div class="stat-val" id="stOnline">0</div><div class="stat-label">在线</div></div>
+      </div>
+
+      <div class="section"><div class="section-title">网站状态</div></div>
+      <div class="glass mode-card">
+        <div class="mode-label">运行模式</div>
+        <div class="mode-btns">
+          <button class="mode-btn active" data-mode="normal" onclick="setMode('normal')">正常</button>
+          <button class="mode-btn" data-mode="maintenance" onclick="setMode('maintenance')">维护</button>
+          <button class="mode-btn" data-mode="shutdown" onclick="setMode('shutdown')">关停</button>
+        </div>
+      </div>
+
+      <div class="section"><div class="section-title">快捷操作</div></div>
+      <div class="actions-grid">
+        <div class="action-btn" onclick="switchPage('visitors')"><div class="action-icon">👥</div><div class="action-name">访客</div></div>
+        <div class="action-btn" onclick="switchPage('security')"><div class="action-icon">🛡️</div><div class="action-name">安全</div></div>
+        <div class="action-btn" onclick="showQuickAnnounce()"><div class="action-icon">📢</div><div class="action-name">公告</div></div>
+        <div class="action-btn" onclick="refreshData()"><div class="action-icon">🔄</div><div class="action-name">刷新</div></div>
+        <div class="action-btn" onclick="clearAllBans()"><div class="action-icon">🔓</div><div class="action-name">解封</div></div>
+        <div class="action-btn" onclick="sendTestEmail()"><div class="action-icon">📧</div><div class="action-name">测试</div></div>
+        <div class="action-btn" onclick="switchPage('settings')"><div class="action-icon">⚙️</div><div class="action-name">设置</div></div>
+        <div class="action-btn" onclick="openConsole()"><div class="action-icon">🌐</div><div class="action-name">网页版</div></div>
+      </div>
+
+      <div class="section"><div class="section-title">最近访客</div></div>
+      <div class="glass list-card" id="recentVisitors"><div class="empty">加载中...</div></div>
+    </div>
+
+    <!-- Visitors -->
+    <div class="page" id="page-visitors">
+      <div class="section"><div class="section-title">访客档案</div></div>
+      <div class="glass list-card" id="visitorList"><div class="empty">加载中...</div></div>
+    </div>
+
+    <!-- Security -->
+    <div class="page" id="page-security">
+      <div class="section"><div class="section-title">安全事件</div></div>
+      <div class="glass list-card" id="securityEvents"><div class="empty">加载中...</div></div>
+    </div>
+
+    <!-- Settings -->
+    <div class="page" id="page-settings">
+      <div class="section"><div class="section-title">账户</div></div>
+      <div class="glass list-card">
+        <div class="setting-item" onclick="bioSettingClick()">
+          <div><div class="si-label" id="bioLabel">生物识别</div><div class="si-sub" id="bioSub">指纹/面容快速登录</div></div>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="setting-item" onclick="logout()">
+          <div><div class="si-label" style="color:var(--danger)">退出登录</div></div>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--danger)" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </div>
+      </div>
+      <div class="section"><div class="section-title">通知</div></div>
+      <div class="glass list-card">
+        <div class="setting-item"><div><div class="si-label">邮件告警</div></div><div class="toggle on" data-key="emailAlert" onclick="toggleSetting(this)"></div></div>
+        <div class="setting-item"><div><div class="si-label">每日报告</div></div><div class="toggle on" data-key="dailyReport" onclick="toggleSetting(this)"></div></div>
+      </div>
+      <div class="section"><div class="section-title">安全</div></div>
+      <div class="glass list-card">
+        <div class="setting-item"><div><div class="si-label">自动封禁</div></div><div class="toggle on" data-key="autoBan" onclick="toggleSetting(this)"></div></div>
+        <div class="setting-item"><div><div class="si-label">反调试</div></div><div class="toggle on" data-key="antiDebug" onclick="toggleSetting(this)"></div></div>
+      </div>
+      <div class="section"><div class="section-title">关于</div></div>
+      <div class="glass list-card">
+        <div class="setting-item"><div><div class="si-label">极风控制 APP</div><div class="si-sub">HyperOS 4 Liquid Glass</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <div class="nav-item active" data-page="home" onclick="switchPage('home')"><div class="nav-icon">🏠</div><div class="nav-label">总览</div></div>
+    <div class="nav-item" data-page="visitors" onclick="switchPage('visitors')"><div class="nav-icon">👥</div><div class="nav-label">访客</div></div>
+    <div class="nav-item" data-page="security" onclick="switchPage('security')"><div class="nav-icon">🛡️</div><div class="nav-label">安全</div></div>
+    <div class="nav-item" data-page="settings" onclick="switchPage('settings')"><div class="nav-icon">⚙️</div><div class="nav-label">设置</div></div>
+  </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">标题</div>
+    <div id="modalBody"></div>
+    <button class="btn-primary" id="modalConfirm" style="margin-top:8px">确定</button>
+    <button class="btn-secondary" onclick="closeModal()">取消</button>
+  </div>
+</div>
 
 <script>
 var API=window.JF_API||'';
 var token=loadToken();
 var refreshTimer=null;
-var approvalTimer=null;
+var bioSupported=false,bioRegistered=false;
 
 function $(s){return document.querySelector(s)}
 function $$(s){return document.querySelectorAll(s)}
+
 function toast(msg,type){
   var t=$('#toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');
-  setTimeout(function(){t.className='toast'},2500);
-  haptic(type==='err'?'heavy':'light');
+  clearTimeout(t._timer);t._timer=setTimeout(function(){t.className='toast'},2500);
 }
-function haptic(pattern){
+function haptic(p){
   try{
-    if(navigator.vibrate)navigator.vibrate(pattern==='heavy'?[30,40,30]:pattern==='success'?[20]:10);
+    if(navigator.vibrate)navigator.vibrate(p==='heavy'?[30]:p==='success'?[10,50,10]:10);
   }catch(e){}
 }
-function formatTime(ts){
-  var d=new Date(ts);
-  return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0')+':'+d.getSeconds().toString().padStart(2,'0');
-}
-function formatDate(ts){
-  var d=new Date(ts);
-  return (d.getMonth()+1)+'/'+d.getDate()+' '+formatTime(ts);
-}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function fmtTime(ts){var d=new Date(ts);return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0')+':'+d.getSeconds().toString().padStart(2,'0')}
+function fmtDate(ts){var d=new Date(ts);return (d.getMonth()+1)+'/'+d.getDate()+' '+fmtTime(ts)}
 
 function api(path,opts){
   opts=opts||{};
-  var headers={'Content-Type':'application/json'};
-  if(token)headers['Authorization']='Bearer '+token;
-  return fetch(API+'/api/'+path,{method:opts.method||'GET',headers:headers,body:opts.body?JSON.stringify(opts.body):undefined})
-    .then(function(r){return r.json()}).catch(function(){return{ok:false}});
+  var h={'Content-Type':'application/json'};
+  if(token)h['Authorization']='Bearer '+token;
+  return fetch(API+'/api/'+path,{method:opts.method||'GET',headers:h,body:opts.body?JSON.stringify(opts.body):undefined})
+    .then(function(r){return r.json()}).catch(function(){return{ok:false,error:'网络错误'}});
 }
 
-// ===== SPLASH =====
-setTimeout(function(){$('#splash').classList.add('hide');checkAuth()},1500);
+// ===== TOKEN STORAGE (encrypted with device binding) =====
+function saveToken(t){
+  try{
+    token=t;
+    var did=localStorage.getItem('jf_did');
+    if(!did){did=(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36));localStorage.setItem('jf_did',did)}
+    var enc='';for(var i=0;i<t.length;i++)enc+=String.fromCharCode(t.charCodeAt(i)^did.charCodeAt(i%did.length));
+    localStorage.setItem('jf_tk',btoa(enc));
+  }catch(e){token=t;localStorage.setItem('jf_tk',t)}
+}
+function loadToken(){
+  try{
+    var enc=localStorage.getItem('jf_tk');if(!enc)return '';
+    var did=localStorage.getItem('jf_did')||'';
+    if(enc.indexOf('=')>=0||enc.length>100){try{var raw=atob(enc),dec='';for(var i=0;i<raw.length;i++)dec+=String.fromCharCode(raw.charCodeAt(i)^did.charCodeAt(i%did.length));return dec}catch(e){return enc}}
+    return enc;
+  }catch(e){return localStorage.getItem('jf_tk')||''}
+}
 
-function checkAuth(){
+// ===== INIT =====
+setTimeout(function(){
+  $('#splash').classList.add('hide');
   if(token){
     api('stats/overview').then(function(d){
-      if(d.ok){showApp()}else{
-        token='';localStorage.removeItem('jf_token');localStorage.removeItem('jf_token_enc');
-        showLogin();
-      }
+      if(d.ok){showApp()}else{token='';localStorage.removeItem('jf_tk');showLogin()}
     });
-  }else{showLogin()}
-}
+  }else showLogin();
+},1200);
 
 function showLogin(){$('#loginScreen').classList.add('show')}
-function showApp(){$('#loginScreen').classList.remove('show');$('#app').classList.add('show');refreshData();startTimers();registerSW()}
+function showApp(){$('#loginScreen').classList.remove('show');$('#app').classList.add('show');refreshData();startTimers();detectBio();registerSW()}
 
-// ===== STEP-BASED LOGIN FLOW =====
-var bioSupported=false;
-var bioType=''; // 'fingerprint', 'face', 'biometric'
-var hasCredential=false;
-
-function showLoginStep(id){
-  document.querySelectorAll('.login-step').forEach(function(s){s.classList.remove('active')});
+// ===== LOGIN FLOW =====
+function showStep(id){
+  $$('.login-step').forEach(function(s){s.classList.remove('active')});
   $('#'+id).classList.add('active');
 }
 
-function detectBiometric(){
-  return new Promise(function(resolve){
-    if(!window.PublicKeyCredential){bioSupported=false;resolve();return}
-    PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(available){
-      bioSupported=available;
-      // Try to determine biometric type from device
-      var ua=navigator.userAgent;
-      if(/Android/i.test(ua)){
-        // Most Android phones with biometric have fingerprint; some have face
-        bioType='fingerprint';
-        // Check for known face-unlock devices
-        if(/Pixel|iPhone|iPad/i.test(ua))bioType='face';
-      }else if(/iPhone|iPad/i.test(ua)){
-        bioType='face';
-      }else{
-        bioType='biometric';
-      }
-      // Check if credential already registered
-      return api('auth/wa/status');
-    }).then(function(d){
-      if(d&&d.ok)hasCredential=d.registered;
-      resolve();
-    }).catch(function(){resolve()});
-  });
-}
-
-function showLogin(){
-  detectBiometric().then(function(){
-    if(bioSupported&&hasCredential){
-      showLoginStep('lstepBio');
-      // Auto-prompt biometric
-      setTimeout(function(){doBioLogin()},500);
-    }else{
-      showLoginStep('lstep1');
-    }
-  });
-}
-
-// Step 1: Password
 $('#btnStep1Next').onclick=function(){
   var u=$('#loginUser').value.trim(),p=$('#loginPass').value;
-  if(!u||!p){$('#loginMsg1').textContent='请输入账号和密码';$('#loginMsg1').className='login-msg error';return}
-  $('#loginMsg1').textContent='验证中...';$('#loginMsg1').className='login-msg';
+  if(!u||!p){msg1('请输入账号和密码','error');return}
+  msg1('验证中...','');
   api('auth/login',{method:'POST',body:{username:u,password:p}}).then(function(d){
     if(d.ok){
-      haptic('success');
-      // Auto-send email code
-      $('#loginMsg1').textContent='';
-      showLoginStep('lstep2');
-      sendEmailCode();
-    }else{
-      haptic('heavy');
-      $('#loginMsg1').textContent=d.error||'账号或密码错误';
-      $('#loginMsg1').className='login-msg error';
-    }
+      haptic('light');msg1('','');
+      showStep('lstep2');sendCode();
+    }else{haptic('heavy');msg1(d.error||'账号或密码错误','error')}
   });
 };
-
-// Enter key on password field
 $('#loginPass').addEventListener('keydown',function(e){if(e.key==='Enter')$('#btnStep1Next').click()});
 
-// Step 2: Email code
-function sendEmailCode(){
+function msg1(t,c){var e=$('#loginMsg1');e.textContent=t;e.className='login-msg'+(c?' '+c:'')}
+function msg2(t,c){var e=$('#loginMsg2');e.textContent=t;e.className='login-msg'+(c?' '+c:'')}
+
+var codeTimer=null;
+function sendCode(){
   api('auth/sendcode',{method:'POST'}).then(function(d){
-    if(d.ok){
-      $('#loginMsg2').textContent='验证码已发送';$('#loginMsg2').className='login-msg ok';
-      startResendTimer();
-    }else{
-      $('#loginMsg2').textContent=d.error||'发送失败';$('#loginMsg2').className='login-msg error';
-    }
+    if(d.ok){msg2('验证码已发送','ok');startCodeTimer()}
+    else msg2(d.error||'发送失败','error');
   });
 }
-
-var resendTimer=null;
-function startResendTimer(){
-  var s=60;
-  $('#btnResendCode').disabled=true;
+function startCodeTimer(){
+  var s=60;var btn=$('#btnResendCode');btn.disabled=true;
   $('#resendTimer').textContent='('+s+'s)';
-  if(resendTimer)clearInterval(resendTimer);
-  resendTimer=setInterval(function(){
-    s--;$('#resendTimer').textContent='('+s+'s)';
-    if(s<=0){clearInterval(resendTimer);$('#btnResendCode').disabled=false;$('#resendTimer').textContent=''}
-  },1000);
+  clearInterval(codeTimer);
+  codeTimer=setInterval(function(){s--;$('#resendTimer').textContent='('+s+'s)';if(s<=0){clearInterval(codeTimer);btn.disabled=false;$('#resendTimer').textContent=''}},1000);
 }
-
-$('#btnResendCode').onclick=function(){if(!this.disabled)sendEmailCode()};
-$('#btnBack1').onclick=function(){showLoginStep('lstep1')};
+$('#btnResendCode').onclick=function(){if(!this.disabled)sendCode()};
+$('#btnBack1').onclick=function(){clearInterval(codeTimer);showStep('lstep1')};
 
 $('#btnStep2Next').onclick=function(){
   var code=$('#loginCode').value.trim();
-  if(!code||code.length<6){$('#loginMsg2').textContent='请输入6位验证码';$('#loginMsg2').className='login-msg error';return}
-  $('#loginMsg2').textContent='验证中...';$('#loginMsg2').className='login-msg';
+  if(code.length!==6){msg2('请输入6位验证码','error');return}
+  msg2('验证中...','');
   api('auth/verify',{method:'POST',body:{code:code}}).then(function(d){
     if(d.ok&&d.token){
-      haptic('success');
-      saveToken(d.token);
-      token=d.token;
-      // Auto-trust device
-      trustDevice();
-      // Go to biometric registration step
-      showLoginStep('lstep3');
-      initBioRegistration();
-    }else{
-      haptic('heavy');
-      $('#loginMsg2').textContent=d.error||'验证码错误';
-      $('#loginMsg2').className='login-msg error';
-    }
+      haptic('success');saveToken(d.token);
+      // Auto trust device
+      api('auth/trust',{method:'POST',body:{deviceName:'极风APP',fp:localStorage.getItem('jf_did')||''}});
+      msg2('登录成功','ok');
+      setTimeout(showApp,400);
+    }else{haptic('heavy');msg2(d.error||'验证码错误','error')}
   });
 };
 $('#loginCode').addEventListener('keydown',function(e){if(e.key==='Enter')$('#btnStep2Next').click()});
 
-// Trust device - store device certificate
-function trustDevice(){
-  var deviceName='极风APP ('+(bioType==='face'?'面容':'指纹')+')';
-  api('auth/trust',{method:'POST',body:{deviceName:deviceName,fp:localStorage.getItem('jf_device_id')||''}}).then(function(d){
-    if(d.ok&&d.deviceToken){
-      // Store device certificate encrypted
-      try{
-        var deviceId=localStorage.getItem('jf_device_id')||'';
-        var enc='';
-        for(var i=0;i<d.deviceToken.length;i++){enc+=String.fromCharCode(d.deviceToken.charCodeAt(i)^deviceId.charCodeAt(i%deviceId.length))}
-        localStorage.setItem('jf_device_token',btoa(enc));
-      }catch(e){localStorage.setItem('jf_device_token',d.deviceToken)}
-    }
-  });
+// ===== BIOMETRIC (in settings only) =====
+function detectBio(){
+  if(!window.PublicKeyCredential)return;
+  PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(ok){
+    bioSupported=ok;
+    return api('auth/wa/status');
+  }).then(function(d){
+    if(d&&d.ok)bioRegistered=d.registered;
+    updateBioUI();
+  }).catch(function(){});
 }
-
-// Step 3: Biometric registration
-function initBioRegistration(){
-  var desc=$('#bioDetectDesc');
-  var area=$('#bioRegisterArea');
-  var typeText=$('#bioTypeText');
-
-  if(bioSupported){
-    desc.textContent='检测到'+(bioType==='face'?'面容识别':bioType==='fingerprint'?'指纹识别':'生物识别')+'功能';
-    typeText.textContent='点击下方图标注册'+(bioType==='face'?'面容':bioType==='fingerprint'?'指纹':'生物识别')+'，下次可快速登录';
-    area.style.display='block';
-  }else{
-    desc.textContent='未检测到生物识别硬件，可稍后在设置中注册';
-    area.style.display='none';
-  }
+function updateBioUI(){
+  var l=$('#bioLabel'),s=$('#bioSub');if(!l)return;
+  if(!bioSupported){l.textContent='生物识别';s.textContent='设备不支持'}
+  else if(bioRegistered){l.textContent='生物识别 ✓';s.textContent='已注册，点击重新注册'}
+  else{l.textContent='生物识别';s.textContent='点击注册指纹/面容'}
 }
-
-$('#btnRegisterBio').onclick=function(){doRegisterBio()};
-$('#btnDoRegisterBio').onclick=function(){doRegisterBio()};
-
-function doRegisterBio(){
+function bioSettingClick(){
+  if(!bioSupported){toast('设备不支持生物识别','err');return}
+  if(bioRegistered){if(confirm('已注册生物识别，重新注册？'))registerBio()}
+  else registerBio();
+}
+function b64ToBuf(s){var b=atob(s.replace(/-/g,'+').replace(/_/g,'/'));var a=new Uint8Array(b.length);for(var i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a.buffer}
+function bufToB64(b){var bytes=new Uint8Array(b);var s='';for(var i=0;i<bytes.byteLength;i++)s+=String.fromCharCode(bytes[i]);return btoa(s)}
+function registerBio(){
   try{
-    if(!bioSupported){toast('设备不支持生物识别','err');return}
-    $('#loginMsg3').textContent='正在调用'+(bioType==='face'?'面容':'指纹')+'识别...';
-    $('#loginMsg3').className='login-msg';
     api('auth/wa/reg-options',{method:'POST'}).then(function(d){
       if(!d.ok)throw new Error(d.error||'注册失败');
-      var opts=d.options;
-      opts.challenge=base64ToBuf(opts.challenge);
-      opts.user.id=base64ToBuf(opts.user.id);
-      opts.excludeCredentials=(opts.excludeCredentials||[]).map(function(c){
-        try{return{id:base64ToBuf(c.id),type:c.type}}catch(e){return null}
-      }).filter(Boolean);
-      return navigator.credentials.create({publicKey:opts});
+      var o=d.options;o.challenge=b64ToBuf(o.challenge);o.user.id=b64ToBuf(o.user.id);
+      o.excludeCredentials=(o.excludeCredentials||[]).map(function(c){try{return{id:b64ToBuf(c.id),type:c.type}}catch(e){return null}}).filter(Boolean);
+      return navigator.credentials.create({publicKey:o});
     }).then(function(cred){
-      if(!cred)throw new Error('CANCELLED');
-      var data={
-        id:bufToBase64(cred.rawId),
-        response:{
-          attestationObject:bufToBase64(cred.response.attestationObject),
-          clientDataJSON:bufToBase64(cred.response.clientDataJSON)
-        },
-        type:cred.type
-      };
+      if(!cred)return;
+      var data={id:bufToB64(cred.rawId),response:{attestationObject:bufToB64(cred.response.attestationObject),clientDataJSON:bufToB64(cred.response.clientDataJSON)},type:cred.type};
       return api('auth/wa/reg-verify',{method:'POST',body:{credential:data}});
     }).then(function(d){
-      if(d.ok){
-        hasCredential=true;
-        $('#loginMsg3').textContent='注册成功！';$('#loginMsg3').className='login-msg ok';
-        haptic('success');
-        setTimeout(showApp,800);
-      }else throw new Error(d.error||'注册失败');
-    }).catch(function(e){
-      if(e.message!=='CANCELLED'&&e.name!=='NotAllowedError'){
-        $('#loginMsg3').textContent=e.message||'注册失败';$('#loginMsg3').className='login-msg error';
-      }
-    });
-  }catch(err){
-    $('#loginMsg3').textContent='生物识别初始化失败';$('#loginMsg3').className='login-msg error';
-  }
+      if(d&&d.ok){bioRegistered=true;updateBioUI();toast('生物识别注册成功','ok');haptic('success')}
+    }).catch(function(e){if(e.name!=='NotAllowedError')toast(e.message||'注册失败','err')});
+  }catch(e){toast('生物识别不可用','err')}
 }
 
-$('#btnSkipBio').onclick=function(){haptic('light');showApp()};
-
-// Biometric login (returning users)
-function doBioLogin(){
-  try{
-    if(!bioSupported||!hasCredential){showLoginStep('lstep1');return}
-    $('#loginMsgBio').textContent='请验证'+(bioType==='face'?'面容':'指纹')+'...';
-    $('#loginMsgBio').className='login-msg';
-    api('auth/wa/login-options',{method:'POST'}).then(function(d){
-      if(!d.ok||!d.options)throw new Error(d.error||'NO_CREDENTIAL');
-      var opts=d.options;
-      opts.challenge=base64ToBuf(opts.challenge);
-      opts.allowCredentials=(opts.allowCredentials||[]).map(function(c){
-        try{return{id:base64ToBuf(c.id),type:c.type,transports:c.transports||['internal']}}catch(e){return null}
-      }).filter(Boolean);
-      return navigator.credentials.get({publicKey:opts});
-    }).then(function(assertion){
-      if(!assertion)throw new Error('CANCELLED');
-      var authData={
-        id:bufToBase64(assertion.rawId),
-        response:{
-          authenticatorData:bufToBase64(assertion.response.authenticatorData),
-          clientDataJSON:bufToBase64(assertion.response.clientDataJSON),
-          signature:bufToBase64(assertion.response.signature)
-        },
-        type:assertion.type
-      };
-      return api('auth/wa/login-verify',{method:'POST',body:{credential:authData}});
-    }).then(function(d){
-      if(d.ok&&d.token){
-        saveToken(d.token);haptic('success');
-        $('#loginMsgBio').textContent='验证成功';$('#loginMsgBio').className='login-msg ok';
-        setTimeout(showApp,500);
-      }else throw new Error(d.error||'验证失败');
-    }).catch(function(e){
-      var msg=e.message||'';
-      if(msg==='NO_CREDENTIAL'){hasCredential=false;showLoginStep('lstep1')}
-      else if(msg!=='CANCELLED'&&e.name!=='NotAllowedError'){
-        $('#loginMsgBio').textContent='验证失败，请用密码登录';$('#loginMsgBio').className='login-msg error';
-      }
-    });
-  }catch(err){
-    $('#loginMsgBio').textContent='生物识别不可用';$('#loginMsgBio').className='login-msg error';
-  }
-}
-
-$('#btnBioLogin').onclick=function(){doBioLogin()};
-$('#btnBioLogin2').onclick=function(){doBioLogin()};
-$('#btnUsePassword').onclick=function(){showLoginStep('lstep1')};
-
-// ===== ENCRYPTED TOKEN STORAGE =====
-function saveToken(t){
-  try{
-    token=t;
-    var deviceId=localStorage.getItem('jf_device_id');
-    if(!deviceId){deviceId=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36);localStorage.setItem('jf_device_id',deviceId)}
-    var enc='';
-    for(var i=0;i<t.length;i++){enc+=String.fromCharCode(t.charCodeAt(i)^deviceId.charCodeAt(i%deviceId.length))}
-    localStorage.setItem('jf_token_enc',btoa(enc));
-    localStorage.removeItem('jf_token');
-  }catch(e){
-    token=t;localStorage.setItem('jf_token',t);
-  }
-}
-function loadToken(){
-  try{
-    var enc=localStorage.getItem('jf_token_enc');
-    if(enc){
-      var deviceId=localStorage.getItem('jf_device_id')||'';
-      var raw=atob(enc),dec='';
-      for(var i=0;i<raw.length;i++){dec+=String.fromCharCode(raw.charCodeAt(i)^deviceId.charCodeAt(i%deviceId.length))}
-      return dec;
-    }
-    return localStorage.getItem('jf_token')||'';
-  }catch(e){return localStorage.getItem('jf_token')||''}
-}
-token=loadToken();
-
-// ===== BIOMETRIC LOGIN =====
-$('#btnBioLogin').onclick=function(){doBiometricLogin()};
-$('#bioIcon').onclick=function(){doBiometricLogin()};
-
-function doBiometricLogin(){
-  try{
-    if(!window.PublicKeyCredential){toast('此设备不支持生物识别，请用密码或邮箱登录','err');return}
-    $('#bioScan').classList.add('show');
-    $('#bioScan').querySelector('.bio-scan-sub').textContent='请验证指纹或面容';
-    PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(available){
-      if(!available){throw new Error('NO_HARDWARE')}
-      return api('auth/wa/login-options',{method:'POST'});
-    }).then(function(d){
-      if(!d.ok||!d.options){throw new Error(d.error||'NO_CREDENTIAL')}
-      var opts=d.options;
-      opts.challenge=base64ToBuf(opts.challenge);
-      opts.allowCredentials=(opts.allowCredentials||[]).map(function(c){
-        try{return{id:base64ToBuf(c.id),type:c.type,transports:c.transports||['internal']}}catch(e){return null}
-      }).filter(Boolean);
-      return navigator.credentials.get({publicKey:opts});
-    }).then(function(assertion){
-      if(!assertion)throw new Error('CANCELLED');
-      var authData={
-        id:bufToBase64(assertion.rawId),
-        response:{
-          authenticatorData:bufToBase64(assertion.response.authenticatorData),
-          clientDataJSON:bufToBase64(assertion.response.clientDataJSON),
-          signature:bufToBase64(assertion.response.signature)
-        },
-        type:assertion.type
-      };
-      return api('auth/wa/login-verify',{method:'POST',body:{credential:authData}});
-    }).then(function(d){
-      $('#bioScan').classList.remove('show');
-      if(d.ok&&d.token){saveToken(d.token);toast('验证成功','ok');setTimeout(showApp,500)}
-      else{toast(d.error||'验证失败','err')}
-    }).catch(function(e){
-      $('#bioScan').classList.remove('show');
-      var msg=e.message||'';
-      if(msg==='NO_CREDENTIAL')toast('请先在设置中注册生物识别','err');
-      else if(msg==='NO_HARDWARE')toast('设备无生物识别硬件','err');
-      else if(msg==='CANCELLED'||e.name==='NotAllowedError'){}
-      else toast('生物识别不可用，请用密码或邮箱登录','err');
-    });
-  }catch(err){
-    $('#bioScan').classList.remove('show');
-    toast('生物识别初始化失败，请用密码或邮箱登录','err');
-  }
-}
-
-function registerBiometric(){
-  try{
-    if(!window.PublicKeyCredential){toast('此设备不支持生物识别','err');return}
-    PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(available){
-      if(!available)throw new Error('设备无生物识别硬件');
-      return api('auth/wa/reg-options',{method:'POST'});
-    }).then(function(d){
-      if(!d.ok)throw new Error(d.error||'注册失败');
-      var opts=d.options;
-      opts.challenge=base64ToBuf(opts.challenge);
-      opts.user.id=base64ToBuf(opts.user.id);
-      opts.excludeCredentials=(opts.excludeCredentials||[]).map(function(c){
-        try{return{id:base64ToBuf(c.id),type:c.type}}catch(e){return null}
-      }).filter(Boolean);
-      return navigator.credentials.create({publicKey:opts});
-    }).then(function(cred){
-      if(!cred)throw new Error('注册取消');
-      var data={
-        id:bufToBase64(cred.rawId),
-        response:{
-          attestationObject:bufToBase64(cred.response.attestationObject),
-          clientDataJSON:bufToBase64(cred.response.clientDataJSON)
-        },
-        type:cred.type
-      };
-      return api('auth/wa/reg-verify',{method:'POST',body:{credential:data}});
-    }).then(function(d){
-      if(d.ok)toast('生物识别注册成功','ok');else toast(d.error||'注册失败','err');
-    }).catch(function(e){
-      if(e.message!=='注册取消'&&e.name!=='NotAllowedError')toast(e.message||'注册失败','err');
-    });
-  }catch(err){toast('生物识别初始化失败','err')}
-}
-
-function base64ToBuf(b64){var bin=atob(b64);var buf=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);return buf.buffer}
-function bufToBase64(buf){var bin='';var bytes=new Uint8Array(buf);for(var i=0;i<bytes.length;i++)bin+=String.fromCharCode(bytes[i]);return btoa(bin)}
-
-// ===== NAVIGATION =====
-function switchPage(page){
-  $$('.page').forEach(function(p){p.classList.remove('active')});
-  $$('.nav-item').forEach(function(n){n.classList.remove('active')});
-  $('#page-'+page).classList.add('active');
-  $('.nav-item[data-page="'+page+'"]').classList.add('active');
-  var titles={home:'概览',visitors:'访客监控',security:'安全中心',settings:'设置'};
-  $('#pageTitle').textContent=titles[page]||'';
+// ===== PAGE NAVIGATION =====
+var currentPage='home';
+function switchPage(p){
+  currentPage=p;
+  $$('.page').forEach(function(pg){pg.classList.remove('active')});
+  $('#page-'+p).classList.add('active');
+  $$('.nav-item').forEach(function(n){n.classList.toggle('active',n.dataset.page===p)});
+  var titles={home:'总览',visitors:'访客档案',security:'安全中心',settings:'设置'};
+  $('#pageTitle').textContent=titles[p]||'极风控制';
   $('#appContent').scrollTop=0;
-  if(page==='visitors')loadVisitors();
-  if(page==='security')loadSecurity();
+  if(p==='visitors')loadVisitors();
+  if(p==='security')loadSecurity();
 }
 
-// ===== DATA =====
+// ===== DATA LOADING =====
 function refreshData(){
   api('stats/overview').then(function(d){
+    if(!d.ok||!d.data)return;
+    var D=d.data;
+    $('#stVisitors').textContent=D.visitors||0;
+    $('#stAttacks').textContent=D.attacks||0;
+    $('#stBanned').textContent=D.bans||0;
+    $('#stOnline').textContent=D.online||'—';
+  });
+  api('site/status').then(function(d){
     if(!d.ok)return;
-    var s=d.data;
-    $('#statVisitors').textContent=s.todayVisitors||0;
-    $('#statAttacks').textContent=s.todayAttacks||0;
-    $('#statBans').textContent=s.activeBans||0;
-    $('#statScore').textContent=s.securityScore||'--';
-    // Status card
-    var mode=s.siteMode||'normal';
-    var card=$('#statusCard'),dot=$('#statusDot'),title=$('#statusTitle'),sub=$('#statusSub');
-    card.className='status-card '+mode;
-    if(mode==='maintenance'){dot.textContent='维护中';title.textContent='网站维护中';sub.textContent='维护模式已启用'}
-    else if(mode==='shutdown'){dot.textContent='已关停';title.textContent='网站已关停';sub.textContent='所有访问已被拦截'}
-    else{dot.textContent='运行中';title.textContent='网站正常运行';sub.textContent='所有系统正常 · 实时监控中'}
-    // Mode buttons
+    var mode=d.mode||'normal';
+    var dot=$('#statusDot');
+    dot.style.background=mode==='normal'?'var(--success)':mode==='maintenance'?'#ff9500':'var(--danger)';
+    dot.style.boxShadow='0 0 8px '+dot.style.background;
     $$('.mode-btn').forEach(function(b){b.classList.toggle('active',b.dataset.mode===mode)});
   });
-  loadEvents();
-  checkApprovals();
-}
-
-function loadEvents(){
-  api('logs/realtime').then(function(d){
-    if(!d.ok||!d.data||!d.data.length){$('#eventList').innerHTML='<div style="padding:20px;text-align:center;color:var(--text-3);font-size:13px">暂无事件</div>';return}
-    $('#eventList').innerHTML=d.data.slice(0,15).map(function(l){
-      return '<div class="event-item"><div class="event-dot '+l.type+'"></div><div class="event-msg">'+esc(l.message)+'</div><div class="event-time">'+(l.timeStr||'')+'</div></div>';
-    }).join('');
+  api('stats/visitors').then(function(d){
+    if(!d.ok||!d.data||!d.data.recent)return;
+    var h='';
+    d.data.recent.slice(0,5).forEach(function(v){
+      var badge=v.banned?'<span class="li-badge badge-danger">封禁</span>':v.warning?'<span class="li-badge badge-warn">警告</span>':'<span class="li-badge badge-ok">正常</span>';
+      var name=v.model||v.device||v.ip||'未知';
+      if(v.brand)name=v.brand+' '+name;
+      h+='<div class="list-item"><div class="li-avatar">'+(v.brandIcon||'📱')+'</div><div class="li-info"><div class="li-title">'+esc(name)+'</div><div class="li-sub">'+esc(v.browser||'')+' · '+fmtTime(v.time||v.ts||Date.now())+'</div></div>'+badge+'</div>';
+    });
+    $('#recentVisitors').innerHTML=h||'<div class="empty">暂无访客</div>';
   });
 }
 
 function loadVisitors(){
-  api('stats/devices').then(function(d){
-    if(!d.ok||!d.data||!d.data.length){$('#visitorList').innerHTML='<div style="padding:20px;text-align:center;color:var(--text-3);font-size:13px">暂无访客</div>';return}
-    $('#visitorList').innerHTML=d.data.slice(0,30).map(function(v){
-      var badge=v.banned?'<span class="visitor-badge vb-banned">封禁</span>':(v.warnings?'<span class="visitor-badge vb-warn">警告</span>':'<span class="visitor-badge vb-normal">正常</span>');
-      var name=v.brand?v.brand+' '+v.model:(v.os||'未知设备');
-      var meta=v.browser+' · '+(v.ip||'')+' · '+v.visits+'次访问';
-      var banBtn=v.banned?'':'<button onclick="quickBan(\''+v.ip+'\',\''+v.fid+'\')" style="padding:6px 12px;border-radius:10px;border:none;background:rgba(255,69,58,0.15);color:var(--red);font-size:12px;font-weight:700;flex-shrink:0">封禁</button>';
-      return '<div class="visitor-item"><div class="visitor-avatar">'+brandIcon(v)+'</div><div class="visitor-info"><div class="visitor-name">'+esc(name)+'</div><div class="visitor-meta">'+esc(meta)+'</div></div>'+banBtn+badge+'</div>';
-    }).join('');
+  api('stats/visitors').then(function(d){
+    if(!d.ok||!d.data||!d.data.recent){$('#visitorList').innerHTML='<div class="empty">暂无数据</div>';return}
+    var h='';
+    d.data.recent.forEach(function(v){
+      var badge=v.banned?'<span class="li-badge badge-danger">封禁</span>':v.warning?'<span class="li-badge badge-warn">警告</span>':'<span class="li-badge badge-ok">正常</span>';
+      var name=v.model||v.device||v.ip||'未知';
+      if(v.brand)name=v.brand+' '+name;
+      var ip=v.ip||'';
+      h+='<div class="list-item" onclick="visitorAction(\''+esc(v.fid||ip)+'\',\''+esc(ip)+'\')"><div class="li-avatar">'+(v.brandIcon||'📱')+'</div><div class="li-info"><div class="li-title">'+esc(name)+'</div><div class="li-sub">'+esc(v.browser||'')+' · '+esc(v.os||'')+' · '+fmtDate(v.time||v.ts||Date.now())+'</div></div>'+badge+'</div>';
+    });
+    $('#visitorList').innerHTML=h||'<div class="empty">暂无访客</div>';
   });
+}
+
+function visitorAction(fid,ip){
+  showModal('访客操作','<div style="margin-bottom:12px;color:var(--text2);font-size:14px">IP: '+esc(ip||'未知')+'<br>设备: '+esc(fid||'未知')+'</div>',function(){
+    api('security/ban',{method:'POST',body:{ip:ip,fid:fid,reason:'APP手动封禁',type:'permanent'}}).then(function(d){
+      if(d.ok){toast('已封禁','ok');haptic('success');loadVisitors();refreshData()}else toast(d.error||'封禁失败','err');
+      closeModal();
+    });
+  },'封禁此设备');
 }
 
 function loadSecurity(){
-  api('stats/security').then(function(d){
-    if(!d.ok)return;
-    var s=d.data;
-    $('#secTotal').textContent=s.totalAttacks||0;
-    $('#secToday').textContent=s.todayAttacks||0;
-  });
   api('security/events').then(function(d){
-    if(!d.ok||!d.data||!d.data.length){$('#securityEvents').innerHTML='<div style="padding:20px;text-align:center;color:var(--text-3);font-size:13px">暂无事件</div>';return}
-    $('#securityEvents').innerHTML=d.data.slice(0,30).map(function(l){
-      return '<div class="event-item"><div class="event-dot '+(l.type||'info')+'"></div><div class="event-msg">'+esc(l.message||l.type||'')+'</div><div class="event-time">'+(l.timeStr||'')+'</div></div>';
-    }).join('');
-    var count=d.data.length;
-    if(count>0){$('#navBadge').style.display='flex';$('#navBadge').textContent=count>99?'99+':count}
+    if(!d.ok||!d.data){$('#securityEvents').innerHTML='<div class="empty">暂无事件</div>';return}
+    var evts=d.data;if(!Array.isArray(evts))evts=[];
+    var colors={attack:'var(--danger)',ban:'var(--danger)',warning:'#ff9500',login:'var(--blue)',auth:'var(--blue)',info:'var(--text3)',unban:'var(--success)'};
+    var h='';
+    evts.slice(0,50).forEach(function(e){
+      h+='<div class="event-item"><div class="event-dot" style="background:'+(colors[e.type]||'var(--text3)')+'"></div><div class="event-text">'+esc(e.message||e.type||'')+'<div class="event-time">'+fmtDate(e.time||e.ts||Date.now())+'</div></div></div>';
+    });
+    $('#securityEvents').innerHTML=h||'<div class="empty">暂无安全事件</div>';
   });
 }
 
-function brandIcon(v){
-  var b=(v.brand||'').toLowerCase(),os=(v.os||'').toLowerCase();
-  var svg=function(p){return '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">'+p+'</svg>'};
-  if(b.includes('xiaomi')||b.includes('redmi'))return svg('<rect x="2" y="2" width="20" height="20" rx="4" fill="#FF6900"/><text x="12" y="16.5" text-anchor="middle" fill="#fff" font-size="11" font-weight="800">MI</text>');
-  if(b.includes('huawei'))return svg('<path d="M12 2C8 2 4 5 4 10c0 4 3 7 8 12 5-5 8-8 8-12 0-5-4-8-8-8z" fill="#CF0A2C"/>');
-  if(b.includes('samsung'))return svg('<ellipse cx="12" cy="12" rx="11" ry="5" fill="none" stroke="#1428A0" stroke-width="2"/>');
-  if(b.includes('apple')||os.includes('ios'))return svg('<path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>');
-  if(os.includes('windows'))return svg('<path d="M3 5.5L10.5 4.5V11.5H3V5.5M11.5 4.3L21 3V11.5H11.5V4.3M3 12.5H10.5V19.5L3 18.5V12.5M11.5 12.5H21V21L11.5 19.7V12.5Z" fill="#0078D4"/>');
-  if(os.includes('android'))return svg('<path d="M17.5 10.5a1 1 0 110 2 1 1 0 010-2zm-11 0a1 1 0 110 2 1 1 0 010-2zM12 2a1 1 0 011 1v1.07A5 5 0 0117.5 9v1h-11V9A5 5 0 0111 4.07V3a1 1 0 011-1z" fill="#3DDC84"/>');
-  return svg('<circle cx="12" cy="12" r="10" fill="var(--text-3)"/>');
-}
-
-// ===== SITE MODE =====
+// ===== ACTIONS =====
 function setMode(mode){
   api('admin/site-mode',{method:'POST',body:{mode:mode}}).then(function(d){
-    if(d.ok){toast(mode==='normal'?'已恢复正常':mode==='maintenance'?'已进入维护模式':'已关停网站','ok');refreshData()}
+    if(d.ok){toast('已切换到'+(mode==='normal'?'正常':mode==='maintenance'?'维护':'关停')+'模式','ok');haptic('light');refreshData()}
     else toast(d.error||'操作失败','err');
   });
 }
 
-// ===== APPROVALS =====
-function checkApprovals(){
-  api('auth/app/pending').then(function(d){
-    if(!d.ok||!d.pending||!d.pending.length){$('#approvalArea').innerHTML='';return}
-    var area=$('#approvalArea');
-    area.innerHTML=d.pending.map(function(p){
-      return '<div class="approval-banner"><h3>🔐 登录授权请求</h3><p>IP: '+esc(p.ip||'未知')+' · 请确认是否为本人操作</p><div class="approval-code">'+esc(p.code)+'</div><div class="approval-actions"><button class="btn-deny" onclick="denyLogin(\''+p.sid+'\')">拒绝</button><button class="btn-approve" onclick="approveLogin(\''+p.sid+'\')">一键授权</button></div></div>';
-    }).join('');
-  });
-}
-
-function approveLogin(sid){
-  api('auth/app/approve',{method:'POST',body:{sid:sid}}).then(function(d){
-    if(d.ok){toast('已授权登录','ok');checkApprovals()}else toast(d.error||'授权失败','err');
-  });
-}
-function denyLogin(sid){
-  api('auth/app/deny',{method:'POST',body:{sid:sid}}).then(function(d){
-    if(d.ok){toast('已拒绝','ok');checkApprovals()}else toast(d.error||'操作失败','err');
-  });
-}
-
-// ===== SETTINGS TOGGLES =====
-$$('.toggle').forEach(function(t){
-  t.onclick=function(){
-    t.classList.toggle('on');
-    var key=t.id.replace('set','').replace(/^[A-Z]/,function(c){return c.toLowerCase()});
-    var map={autoBan:'autoBan',emailAlert:'emailAlert',antiDebug:'antiDebug',dailyReport:'dailyReport'};
-    var setting=map[t.id];
-    if(setting)api('settings',{method:'POST',body:{key:setting,value:t.classList.contains('on')}});
-  };
-});
-
-function openConsole(){window.location.href='console.html'}
-
-// Quick announcement
 function showQuickAnnounce(){
-  var text=prompt('发布公告（将显示在官网顶部）:');
-  if(!text||!text.trim())return;
-  api('announcement/publish',{method:'POST',body:{content:text.trim()}}).then(function(d){
-    if(d.ok){toast('公告已发布','ok');haptic('success')}else toast(d.error||'发布失败','err');
-  });
+  showModal('发布公告','<input class="modal-input" id="maTitle" placeholder="公告标题"><textarea class="modal-input" id="maContent" placeholder="公告内容"></textarea>',function(){
+    var title=$('#maTitle').value.trim(),content=$('#maContent').value.trim();
+    if(!title||!content){toast('请填写完整','err');return}
+    api('announcement/publish',{method:'POST',body:{title:title,content:content}}).then(function(d){
+      if(d.ok){toast('公告已发布','ok');closeModal()}else toast(d.error||'失败','err');
+    });
+  },'发布');
 }
 
-// Clear all bans
 function clearAllBans(){
-  if(!confirm('确定清空所有封禁？'))return;
-  api('security/clear-bans',{method:'POST'}).then(function(d){
-    if(d.ok){toast('已清空所有封禁','ok');haptic('success');refreshData()}else toast(d.error||'操作失败','err');
-  });
+  showModal('一键解封','<div style="color:var(--text2);font-size:14px">确定解除所有临时封禁？</div>',function(){
+    api('security/clear-bans',{method:'POST'}).then(function(d){
+      if(d.ok){toast('已解封','ok');refreshData()}else toast(d.error||'失败','err');
+      closeModal();
+    });
+  },'确认解封');
 }
 
-// Send test email
 function sendTestEmail(){
-  toast('正在发送测试邮件...');
   api('reports/send-daily',{method:'POST'}).then(function(d){
     if(d.ok)toast('测试邮件已发送','ok');else toast(d.error||'发送失败','err');
   });
 }
 
-// Quick ban from visitor list
-function quickBan(ip,fid){
-  if(!ip&&!fid)return;
-  var reason=prompt('封禁原因:','手动封禁');
-  if(reason===null)return;
-  api('security/ban',{method:'POST',body:{ip:ip,fid:fid,reason:reason||'手动封禁',permanent:false}}).then(function(d){
-    if(d.ok){toast('已封禁','ok');haptic('heavy');loadVisitors();refreshData()}else toast(d.error||'封禁失败','err');
+function openConsole(){window.open(API+'/console.html','_blank')}
+
+function logout(){
+  token='';localStorage.removeItem('jf_tk');localStorage.removeItem('jf_device_token');
+  $('#app').classList.remove('show');showLogin();showStep('lstep1');
+}
+
+function toggleSetting(el){
+  var key=el.dataset.key;
+  var on=!el.classList.contains('on');
+  el.classList.toggle('on');
+  var body={};body[key]=on;
+  api('settings',{method:'POST',body:body}).then(function(d){
+    if(!d.ok){el.classList.toggle('on');toast('设置失败','err')}
+    else{toast(on?'已开启':'已关闭','ok');haptic('light')}
   });
 }
 
-// Pull to refresh
-var touchStartY=0;
-document.addEventListener('touchstart',function(e){
-  var scrollEl=document.querySelector('.app-content');
-  if(scrollEl&&scrollEl.scrollTop<=0)touchStartY=e.touches[0].clientY;
-},{passive:true});
-document.addEventListener('touchend',function(e){
-  var scrollEl=document.querySelector('.app-content');
-  if(scrollEl&&touchStartY>0){
-    var diff=e.changedTouches[0].clientY-touchStartY;
-    if(diff>80&&scrollEl.scrollTop<=0){
-      haptic('light');
-      refreshData();
-      if($('#page-visitors').classList.contains('active'))loadVisitors();
-      if($('#page-security').classList.contains('active'))loadSecurity();
-    }
-  }
-  touchStartY=0;
-},{passive:true});
-
-// Network status
-window.addEventListener('online',function(){toast('网络已恢复','ok')});
-window.addEventListener('offline',function(){toast('网络连接断开','err')});
-function bioSettingClick(){
-  if(!bioSupported){toast('设备不支持生物识别','err');return}
-  if(hasCredential){
-    if(confirm('已注册生物识别，是否重新注册？'))doRegisterBioFromSettings();
-  }else{
-    doRegisterBioFromSettings();
-  }
+// ===== MODAL =====
+function showModal(title,body,onConfirm,btnText){
+  $('#modalTitle').textContent=title;
+  $('#modalBody').innerHTML=body;
+  $('#modalConfirm').textContent=btnText||'确定';
+  $('#modalConfirm').onclick=onConfirm||closeModal;
+  $('#modalOverlay').classList.add('show');
 }
-function doRegisterBioFromSettings(){
-  try{
-    api('auth/wa/reg-options',{method:'POST'}).then(function(d){
-      if(!d.ok)throw new Error(d.error||'注册失败');
-      var opts=d.options;
-      opts.challenge=base64ToBuf(opts.challenge);
-      opts.user.id=base64ToBuf(opts.user.id);
-      opts.excludeCredentials=(opts.excludeCredentials||[]).map(function(c){
-        try{return{id:base64ToBuf(c.id),type:c.type}}catch(e){return null}
-      }).filter(Boolean);
-      return navigator.credentials.create({publicKey:opts});
-    }).then(function(cred){
-      if(!cred)return;
-      var data={
-        id:bufToBase64(cred.rawId),
-        response:{attestationObject:bufToBase64(cred.response.attestationObject),clientDataJSON:bufToBase64(cred.response.clientDataJSON)},
-        type:cred.type
-      };
-      return api('auth/wa/reg-verify',{method:'POST',body:{credential:data}});
-    }).then(function(d){
-      if(d&&d.ok){hasCredential=true;toast('生物识别注册成功','ok');updateBioSettingUI()}
-    }).catch(function(e){if(e.message&&e.name!=='NotAllowedError')toast(e.message,'err')});
-  }catch(e){toast('生物识别不可用','err')}
-}
-function updateBioSettingUI(){
-  var label=$('#bioSettingLabel'),sub=$('#bioSettingSub');
-  if(!label)return;
-  if(!bioSupported){label.textContent='生物识别';sub.textContent='设备不支持'}
-  else if(hasCredential){label.textContent='生物识别 ✓';sub.textContent='已注册，点击重新注册'}
-  else{label.textContent='生物识别';sub.textContent='点击注册指纹/面容'}
-}
-function logout(){token='';localStorage.removeItem('jf_token');localStorage.removeItem('jf_token_enc');localStorage.removeItem('jf_device_token');$('#app').classList.remove('show');showLogin()}
+function closeModal(){$('#modalOverlay').classList.remove('show')}
 
 // ===== TIMERS =====
 function startTimers(){
-  if(refreshTimer)clearInterval(refreshTimer);
-  refreshTimer=setInterval(function(){
-    if($('#page-home').classList.contains('active'))refreshData();
-    if($('#page-visitors').classList.contains('active'))loadVisitors();
-    if($('#page-security').classList.contains('active'))loadSecurity();
-  },5000);
-  if(approvalTimer)clearInterval(approvalTimer);
-  approvalTimer=setInterval(checkApprovals,3000);
+  clearInterval(refreshTimer);
+  refreshTimer=setInterval(refreshData,5000);
 }
 
-// ===== SERVICE WORKER =====
-function registerSW(){if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){})}
-
-// Ripple effect
-document.addEventListener('click',function(e){
-  var btn=e.target.closest('.bio-btn');
-  if(!btn)return;
-  var r=document.createElement('span');r.className='ripple';
-  var rect=btn.getBoundingClientRect();
-  var size=Math.max(rect.width,rect.height);
-  r.style.width=r.style.height=size+'px';
-  r.style.left=(e.clientX-rect.left-size/2)+'px';
-  r.style.top=(e.clientY-rect.top-size/2)+'px';
-  btn.appendChild(r);
-  setTimeout(function(){r.remove()},500);
+// ===== PULL TO REFRESH =====
+var touchStartY=0,pulling=false;
+$('#appContent').addEventListener('touchstart',function(e){
+  if(this.scrollTop<=0){touchStartY=e.touches[0].clientY;pulling=true}
+},{passive:true});
+$('#appContent').addEventListener('touchmove',function(e){
+  if(!pulling)return;
+  var diff=e.touches[0].clientY-touchStartY;
+  if(diff>60){$('#pullHint').classList.add('show');this.style.transform='translateY('+Math.min(diff*0.3,60)+'px)';this.style.transition='transform .1s'}
+},{passive:true});
+$('#appContent').addEventListener('touchend',function(){
+  if(!pulling)return;pulling=false;
+  this.style.transform='';this.style.transition='transform .3s ease';
+  if($('#pullHint').classList.contains('show')){$('#pullHint').classList.remove('show');refreshData();toast('已刷新','ok')}
 });
+
+// ===== ONLINE/OFFLINE =====
+window.addEventListener('online',function(){toast('网络已连接','ok')});
+window.addEventListener('offline',function(){toast('网络已断开','err')});
+
+// ===== SERVICE WORKER =====
+function registerSW(){
+  if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){})}
+}
 </script>
 </body>
 </html>
