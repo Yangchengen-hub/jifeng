@@ -839,7 +839,7 @@ async function handleRoute(route, method, req, res, ctx) {
   // Security events with filtering
   if (route === 'security/events' && method === 'GET') {
     const events = await db.lrange('events:list', 0, 99);
-    const type = req.query.type || event.queryStringParameters?.type;
+    const type = (event.queryStringParameters && event.queryStringParameters.type) || null;
     let filtered = events;
     if (type && type !== 'all') filtered = events.filter(e => e.type === type);
     return j({ ok: true, data: filtered });
