@@ -164,6 +164,24 @@ async function handleRoute(route, method, req, res, ctx) {
       return j({ ok: false, error: '账号或密码错误' });
     }
     await db.del('loginfail:' + ip);
+    // If device token provided and valid, issue token directly (biometric login)
+    const { deviceToken } = req.body;
+    if (deviceToken) {
+      try {
+        const payload = auth.verify(deviceToken);
+        if (payload && payload.role === 'device') {
+          const devices = (await db.get('trusted_devices')) || [];
+          const device = devices.find(d => d.id === payload.deviceId);
+          if (device) {
+            device.lastUsed = Date.now();
+            await db.set('trusted_devices', devices);
+            const token = auth.sign({ user: process.env.ADMIN_USER || 'NUOYAN', role: 'admin', exp: Date.now() + 86400000 });
+            await sec.logSecurityEvent('auth', '生物识别登录成功', { ip });
+            return j({ ok: true, token, trusted: true });
+          }
+        }
+      } catch(e) {}
+    }
     return j({ ok: true });
   }
 
