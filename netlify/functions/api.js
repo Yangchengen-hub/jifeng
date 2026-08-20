@@ -115,7 +115,7 @@ exports.handler = async function(event, context) {
     }
 
     // Route handling - inline the catch-all logic
-    const result = await handleRoute(route, method, req, res, { ip, fid });
+    const result = await handleRoute(route, method, req, res, { ip, fid, event });
     if (result) return result;
 
     return { statusCode: res.statusCode, headers: res.headers, body: res.body };
@@ -126,7 +126,7 @@ exports.handler = async function(event, context) {
 };
 
 async function handleRoute(route, method, req, res, ctx) {
-  const { ip, fid } = ctx;
+  const { ip, fid, event } = ctx;
   const j = (data, status) => ({ statusCode: status || 200, headers: { ...corsHeaders(),
     'X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','X-XSS-Protection':'1;mode=block',
     'Referrer-Policy':'strict-origin-when-cross-origin',
@@ -839,9 +839,9 @@ async function handleRoute(route, method, req, res, ctx) {
   // Security events with filtering
   if (route === 'security/events' && method === 'GET') {
     const events = await db.lrange('events:list', 0, 99);
-    const type = (event.queryStringParameters && event.queryStringParameters.type) || null;
-    let filtered = events;
-    if (type && type !== 'all') filtered = events.filter(e => e.type === type);
+    const type = (event && event.queryStringParameters && event.queryStringParameters.type) || null;
+    let filtered = Array.isArray(events) ? events : [];
+    if (type && type !== 'all') filtered = filtered.filter(e => e && e.type === type);
     return j({ ok: true, data: filtered });
   }
 
