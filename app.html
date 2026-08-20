@@ -81,6 +81,9 @@ input,button{font-family:inherit;color:inherit;-webkit-user-select:text;user-sel
 .login-btn-alt{width:100%;padding:14px;border:1px solid var(--border);border-radius:16px;background:transparent;font-size:15px;font-weight:600;cursor:pointer;transition:background .15s}
 .login-btn-alt:active{background:var(--card-2)}
 .login-msg{margin-top:14px;text-align:center;font-size:13px;min-height:20px}
+.login-step{display:none;animation:stepSlide .35s var(--spring)}
+.login-step.active{display:block}
+@keyframes stepSlide{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
 .login-msg.error{color:var(--red)}
 .login-msg.ok{color:var(--green)}
 
@@ -231,27 +234,66 @@ input,button{font-family:inherit;color:inherit;-webkit-user-select:text;user-sel
 <!-- Login -->
 <div class="login-screen" id="loginScreen">
   <div class="login-bg"><div class="orb"></div><div class="orb"></div></div>
-  <div class="login-card">
-    <div class="bio-icon" id="bioIcon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/><path d="M12 7v4l2 2"/></svg>
+  <div class="login-card" id="loginCard">
+    <!-- Step 1: Password -->
+    <div class="login-step active" id="lstep1">
+      <div class="login-logo" style="margin-bottom:20px">
+        <div class="mark" style="margin:0 auto 14px">JF</div>
+        <div class="login-title">极风控制</div>
+        <div class="login-desc">请输入管理员账号密码</div>
+      </div>
+      <input class="login-input" type="text" id="loginUser" placeholder="管理员账号" value="NUOYAN" autocomplete="username">
+      <input class="login-input" type="password" id="loginPass" placeholder="密码" autocomplete="current-password">
+      <button class="bio-btn" id="btnStep1Next">下一步</button>
+      <div class="login-msg" id="loginMsg1"></div>
     </div>
-    <div class="login-title">极风控制</div>
-    <div class="login-desc">使用指纹或面容快速登录<br>安全管控尽在掌握</div>
-    <button class="bio-btn" id="btnBioLogin">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/></svg>
-      指纹 / 面容登录
-    </button>
-    <div class="login-divider">其他登录方式</div>
-    <input class="login-input" type="text" id="loginUser" placeholder="管理员账号" value="NUOYAN" autocomplete="username">
-    <input class="login-input" type="password" id="loginPass" placeholder="密码" autocomplete="current-password">
-    <button class="login-btn-alt" id="btnPassLogin">密码登录</button>
-    <div style="display:flex;gap:10px;margin-top:10px">
-      <input class="login-input" type="email" id="loginEmail" placeholder="邮箱验证码登录" style="margin-bottom:0;flex:1">
-      <button class="login-btn-alt" id="btnSendCode" style="width:auto;padding:14px 16px;white-space:nowrap">发送</button>
+
+    <!-- Step 2: Email verification -->
+    <div class="login-step" id="lstep2">
+      <div class="login-logo" style="margin-bottom:20px">
+        <div class="step-indicator"><div class="step-dot done"></div><div class="step-line done"></div><div class="step-dot active"></div></div>
+        <div class="login-title" style="margin-top:16px">邮箱验证</div>
+        <div class="login-desc">验证码已发送至管理员邮箱<br>请输入6位验证码</div>
+      </div>
+      <input class="login-input" type="text" id="loginCode" placeholder="6位验证码" maxlength="6" style="letter-spacing:8px;text-align:center;font-size:22px;font-weight:800">
+      <button class="bio-btn" id="btnStep2Next">验证并登录</button>
+      <button class="login-btn-alt" id="btnResendCode" style="margin-top:10px">重新发送 <span id="resendTimer"></span></button>
+      <button class="login-btn-alt" id="btnBack1" style="margin-top:8px">返回</button>
+      <div class="login-msg" id="loginMsg2"></div>
     </div>
-    <input class="login-input" type="text" id="loginCode" placeholder="输入6位验证码" style="margin-top:10px;letter-spacing:4px;text-align:center;font-size:18px;font-weight:700" maxlength="6">
-    <button class="login-btn-alt" id="btnEmailLogin" style="margin-top:10px">邮箱验证码登录</button>
-    <div class="login-msg" id="loginMsg"></div>
+
+    <!-- Step 3: Biometric registration -->
+    <div class="login-step" id="lstep3">
+      <div class="login-logo" style="margin-bottom:20px">
+        <div class="step-indicator"><div class="step-dot done"></div><div class="step-line done"></div><div class="step-dot done"></div><div class="step-line done"></div><div class="step-dot active"></div></div>
+        <div class="login-title" style="margin-top:16px">设置生物识别</div>
+        <div class="login-desc" id="bioDetectDesc">正在检测设备生物识别能力...</div>
+      </div>
+      <div id="bioRegisterArea" style="display:none">
+        <div class="bio-icon" id="btnRegisterBio" style="margin:0 auto 16px">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/></svg>
+        </div>
+        <div style="text-align:center;font-size:13px;color:var(--text-3);margin-bottom:16px" id="bioTypeText"></div>
+        <button class="bio-btn" id="btnDoRegisterBio">注册生物识别</button>
+      </div>
+      <button class="login-btn-alt" id="btnSkipBio" style="margin-top:10px">跳过，直接进入</button>
+      <div class="login-msg" id="loginMsg3"></div>
+    </div>
+
+    <!-- Biometric login (returning users) -->
+    <div class="login-step" id="lstepBio">
+      <div class="login-logo" style="margin-bottom:20px">
+        <div class="bio-icon" id="btnBioLogin" style="margin:0 auto 16px;cursor:pointer">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/></svg>
+        </div>
+        <div class="login-title">指纹/面容登录</div>
+        <div class="login-desc" id="bioLoginDesc">验证身份以进入控制台</div>
+      </div>
+      <button class="bio-btn" id="btnBioLogin2">点击开始验证</button>
+      <div class="login-divider">或使用密码</div>
+      <button class="login-btn-alt" id="btnUsePassword">账号密码登录</button>
+      <div class="login-msg" id="loginMsgBio"></div>
+    </div>
   </div>
 </div>
 
@@ -392,8 +434,8 @@ input,button{font-family:inherit;color:inherit;-webkit-user-select:text;user-sel
       <div class="setting-item"><div><div class="si-label">每日报告</div><div class="si-sub">每天自动发送运维日报</div></div><button class="toggle on" id="setDailyReport"></button></div>
 
       <div class="section-title">账号</div>
-      <div class="setting-item" onclick="registerBiometric()" style="cursor:pointer">
-        <div><div class="si-label">生物识别</div><div class="si-sub">注册指纹/面容用于快速登录</div></div>
+      <div class="setting-item" onclick="bioSettingClick()" style="cursor:pointer">
+        <div><div class="si-label" id="bioSettingLabel">生物识别</div><div class="si-sub" id="bioSettingSub">点击管理指纹/面容登录</div></div>
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--text-3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
       <div class="setting-item" onclick="logout()" style="cursor:pointer">
@@ -472,7 +514,10 @@ setTimeout(function(){$('#splash').classList.add('hide');checkAuth()},1500);
 function checkAuth(){
   if(token){
     api('stats/overview').then(function(d){
-      if(d.ok){showApp()}else{showLogin()}
+      if(d.ok){showApp()}else{
+        token='';localStorage.removeItem('jf_token');localStorage.removeItem('jf_token_enc');
+        showLogin();
+      }
     });
   }else{showLogin()}
 }
@@ -480,57 +525,265 @@ function checkAuth(){
 function showLogin(){$('#loginScreen').classList.add('show')}
 function showApp(){$('#loginScreen').classList.remove('show');$('#app').classList.add('show');refreshData();startTimers();registerSW()}
 
-// ===== PASSWORD LOGIN =====
-$('#btnPassLogin').onclick=function(){
-  var u=$('#loginUser').value.trim(),p=$('#loginPass').value;
-  if(!u||!p){$('#loginMsg').textContent='请输入账号密码';$('#loginMsg').className='login-msg error';return}
-  $('#loginMsg').textContent='登录中...';$('#loginMsg').className='login-msg';
-  api('auth/login',{method:'POST',body:{username:u,password:p}}).then(function(d){
-    if(d.ok&&d.token){saveToken(d.token);$('#loginMsg').textContent='登录成功';$('#loginMsg').className='login-msg ok';setTimeout(showApp,500)}
-    else{$('#loginMsg').textContent=d.error||'登录失败';$('#loginMsg').className='login-msg error'}
-  });
-};
+// ===== STEP-BASED LOGIN FLOW =====
+var bioSupported=false;
+var bioType=''; // 'fingerprint', 'face', 'biometric'
+var hasCredential=false;
 
-// ===== EMAIL CODE LOGIN =====
-var codeTimer=null;
-$('#btnSendCode').onclick=function(){
-  var email=$('#loginEmail').value.trim();
-  if(!email||!email.includes('@')){$('#loginMsg').textContent='请输入有效邮箱';$('#loginMsg').className='login-msg error';return}
-  var btn=$('#btnSendCode');btn.disabled=true;btn.textContent='发送中...';
-  api('auth/sendcode',{method:'POST',body:{email:email}}).then(function(d){
-    if(d.ok){
-      $('#loginMsg').textContent='验证码已发送至 '+email;$('#loginMsg').className='login-msg ok';
-      var s=60;btn.textContent=s+'s';codeTimer=setInterval(function(){s--;btn.textContent=s+'s';if(s<=0){clearInterval(codeTimer);btn.disabled=false;btn.textContent='发送'}},1000);
+function showLoginStep(id){
+  document.querySelectorAll('.login-step').forEach(function(s){s.classList.remove('active')});
+  $('#'+id).classList.add('active');
+}
+
+function detectBiometric(){
+  return new Promise(function(resolve){
+    if(!window.PublicKeyCredential){bioSupported=false;resolve();return}
+    PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(available){
+      bioSupported=available;
+      // Try to determine biometric type from device
+      var ua=navigator.userAgent;
+      if(/Android/i.test(ua)){
+        // Most Android phones with biometric have fingerprint; some have face
+        bioType='fingerprint';
+        // Check for known face-unlock devices
+        if(/Pixel|iPhone|iPad/i.test(ua))bioType='face';
+      }else if(/iPhone|iPad/i.test(ua)){
+        bioType='face';
+      }else{
+        bioType='biometric';
+      }
+      // Check if credential already registered
+      return api('auth/wa/status');
+    }).then(function(d){
+      if(d&&d.ok)hasCredential=d.registered;
+      resolve();
+    }).catch(function(){resolve()});
+  });
+}
+
+function showLogin(){
+  detectBiometric().then(function(){
+    if(bioSupported&&hasCredential){
+      showLoginStep('lstepBio');
+      // Auto-prompt biometric
+      setTimeout(function(){doBioLogin()},500);
     }else{
-      btn.disabled=false;btn.textContent='发送';
-      $('#loginMsg').textContent=d.error||'发送失败';$('#loginMsg').className='login-msg error';
+      showLoginStep('lstep1');
+    }
+  });
+}
+
+// Step 1: Password
+$('#btnStep1Next').onclick=function(){
+  var u=$('#loginUser').value.trim(),p=$('#loginPass').value;
+  if(!u||!p){$('#loginMsg1').textContent='请输入账号和密码';$('#loginMsg1').className='login-msg error';return}
+  $('#loginMsg1').textContent='验证中...';$('#loginMsg1').className='login-msg';
+  api('auth/login',{method:'POST',body:{username:u,password:p}}).then(function(d){
+    if(d.ok){
+      haptic('success');
+      // Auto-send email code
+      $('#loginMsg1').textContent='';
+      showLoginStep('lstep2');
+      sendEmailCode();
+    }else{
+      haptic('heavy');
+      $('#loginMsg1').textContent=d.error||'账号或密码错误';
+      $('#loginMsg1').className='login-msg error';
     }
   });
 };
-$('#btnEmailLogin').onclick=function(){
-  var email=$('#loginEmail').value.trim(),code=$('#loginCode').value.trim();
-  if(!email||!code){$('#loginMsg').textContent='请输入邮箱和验证码';$('#loginMsg').className='login-msg error';return}
-  $('#loginMsg').textContent='验证中...';$('#loginMsg').className='login-msg';
-  api('auth/verify',{method:'POST',body:{email:email,code:code}}).then(function(d){
-    if(d.ok&&d.token){saveToken(d.token);$('#loginMsg').textContent='登录成功';$('#loginMsg').className='login-msg ok';setTimeout(showApp,500)}
-    else{$('#loginMsg').textContent=d.error||'验证失败';$('#loginMsg').className='login-msg error'}
+
+// Enter key on password field
+$('#loginPass').addEventListener('keydown',function(e){if(e.key==='Enter')$('#btnStep1Next').click()});
+
+// Step 2: Email code
+function sendEmailCode(){
+  api('auth/sendcode',{method:'POST'}).then(function(d){
+    if(d.ok){
+      $('#loginMsg2').textContent='验证码已发送';$('#loginMsg2').className='login-msg ok';
+      startResendTimer();
+    }else{
+      $('#loginMsg2').textContent=d.error||'发送失败';$('#loginMsg2').className='login-msg error';
+    }
+  });
+}
+
+var resendTimer=null;
+function startResendTimer(){
+  var s=60;
+  $('#btnResendCode').disabled=true;
+  $('#resendTimer').textContent='('+s+'s)';
+  if(resendTimer)clearInterval(resendTimer);
+  resendTimer=setInterval(function(){
+    s--;$('#resendTimer').textContent='('+s+'s)';
+    if(s<=0){clearInterval(resendTimer);$('#btnResendCode').disabled=false;$('#resendTimer').textContent=''}
+  },1000);
+}
+
+$('#btnResendCode').onclick=function(){if(!this.disabled)sendEmailCode()};
+$('#btnBack1').onclick=function(){showLoginStep('lstep1')};
+
+$('#btnStep2Next').onclick=function(){
+  var code=$('#loginCode').value.trim();
+  if(!code||code.length<6){$('#loginMsg2').textContent='请输入6位验证码';$('#loginMsg2').className='login-msg error';return}
+  $('#loginMsg2').textContent='验证中...';$('#loginMsg2').className='login-msg';
+  api('auth/verify',{method:'POST',body:{code:code}}).then(function(d){
+    if(d.ok&&d.token){
+      haptic('success');
+      saveToken(d.token);
+      token=d.token;
+      // Auto-trust device
+      trustDevice();
+      // Go to biometric registration step
+      showLoginStep('lstep3');
+      initBioRegistration();
+    }else{
+      haptic('heavy');
+      $('#loginMsg2').textContent=d.error||'验证码错误';
+      $('#loginMsg2').className='login-msg error';
+    }
   });
 };
+$('#loginCode').addEventListener('keydown',function(e){if(e.key==='Enter')$('#btnStep2Next').click()});
+
+// Trust device - store device certificate
+function trustDevice(){
+  var deviceName='极风APP ('+(bioType==='face'?'面容':'指纹')+')';
+  api('auth/trust',{method:'POST',body:{deviceName:deviceName,fp:localStorage.getItem('jf_device_id')||''}}).then(function(d){
+    if(d.ok&&d.deviceToken){
+      // Store device certificate encrypted
+      try{
+        var deviceId=localStorage.getItem('jf_device_id')||'';
+        var enc='';
+        for(var i=0;i<d.deviceToken.length;i++){enc+=String.fromCharCode(d.deviceToken.charCodeAt(i)^deviceId.charCodeAt(i%deviceId.length))}
+        localStorage.setItem('jf_device_token',btoa(enc));
+      }catch(e){localStorage.setItem('jf_device_token',d.deviceToken)}
+    }
+  });
+}
+
+// Step 3: Biometric registration
+function initBioRegistration(){
+  var desc=$('#bioDetectDesc');
+  var area=$('#bioRegisterArea');
+  var typeText=$('#bioTypeText');
+
+  if(bioSupported){
+    desc.textContent='检测到'+(bioType==='face'?'面容识别':bioType==='fingerprint'?'指纹识别':'生物识别')+'功能';
+    typeText.textContent='点击下方图标注册'+(bioType==='face'?'面容':bioType==='fingerprint'?'指纹':'生物识别')+'，下次可快速登录';
+    area.style.display='block';
+  }else{
+    desc.textContent='未检测到生物识别硬件，可稍后在设置中注册';
+    area.style.display='none';
+  }
+}
+
+$('#btnRegisterBio').onclick=function(){doRegisterBio()};
+$('#btnDoRegisterBio').onclick=function(){doRegisterBio()};
+
+function doRegisterBio(){
+  try{
+    if(!bioSupported){toast('设备不支持生物识别','err');return}
+    $('#loginMsg3').textContent='正在调用'+(bioType==='face'?'面容':'指纹')+'识别...';
+    $('#loginMsg3').className='login-msg';
+    api('auth/wa/reg-options',{method:'POST'}).then(function(d){
+      if(!d.ok)throw new Error(d.error||'注册失败');
+      var opts=d.options;
+      opts.challenge=base64ToBuf(opts.challenge);
+      opts.user.id=base64ToBuf(opts.user.id);
+      opts.excludeCredentials=(opts.excludeCredentials||[]).map(function(c){
+        try{return{id:base64ToBuf(c.id),type:c.type}}catch(e){return null}
+      }).filter(Boolean);
+      return navigator.credentials.create({publicKey:opts});
+    }).then(function(cred){
+      if(!cred)throw new Error('CANCELLED');
+      var data={
+        id:bufToBase64(cred.rawId),
+        response:{
+          attestationObject:bufToBase64(cred.response.attestationObject),
+          clientDataJSON:bufToBase64(cred.response.clientDataJSON)
+        },
+        type:cred.type
+      };
+      return api('auth/wa/reg-verify',{method:'POST',body:{credential:data}});
+    }).then(function(d){
+      if(d.ok){
+        hasCredential=true;
+        $('#loginMsg3').textContent='注册成功！';$('#loginMsg3').className='login-msg ok';
+        haptic('success');
+        setTimeout(showApp,800);
+      }else throw new Error(d.error||'注册失败');
+    }).catch(function(e){
+      if(e.message!=='CANCELLED'&&e.name!=='NotAllowedError'){
+        $('#loginMsg3').textContent=e.message||'注册失败';$('#loginMsg3').className='login-msg error';
+      }
+    });
+  }catch(err){
+    $('#loginMsg3').textContent='生物识别初始化失败';$('#loginMsg3').className='login-msg error';
+  }
+}
+
+$('#btnSkipBio').onclick=function(){haptic('light');showApp()};
+
+// Biometric login (returning users)
+function doBioLogin(){
+  try{
+    if(!bioSupported||!hasCredential){showLoginStep('lstep1');return}
+    $('#loginMsgBio').textContent='请验证'+(bioType==='face'?'面容':'指纹')+'...';
+    $('#loginMsgBio').className='login-msg';
+    api('auth/wa/login-options',{method:'POST'}).then(function(d){
+      if(!d.ok||!d.options)throw new Error(d.error||'NO_CREDENTIAL');
+      var opts=d.options;
+      opts.challenge=base64ToBuf(opts.challenge);
+      opts.allowCredentials=(opts.allowCredentials||[]).map(function(c){
+        try{return{id:base64ToBuf(c.id),type:c.type,transports:c.transports||['internal']}}catch(e){return null}
+      }).filter(Boolean);
+      return navigator.credentials.get({publicKey:opts});
+    }).then(function(assertion){
+      if(!assertion)throw new Error('CANCELLED');
+      var authData={
+        id:bufToBase64(assertion.rawId),
+        response:{
+          authenticatorData:bufToBase64(assertion.response.authenticatorData),
+          clientDataJSON:bufToBase64(assertion.response.clientDataJSON),
+          signature:bufToBase64(assertion.response.signature)
+        },
+        type:assertion.type
+      };
+      return api('auth/wa/login-verify',{method:'POST',body:{credential:authData}});
+    }).then(function(d){
+      if(d.ok&&d.token){
+        saveToken(d.token);haptic('success');
+        $('#loginMsgBio').textContent='验证成功';$('#loginMsgBio').className='login-msg ok';
+        setTimeout(showApp,500);
+      }else throw new Error(d.error||'验证失败');
+    }).catch(function(e){
+      var msg=e.message||'';
+      if(msg==='NO_CREDENTIAL'){hasCredential=false;showLoginStep('lstep1')}
+      else if(msg!=='CANCELLED'&&e.name!=='NotAllowedError'){
+        $('#loginMsgBio').textContent='验证失败，请用密码登录';$('#loginMsgBio').className='login-msg error';
+      }
+    });
+  }catch(err){
+    $('#loginMsgBio').textContent='生物识别不可用';$('#loginMsgBio').className='login-msg error';
+  }
+}
+
+$('#btnBioLogin').onclick=function(){doBioLogin()};
+$('#btnBioLogin2').onclick=function(){doBioLogin()};
+$('#btnUsePassword').onclick=function(){showLoginStep('lstep1')};
 
 // ===== ENCRYPTED TOKEN STORAGE =====
 function saveToken(t){
   try{
     token=t;
-    // Encrypt token with device-bound key before storing
     var deviceId=localStorage.getItem('jf_device_id');
     if(!deviceId){deviceId=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36);localStorage.setItem('jf_device_id',deviceId)}
-    // Store token obfuscated (basic XOR with device ID)
     var enc='';
     for(var i=0;i<t.length;i++){enc+=String.fromCharCode(t.charCodeAt(i)^deviceId.charCodeAt(i%deviceId.length))}
     localStorage.setItem('jf_token_enc',btoa(enc));
     localStorage.removeItem('jf_token');
   }catch(e){
-    // Fallback: plain storage if encryption fails
     token=t;localStorage.setItem('jf_token',t);
   }
 }
@@ -546,7 +799,6 @@ function loadToken(){
     return localStorage.getItem('jf_token')||'';
   }catch(e){return localStorage.getItem('jf_token')||''}
 }
-// Override token initialization
 token=loadToken();
 
 // ===== BIOMETRIC LOGIN =====
@@ -824,7 +1076,46 @@ document.addEventListener('touchend',function(e){
 // Network status
 window.addEventListener('online',function(){toast('网络已恢复','ok')});
 window.addEventListener('offline',function(){toast('网络连接断开','err')});
-function logout(){token='';localStorage.removeItem('jf_token');localStorage.removeItem('jf_token_enc');$('#app').classList.remove('show');showLogin()}
+function bioSettingClick(){
+  if(!bioSupported){toast('设备不支持生物识别','err');return}
+  if(hasCredential){
+    if(confirm('已注册生物识别，是否重新注册？'))doRegisterBioFromSettings();
+  }else{
+    doRegisterBioFromSettings();
+  }
+}
+function doRegisterBioFromSettings(){
+  try{
+    api('auth/wa/reg-options',{method:'POST'}).then(function(d){
+      if(!d.ok)throw new Error(d.error||'注册失败');
+      var opts=d.options;
+      opts.challenge=base64ToBuf(opts.challenge);
+      opts.user.id=base64ToBuf(opts.user.id);
+      opts.excludeCredentials=(opts.excludeCredentials||[]).map(function(c){
+        try{return{id:base64ToBuf(c.id),type:c.type}}catch(e){return null}
+      }).filter(Boolean);
+      return navigator.credentials.create({publicKey:opts});
+    }).then(function(cred){
+      if(!cred)return;
+      var data={
+        id:bufToBase64(cred.rawId),
+        response:{attestationObject:bufToBase64(cred.response.attestationObject),clientDataJSON:bufToBase64(cred.response.clientDataJSON)},
+        type:cred.type
+      };
+      return api('auth/wa/reg-verify',{method:'POST',body:{credential:data}});
+    }).then(function(d){
+      if(d&&d.ok){hasCredential=true;toast('生物识别注册成功','ok');updateBioSettingUI()}
+    }).catch(function(e){if(e.message&&e.name!=='NotAllowedError')toast(e.message,'err')});
+  }catch(e){toast('生物识别不可用','err')}
+}
+function updateBioSettingUI(){
+  var label=$('#bioSettingLabel'),sub=$('#bioSettingSub');
+  if(!label)return;
+  if(!bioSupported){label.textContent='生物识别';sub.textContent='设备不支持'}
+  else if(hasCredential){label.textContent='生物识别 ✓';sub.textContent='已注册，点击重新注册'}
+  else{label.textContent='生物识别';sub.textContent='点击注册指纹/面容'}
+}
+function logout(){token='';localStorage.removeItem('jf_token');localStorage.removeItem('jf_token_enc');localStorage.removeItem('jf_device_token');$('#app').classList.remove('show');showLogin()}
 
 // ===== TIMERS =====
 function startTimers(){
